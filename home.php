@@ -145,6 +145,52 @@ wp_reset_postdata(); // Reset the post data
 		</div>
 	</div>
 </section>
+<?php
+// Count all approved users
+$approved_users = count(get_users([
+    'meta_key' => 'approval_status',
+    'meta_value' => 'approved',
+    'number' => -1,
+]));
+
+// Count approved male users
+$approved_males = count(get_users([
+    'meta_query' => [
+        [
+            'key' => 'approval_status',
+            'value' => 'approved',
+            'compare' => '='
+        ],
+        [
+            'key' => 'user_gender',
+            'value' => 'Male',
+            'compare' => '='
+        ]
+    ],
+    'number' => -1,
+]));
+
+// Count approved female users
+$approved_females = count(get_users([
+    'meta_query' => [
+        [
+            'key' => 'approval_status',
+            'value' => 'approved',
+            'compare' => '='
+        ],
+        [
+            'key' => 'user_gender',
+            'value' => 'Female',
+            'compare' => '='
+        ]
+    ],
+    'number' => -1,
+]));
+
+// Count success stories (published)
+$success_stories = wp_count_posts('success_story')->publish;
+?>
+
 
 <section id="exep" class="pt-4 pb-5">
 	<div class="container-xl">
@@ -197,7 +243,7 @@ wp_reset_postdata(); // Reset the post data
 								class="d-inline-block text-center theme-bg text-white rounded-circle cont_icon me-3 fs-5"><i
 									class="bi bi-heart"></i></span>
 							<span class="flex-column lh-1">
-								<b class="fs-1 d-block count" data-target="3000">0</b>
+								<b class="fs-1 d-block count" data-target="<?php echo esc_attr($success_stories); ?>">0</b>
 								<span class="d-block text-uppercase text-muted mt-2 font_13">COUPLES PARED</span>
 							</span>
 						</li>
@@ -212,7 +258,7 @@ wp_reset_postdata(); // Reset the post data
 								class="d-inline-block text-center theme-bg text-white rounded-circle cont_icon me-3 fs-5"><i
 									class="bi bi-people"></i></span>
 							<span class="flex-column lh-1">
-								<b class="fs-1 d-block count" data-target="3000">0</b>
+								<b class="fs-1 d-block count" data-target="<?php echo esc_attr($approved_users); ?>">0</b>
 								<span class="d-block text-uppercase text-muted mt-2 font_13">REGISTERED USERS</span>
 							</span>
 						</li>
@@ -227,7 +273,7 @@ wp_reset_postdata(); // Reset the post data
 								class="d-inline-block text-center theme-bg text-white rounded-circle cont_icon me-3 fs-5"><i
 									class="bi bi-gender-male"></i></span>
 							<span class="flex-column lh-1">
-								<b class="fs-1 d-block count" data-target="1200">0</b>
+								<b class="fs-1 d-block count" data-target="<?php echo esc_attr($approved_males); ?>">0</b>
 								<span class="d-block text-uppercase text-muted mt-2 font_13">Mens</span>
 							</span>
 						</li>
@@ -242,7 +288,7 @@ wp_reset_postdata(); // Reset the post data
 								class="d-inline-block text-center theme-bg text-white rounded-circle cont_icon me-3 fs-5"><i
 									class="bi bi-gender-female"></i></span>
 							<span class="flex-column lh-1">
-								<b class="fs-1 d-block count" data-target="1700">0</b>
+								<b class="fs-1 d-block count" data-target="<?php echo esc_attr($approved_females); ?>">0</b>
 								<span class="d-block text-uppercase text-muted mt-2 font_13">WOMENS</span>
 							</span>
 						</li>
@@ -389,7 +435,7 @@ wp_reset_postdata(); // Reset the post data
 							free Spotlights</li>
 					</ul>
 					<span class="d-block mt-3 text-center"><a class="d-block button"
-							href="<?php echo wp_registration_url(); ?>">Register Free</a></span>
+							href="<?php echo esc_url(home_url('/signup')); ?>">Register Free</a></span>
 				</div>
 			</div>
 			<div class="col p-0">
@@ -555,7 +601,7 @@ wp_reset_postdata(); // Reset the post data
 </section>
 
 
-<section id="profile" class="pt-5 pb-5">
+<!-- <section id="profile" class="pt-5 pb-5">
 	<div class="container-xl">
 		<div class="row exep_1 mb-4 text-center">
 			<div class="col-md-12">
@@ -569,12 +615,6 @@ wp_reset_postdata(); // Reset the post data
 					<li class="nav-item">
 						<a href="#profile1" data-bs-toggle="tab" aria-expanded="true" class="nav-link active">
 							<span class="d-md-block">Mother Tongue</span>
-						</a>
-					</li>
-
-					<li class="nav-item">
-						<a href="#profile2" data-bs-toggle="tab" aria-expanded="true" class="nav-link">
-							<span class="d-md-block">Caste</span>
 						</a>
 					</li>
 					<li class="nav-item">
@@ -592,16 +632,6 @@ wp_reset_postdata(); // Reset the post data
 					<li class="nav-item">
 						<a href="#profile5" data-bs-toggle="tab" aria-expanded="true" class="nav-link">
 							<span class="d-md-block">Occupation</span>
-						</a>
-					</li>
-					<li class="nav-item">
-						<a href="#profile6" data-bs-toggle="tab" aria-expanded="true" class="nav-link">
-							<span class="d-md-block">State</span>
-						</a>
-					</li>
-					<li class="nav-item">
-						<a href="#profile7" data-bs-toggle="tab" aria-expanded="true" class="nav-link">
-							<span class="d-md-block">NRI</span>
 						</a>
 					</li>
 
@@ -649,47 +679,7 @@ wp_reset_postdata(); // Reset the post data
 							</ul>
 						</div>
 					</div>
-					<div class="tab-pane" id="profile2">
-						<div class="profile1_inner">
-							<ul class="mb-0 d-flex flex-wrap justify-content-center">
-								<li><a href="#">Aggarwal</a></li>
-								<li class="text-muted mx-3">|</li>
-								<li><a href="#">Brahmin</a></li>
-								<li class="text-muted mx-3">|</li>
-								<li><a href="#">Jat</a></li>
-								<li class="text-muted mx-3">|</li>
-								<li><a href="#">Kayastha</a></li>
-								<li class="text-muted mx-3">|</li>
-								<li><a href="#">Maratha</a></li>
-								<li class="text-muted mx-3">|</li>
-								<li><a href="#">Rajput</a></li>
-								<li class="text-muted mx-3">|</li>
-								<li><a href="#">Sindhi</a></li>
-								<li class="text-muted mx-3">|</li>
-								<li><a href="#">Arora</a></li>
-								<li class="text-muted mx-3">|</li>
-								<li><a href="#">Sikh</a></li>
-								<li class="text-muted mx-3">|</li>
-								<li><a href="#">Digambar</a></li>
-								<li class="text-muted mx-3">|</li>
-								<li><a href="#">Vasihnav</a></li>
-								<li class="text-muted mx-3">|</li>
-								<li><a href="#">Gupta</a></li>
-								<li class="text-muted mx-3">|</li>
-								<li><a href="#">Teli</a></li>
-								<li class="text-muted mx-3">|</li>
-								<li><a href="#">Bania</a></li>
-								<li class="text-muted mx-3">|</li>
-								<li><a href="#">Yadava</a></li>
-								<li class="text-muted mx-3">|</li>
-								<li><a href="#">Khatri</a></li>
-								<li class="text-muted mx-3">|</li>
-								<li><a href="#">Gaur</a></li>
-								<li class="text-muted mx-3">|</li>
-							</ul>
-						</div>
 
-					</div>
 					<div class="tab-pane" id="profile3">
 						<div class="profile1_inner">
 							<ul class="mb-0 d-flex flex-wrap justify-content-center">
@@ -766,66 +756,15 @@ wp_reset_postdata(); // Reset the post data
 
 					</div>
 
-					<div class="tab-pane" id="profile6">
 
-						<div class="profile1_inner">
-							<ul class="mb-0 d-flex flex-wrap justify-content-center">
-								<li><a href="#">Karnataka</a></li>
-								<li class="text-muted mx-3">|</li>
-								<li><a href="#">Uttar Pradesh</a></li>
-								<li class="text-muted mx-3">|</li>
-								<li><a href="#">Maharashtra</a></li>
-								<li class="text-muted mx-3">|</li>
-								<li><a href="#">Nagaland</a></li>
-								<li class="text-muted mx-3">|</li>
-								<li><a href="#">Meghalaya</a></li>
-								<li class="text-muted mx-3">|</li>
-								<li><a href="#">Manipur</a></li>
-								<li class="text-muted mx-3">|</li>
-								<li><a href="#">Delhi</a></li>
-								<li class="text-muted mx-3">|</li>
-								<li><a href="#">Kerala</a></li>
-								<li class="text-muted mx-3">|</li>
-								<li><a href="#">Bihar</a></li>
-								<li class="text-muted mx-3">|</li>
-								<li><a href="#">Assam</a></li>
-							</ul>
-						</div>
-					</div>
-
-					<div class="tab-pane" id="profile7">
-						<div class="profile1_inner">
-							<ul class="mb-0 d-flex flex-wrap justify-content-center">
-								<li><a href="#">United States</a></li>
-								<li class="text-muted mx-3">|</li>
-								<li><a href="#">United Kingdom</a></li>
-								<li class="text-muted mx-3">|</li>
-								<li><a href="#">Canada</a></li>
-								<li class="text-muted mx-3">|</li>
-								<li><a href="#">Sweden</a></li>
-								<li class="text-muted mx-3">|</li>
-								<li><a href="#">Spain</a></li>
-								<li class="text-muted mx-3">|</li>
-								<li><a href="#">Italy</a></li>
-								<li class="text-muted mx-3">|</li>
-								<li><a href="#">France</a></li>
-								<li class="text-muted mx-3">|</li>
-								<li><a href="#">Australia</a></li>
-								<li class="text-muted mx-3">|</li>
-								<li><a href="#">UAE</a></li>
-								<li class="text-muted mx-3">|</li>
-								<li><a href="#">Netherlands</a></li>
-							</ul>
-						</div>
-
-					</div>
 
 
 				</div>
 			</div>
 		</div>
 	</div>
-</section>
+</section> -->
+<?php usabdlp_render_profile_tabs(); ?>
 
 <section id="about" class="pt-5 pb-5 bg_light">
 	<div class="container-xl">

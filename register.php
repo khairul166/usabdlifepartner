@@ -31,6 +31,7 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST' && isset($_POST['register'])) {
     $religion = isset($_POST['religion']) ? sanitize_text_field($_POST['religion']) : '';
     $dob = isset($_POST['dob']) ? sanitize_text_field($_POST['dob']) : '';
     $maritalstatus = isset($_POST['maritalstatus']) ? sanitize_text_field($_POST['maritalstatus']) : '';
+    $user_gender = isset($_POST['user_gender']) ? sanitize_text_field($_POST['user_gender']) : '';
     $education = isset($_POST['education']) ? sanitize_text_field($_POST['education']) : '';
     $user_profession = isset($_POST['user_profession']) ? sanitize_text_field($_POST['user_profession']) : '';
     $country = isset($_POST['country']) ? sanitize_text_field($_POST['country']) : '';
@@ -67,6 +68,7 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST' && isset($_POST['register'])) {
             update_user_meta($user_id, 'religion', $religion);
             update_user_meta($user_id, 'dob', $dob);
             update_user_meta($user_id, 'marital_status', $maritalstatus);
+            update_user_meta($user_id, 'user_gender', $user_gender);
             update_user_meta($user_id, 'education', $education);
             update_user_meta($user_id, 'profession', $user_profession);
             update_user_meta($user_id, 'country', $country);
@@ -85,26 +87,26 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST' && isset($_POST['register'])) {
                 update_user_meta($user_id, 'usaLandmark', $usaLandmark);
             }
 
- // Generate verification token
- $token = bin2hex(random_bytes(16));
- update_user_meta($user_id, 'email_verification_token', $token);
- update_user_meta($user_id, 'email_verified', 0);
+            // Generate verification token
+            $token = bin2hex(random_bytes(16));
+            update_user_meta($user_id, 'email_verification_token', $token);
+            update_user_meta($user_id, 'email_verified', 0);
 
- // Build verification URL
- $verification_url = home_url("/verify-email/?token={$token}&user_id={$user_id}");
+            // Build verification URL
+            $verification_url = home_url("/verify-email/?token={$token}&user_id={$user_id}");
 
- // Send email
- $subject = 'Verify Your Email Address';
- $message = "<p>Thanks for registering. Please <a href='{$verification_url}'>click here to verify your email</a>.</p>";
- $headers = ['Content-Type: text/html; charset=UTF-8'];
+            // Send email
+            $subject = 'Verify Your Email Address';
+            $message = "<p>Thanks for registering. Please <a href='{$verification_url}'>click here to verify your email</a>.</p>";
+            $headers = ['Content-Type: text/html; charset=UTF-8'];
 
- wp_mail($email, $subject, $message, $headers);
+            wp_mail($email, $subject, $message, $headers);
 
- // Optional: Log the user out right away if needed
+            // Optional: Log the user out right away if needed
 //  wp_logout();
 
- wp_redirect(home_url('/my-account'));
- exit;
+            wp_redirect(home_url('/my-account'));
+            exit;
         }
     }
 }
@@ -114,7 +116,7 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST' && isset($_POST['register'])) {
     <div class="container-xl">
         <h1 class="theme-text-color text-center mb-4">REGISTRATION</h1>
         <div class="row search_form1 shadow p-4 w-75 mx-auto">
-            <?php if (isset($error_message)) : ?>
+            <?php if (isset($error_message)): ?>
                 <div class="alert alert-danger"><?php echo esc_html($error_message); ?></div>
             <?php endif; ?>
             <div class="col-md-12">
@@ -146,11 +148,13 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST' && isset($_POST['register'])) {
                             </div>
                             <div class="col-md-6 pt-1 pb-2">
                                 <label for="fname" class="form-label">First Name:</label>
-                                <input type="text" class="form-control" id="fname" name="fname" placeholder="Enter your first name" required>
+                                <input type="text" class="form-control" id="fname" name="fname"
+                                    placeholder="Enter your first name" required>
                             </div>
                             <div class="col-md-6 pt-1 pb-2">
                                 <label for="lname" class="form-label">Last Name:</label>
-                                <input type="text" class="form-control" id="lname" name="lname" placeholder="Enter your last name" required>
+                                <input type="text" class="form-control" id="lname" name="lname"
+                                    placeholder="Enter your last name" required>
                             </div>
                             <div class="col-md-6 pt-1 pb-2">
                                 <label for="religion" class="form-label">Religion:</label>
@@ -169,7 +173,8 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST' && isset($_POST['register'])) {
                             </div>
                             <div class="col-md-6 pt-1 pb-2">
                                 <label for="maritalstatus" class="form-label">Marital Status:</label>
-                                <select id="maritalstatus" name="maritalstatus" class="form-select form-select-sm" required>
+                                <select id="maritalstatus" name="maritalstatus" class="form-select form-select-sm"
+                                    required>
                                     <option value="" selected disabled>Select Marital Status</option>
                                     <option value="Never Married">Never Married</option>
                                     <option value="Widowed">Widowed</option>
@@ -220,7 +225,8 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST' && isset($_POST['register'])) {
                             </div>
                             <div class="col-md-6 pt-1 pb-2">
                                 <label for="user_profession" class="form-label">Profession</label>
-                                <select id="user_profession" name="user_profession" class="form-select form-select-sm" required>
+                                <select id="user_profession" name="user_profession" class="form-select form-select-sm"
+                                    required>
                                     <option value="" selected disabled>Select Profession</option>
                                     <option value="Accountant">Accountant</option>
                                     <option value="Acting Professional">Acting Professional</option>
@@ -267,7 +273,8 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST' && isset($_POST['register'])) {
                                     <option value="Government Employee">Government Employee</option>
                                     <option value="Health Care Professional">Health Care Professional</option>
                                     <option value="Home Maker">Home Maker</option>
-                                    <option value="Hotel And Restaurant Professional">Hotel And Restaurant Professional</option>
+                                    <option value="Hotel And Restaurant Professional">Hotel And Restaurant Professional
+                                    </option>
                                     <option value="Human Resources Professional">Human Resources Professional</option>
                                     <option value="Interior Designer">Interior Designer</option>
                                     <option value="Investment Professional">Investment Professional</option>
@@ -337,8 +344,28 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST' && isset($_POST['register'])) {
                                     <option value="Zoologist">Zoologist</option>
                                 </select>
                             </div>
+                            <div class="col-md-6 pt-1 pb-2">
+                                <label for="user_gender" class="form-label">Gender</label>
+                                <select name="user_gender" id="user_gender" class="form-select form-select-sm" required>
+                                    <option value="" disabled selected>Select Gender</option>
+                                    <option value="male">Male</option>
+                                    <option value="female">Female</option>
+                                    <option value="trans_male">Transgender Male</option>
+                                    <option value="trans_female">Transgender Female</option>
+                                    <option value="non_binary">Non-Binary</option>
+                                    <option value="genderqueer">Genderqueer</option>
+                                    <option value="genderfluid">Genderfluid</option>
+                                    <option value="agender">Agender</option>
+                                    <option value="intersex">Intersex</option>
+                                    <option value="two_spirit">Two-Spirit</option>
+                                    <option value="other">Other</option>
+                                    <option value="prefer_not_say">Prefer not to say</option>
+                                </select>
+
+                            </div>
                         </div>
                     </div>
+
 
                     <div class="addressinfo">
                         <h3 class="reg_form_head pb-2 pt-2 theme-text-color">Address Information</h3>
@@ -369,7 +396,7 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST' && isset($_POST['register'])) {
                                 </div>
                                 <div class="col-md-6">
                                     <label for="upazila" class="form-label">Present Upazila / City *</label>
-                                    <select id="upazila" name="upazila" class="form-select" >
+                                    <select id="upazila" name="upazila" class="form-select">
                                         <option value="">Select Upazila/City</option>
                                     </select>
                                 </div>
@@ -377,13 +404,14 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST' && isset($_POST['register'])) {
                             <div class="row mt-3" id="villageAreaRow">
                                 <div class="col-md-6">
                                     <label for="village" class="form-label">Village / Area *</label>
-                                    <select id="village" name="village" class="form-select" >
+                                    <select id="village" name="village" class="form-select">
                                         <option value="">Select Village/Area</option>
                                     </select>
                                 </div>
                                 <div class="col-md-6">
                                     <label for="landmark" class="form-label">Location / Landmark / Area *</label>
-                                    <input type="text" id="landmark" name="landmark" class="form-control" placeholder="Enter landmark">
+                                    <input type="text" id="landmark" name="landmark" class="form-control"
+                                        placeholder="Enter landmark">
                                 </div>
                             </div>
                         </div>
@@ -392,13 +420,13 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST' && isset($_POST['register'])) {
                             <div class="row mt-3">
                                 <div class="col-md-6">
                                     <label for="state" class="form-label">State Of Present Country *</label>
-                                    <select id="state" name="state" class="form-select" >
+                                    <select id="state" name="state" class="form-select">
                                         <option value="">Select State</option>
                                     </select>
                                 </div>
                                 <div class="col-md-6">
                                     <label for="city" class="form-label">City Of Present State *</label>
-                                    <select id="city" name="city" class="form-select" >
+                                    <select id="city" name="city" class="form-select">
                                         <option value="">Select City</option>
                                     </select>
                                 </div>
@@ -406,7 +434,8 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST' && isset($_POST['register'])) {
                             <div class="row mt-3">
                                 <div class="col-md-6">
                                     <label for="usaLandmark" class="form-label">Location / Landmark / Area *</label>
-                                    <input type="text" id="usaLandmark" name="usaLandmark" class="form-control" placeholder="Enter landmark" >
+                                    <input type="text" id="usaLandmark" name="usaLandmark" class="form-control"
+                                        placeholder="Enter landmark">
                                 </div>
                             </div>
                         </div>
@@ -416,81 +445,92 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST' && isset($_POST['register'])) {
                     <div class="row">
                         <div class="col-md-12 pt-1 pb-2">
                             <label for="username" class="form-label">Username</label>
-                            <input type="text" id="username" name="username" class="form-control" placeholder="Enter Username" required>
+                            <input type="text" id="username" name="username" class="form-control"
+                                placeholder="Enter Username" required>
                         </div>
                         <div class="col-md-12 pt-1 pb-2">
                             <label for="email" class="form-label">Email</label>
-                            <input type="email" id="email" name="email" class="form-control" placeholder="Enter Email" required>
+                            <input type="email" id="email" name="email" class="form-control" placeholder="Enter Email"
+                                required>
                         </div>
                         <div class="col-md-6 pt-1 pb-2">
                             <label for="user_phone" class="form-label">Candidate Phone Number*</label>
                             <div class="input-group">
-                                <select class="form-select" id="candidate_country_code" name="candidate_country_code" style="max-width: 100px;">
+                                <select class="form-select" id="candidate_country_code" name="candidate_country_code"
+                                    style="max-width: 100px;">
                                     <option value="+1">+1 (USA)</option>
                                     <option value="+880">+880 (Bangladesh)</option>
                                     <!-- Add more country codes as needed -->
                                 </select>
-                                <input type="text" id="user_phone" name="user_phone" class="form-control" placeholder="Enter Candidate Phone Number" required>
+                                <input type="text" id="user_phone" name="user_phone" class="form-control"
+                                    placeholder="Enter Candidate Phone Number" required>
                             </div>
                         </div>
                         <div class="col-md-6 pt-1 pb-2">
                             <label for="user_g_phone" class="form-label">Guardian Phone Number*</label>
                             <div class="input-group">
-                                <select class="form-select" id="guardian_country_code" name="guardian_country_code" style="max-width: 100px;">
+                                <select class="form-select" id="guardian_country_code" name="guardian_country_code"
+                                    style="max-width: 100px;">
                                     <option value="+1">+1 (USA)</option>
                                     <option value="+880">+880 (Bangladesh)</option>
                                     <!-- Add more country codes as needed -->
                                 </select>
-                                <input type="text" id="user_g_phone" name="user_g_phone" class="form-control" placeholder="Enter Guardian Phone Number" required>
+                                <input type="text" id="user_g_phone" name="user_g_phone" class="form-control"
+                                    placeholder="Enter Guardian Phone Number" required>
                             </div>
                         </div>
                         <div class="col-md-6 pt-1 pb-2">
                             <label for="password" class="form-label">Password*</label>
-                            <input type="password" id="password" name="password" class="form-control" placeholder="Enter Password" required>
+                            <input type="password" id="password" name="password" class="form-control"
+                                placeholder="Enter Password" required>
                         </div>
                         <div class="col-md-6 pt-1 pb-2">
                             <label for="repassword" class="form-label">Confirm Password*</label>
-                            <input type="password" id="repassword" name="repassword" class="form-control" placeholder="Re-type Password" required>
+                            <input type="password" id="repassword" name="repassword" class="form-control"
+                                placeholder="Re-type Password" required>
                         </div>
                         <div class="d-flex mt-4">
                             <input class="form-check-input me-2" type="checkbox" value="" id="invalidCheck" required>
                             <label class="form-check-label" for="invalidCheck">
-                                Before registration read our <a href="#">Privacy Statement</a> and <a href="#">Terms & Conditions</a>
+                                Before registration read our <a href="#">Privacy Statement</a> and <a href="#">Terms &
+                                    Conditions</a>
                             </label>
                         </div>
                         <div class="d-block mt-4 text-center">
-                            <button type="submit" name="register" class="d-block button w-50 mx-auto"><strong>Register For Free</strong></button>
+                            <button type="submit" name="register" class="d-block button w-50 mx-auto"><strong>Register
+                                    For Free</strong></button>
                         </div>
                     </div>
                 </form>
                 <!-- Or Sign Up Using Section -->
                 <div class="text-center mt-4">
-                    <span class="text-muted">Or already have account? <a href="<?php echo wp_login_url(); ?>">Sign In</a></span>
+                    <span class="text-muted">Or already have account? <a href="<?php echo wp_login_url(); ?>">Sign
+                            In</a></span>
                 </div>
 
-									<!-- Or Sign Up Using Section -->
-									<div class="text-center mt-4">
-				<span class="text-muted">Or Sign Up Using</span>
-			 </div>
+                <!-- Or Sign Up Using Section -->
+                <div class="text-center mt-4">
+                    <span class="text-muted">Or Sign Up Using</span>
+                </div>
 
-					<!-- Social Login Buttons -->
-					<div class="row mt-3 justify-content-center">
-						<div class="col-auto text-center">
-							<a href="#" class="btn btn-circle btn-outline-danger">
-								<i class="bi bi-google"></i>
-							</a>
-						</div>
-						<div class="col-auto text-center">
-							<a href="#" class="btn btn-circle btn-outline-primary">
-								<i class="bi bi-facebook"></i>
-							</a>
-						</div>
-						<div class="col-auto text-center">
-							<a href="#" class="btn btn-circle btn-outline-primary">
-								<i class="bi bi-linkedin"></i>
-							</a>
-						</div>
-					</div>
+                <!-- Social Login Buttons -->
+                <div class="row mt-3 justify-content-center">
+                    <div class="col-auto text-center">
+                        <a href="#" class="btn btn-circle btn-outline-danger">
+                            <i class="bi bi-google"></i>
+                        </a>
+                    </div>
+                    <div class="col-auto text-center">
+                        <a href="#" class="btn btn-circle btn-outline-primary">
+                            <i class="bi bi-facebook"></i>
+                        </a>
+                    </div>
+                    <div class="col-auto text-center">
+                        <a href="#" class="btn btn-circle btn-outline-primary">
+                            <i class="bi bi-linkedin"></i>
+                        </a>
+                    </div>
+                </div>
             </div>
         </div>
     </div>

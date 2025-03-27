@@ -740,6 +740,108 @@ if (class_exists('Kirki')) {
 }
 
 
+// Dynamic Tab Pane Section for Profile Browsing
+function usabdlp_render_profile_tabs() {
+    global $wpdb;
+
+    // Helper function to generate tab HTML
+    function generate_profile_tab($meta_key, $label) {
+        global $wpdb;
+        $values = $wpdb->get_col(
+            $wpdb->prepare(
+                "SELECT DISTINCT meta_value FROM {$wpdb->usermeta} WHERE meta_key = %s AND meta_value != ''",
+                $meta_key
+            )
+        );
+
+        echo '<div class="tab-pane" id="profile_' . esc_attr($meta_key) . '">';
+        echo '<div class="profile1_inner">';
+        echo '<ul class="mb-0 d-flex flex-wrap justify-content-center">';
+
+        if ($values) {
+            foreach ($values as $index => $value) {
+                echo '<li><a href="' . esc_url(home_url('/search/?' . $meta_key . '=' . urlencode($value))) . '">' . esc_html($value) . '</a></li>';
+                if ($index !== array_key_last($values)) {
+                    echo '<li class="text-muted mx-3">|</li>';
+                }
+            }
+        } else {
+            echo '<li>No ' . esc_html($label) . ' found.</li>';
+        }
+
+        echo '</ul></div></div>';
+    }
+
+    // Fetch unique values for combined city field (division or city)
+    $city_values = $wpdb->get_col("SELECT DISTINCT meta_value FROM {$wpdb->usermeta} WHERE meta_key IN ('division', 'city') AND meta_value != ''");
+
+    ?>
+
+    <section id="profile" class="pt-5 pb-5">
+        <div class="container-xl">
+            <div class="row exep_1 mb-4 text-center">
+                <div class="col-md-12">
+                    <span class="text-uppercase text-muted d-block">Browse</span>
+                    <b class="d-block fs-3 mt-2">Profiles by <span class="theme-text-color">Matrimonials</span></b>
+                </div>
+            </div>
+            <div class="row profile_1">
+                <div class="col-md-12">
+                    <ul class="nav nav-tabs mb-0 flex-wrap font_15 justify-content-center border-0 tab_click">
+                        <li class="nav-item">
+                            <a href="#profile_mother_tongue" data-bs-toggle="tab" class="nav-link active"><span>Mother Tongue</span></a>
+                        </li>
+                        <li class="nav-item">
+                            <a href="#profile_religion" data-bs-toggle="tab" class="nav-link"><span>Religion</span></a>
+                        </li>
+                        <li class="nav-item">
+                            <a href="#profile_city" data-bs-toggle="tab" class="nav-link"><span>City</span></a>
+                        </li>
+                        <li class="nav-item">
+                            <a href="#profile_profession" data-bs-toggle="tab" class="nav-link"><span>Occupation</span></a>
+                        </li>
+                    </ul>
+
+                    <div class="tab-content mt-4">
+                        <div class="tab-pane active" id="profile_mother_tongue">
+                            <?php generate_profile_tab('mother_tongue', 'Mother Tongue'); ?>
+                        </div>
+                        <div class="tab-pane" id="profile_religion">
+                            <?php generate_profile_tab('religion', 'Religion'); ?>
+                        </div>
+                        <div class="tab-pane" id="profile_city">
+                            <div class="profile1_inner">
+                                <ul class="mb-0 d-flex flex-wrap justify-content-center">
+                                    <?php
+                                    if ($city_values) {
+                                        foreach ($city_values as $index => $city) {
+                                            echo '<li><a href="' . esc_url(home_url('/search/?city=' . urlencode($city))) . '">' . esc_html($city) . '</a></li>';
+                                            if ($index !== array_key_last($city_values)) {
+                                                echo '<li class="text-muted mx-3">|</li>';
+                                            }
+                                        }
+                                    } else {
+                                        echo '<li>No cities found.</li>';
+                                    }
+                                    ?>
+                                </ul>
+                            </div>
+                        </div>
+                        <div class="tab-pane" id="profile_profession">
+                            <?php generate_profile_tab('profession', 'Profession'); ?>
+                        </div>
+                    </div>
+
+                </div>
+            </div>
+        </div>
+    </section>
+    <?php
+}
+
+// You can call this function wherever you want to display the section
+// Example: usabdlp_render_profile_tabs();
+
 
 
 

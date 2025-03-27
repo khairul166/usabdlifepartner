@@ -113,6 +113,7 @@ $height = get_user_meta($user_id, 'height', true);
 $weight = get_user_meta($user_id, 'weight', true);
 $mother_tongue = get_user_meta($user_id, 'mother_tongue', true);
 $marital_status = get_user_meta($user_id, 'marital_status', true);
+$user_gender = get_user_meta($user_id, 'user_gender', true);
 $body_type = get_user_meta($user_id, 'body_type', true);
 $complexion = get_user_meta($user_id, 'complexion', true);
 $physical_status = get_user_meta($user_id, 'physical_status', true);
@@ -128,6 +129,7 @@ $height = !empty($height) ? $height : 'Not set';
 $weight = !empty($weight) ? $weight : 'Not set';
 $mother_tongue = !empty($mother_tongue) ? $mother_tongue : 'Not set';
 $marital_status = !empty($marital_status) ? $marital_status : 'Not set';
+$user_gender = !empty($user_gender) ? $user_gender : 'Not set';
 $body_type = !empty($body_type) ? $body_type : 'Not set';
 $complexion = !empty($complexion) ? $complexion : 'Not set';
 $physical_status = !empty($physical_status) ? $physical_status : 'Not set';
@@ -145,6 +147,7 @@ if (isset($_POST['update_basic_details'])) {
     update_user_meta($user_id, 'weight', sanitize_text_field($_POST['weight']));
     update_user_meta($user_id, 'mother_tongue', sanitize_text_field($_POST['mother_tongue']));
     update_user_meta($user_id, 'marital_status', sanitize_text_field($_POST['marital_status']));
+    update_user_meta($user_id, 'user_gender', sanitize_text_field($_POST['user_gender']));
     update_user_meta($user_id, 'body_type', sanitize_text_field($_POST['body_type']));
     update_user_meta($user_id, 'complexion', sanitize_text_field($_POST['complexion']));
     update_user_meta($user_id, 'physical_status', sanitize_text_field($_POST['physical_status']));
@@ -553,18 +556,18 @@ get_header();
                                                 </li>
                                                 <li class="d-flex mt-2"><b class="me-2"> Religion:</b> <span>
                                                         <?php echo esc_html($religion); ?></span></li>
-                                                        <li class="d-flex mt-2">
-    <b class="me-2">Location:</b>
-    <span>
-        <?php 
-        if (strtolower($country) == 'bangladesh') {
-            echo esc_html($district . ', ' . $division);
-        } else {
-            echo esc_html($city . ', ' . $country);
-        }
-        ?>
-    </span>
-</li>
+                                                <li class="d-flex mt-2">
+                                                    <b class="me-2">Location:</b>
+                                                    <span>
+                                                        <?php
+                                                        if (strtolower($country) == 'bangladesh') {
+                                                            echo esc_html($district . ', ' . $division);
+                                                        } else {
+                                                            echo esc_html($city . ', ' . $country);
+                                                        }
+                                                        ?>
+                                                    </span>
+                                                </li>
 
                                                 <li class="d-flex mt-2"><b class="me-2"> Education:</b> <span>
                                                         <?php echo esc_html($education); ?></span></li>
@@ -581,7 +584,7 @@ get_header();
                                             <p class="mt-1"><?php echo esc_html($about_yourself); ?></p>
                                             <ul class="mb-0 d-flex social_brands">
     <!-- Facebook -->
-    <?php if (!empty($facebook)): ?>
+    <?php if (!empty($facebook) && $facebook !== 'Not set'): ?>
         <li>
             <a class="bg-primary d-inline-block text-white text-center"
                 href="https://www.facebook.com/<?php echo esc_attr($facebook); ?>"
@@ -590,9 +593,9 @@ get_header();
             </a>
         </li>
     <?php endif; ?>
-    
+
     <!-- Instagram -->
-    <?php if (!empty($instagram)): ?>
+    <?php if (!empty($instagram) && $instagram !== 'Not set'): ?>
         <li class="ms-2">
             <a class="bg-success d-inline-block text-white text-center"
                 href="https://www.instagram.com/<?php echo esc_attr($instagram); ?>"
@@ -601,9 +604,9 @@ get_header();
             </a>
         </li>
     <?php endif; ?>
-    
+
     <!-- LinkedIn -->
-    <?php if (!empty($linkedin)): ?>
+    <?php if (!empty($linkedin) && $linkedin !== 'Not set'): ?>
         <li class="ms-2">
             <a class="bg-warning d-inline-block text-white text-center"
                 href="https://www.linkedin.com/in/<?php echo esc_attr($linkedin); ?>"
@@ -612,9 +615,9 @@ get_header();
             </a>
         </li>
     <?php endif; ?>
-    
+
     <!-- X (Twitter) -->
-    <?php if (!empty($x)): ?>
+    <?php if (!empty($x) && $x !== 'Not set'): ?>
         <li class="ms-2">
             <a class="bg-dark d-inline-block text-white text-center"
                 href="https://twitter.com/<?php echo esc_attr($x); ?>"
@@ -625,6 +628,7 @@ get_header();
     <?php endif; ?>
 </ul>
 
+
                                         </div>
                                     </div>
                                 </div>
@@ -632,18 +636,20 @@ get_header();
                         </div>
                     </div>
                     <?php if ($email_verified == false): ?>
-    <div class="list_dt1 shadow p-3 mt-4">
-        <div class="list_1_right2_inner row mx-0">
-            <p class="text-danger">Your email has not been verified yet. Please check your inbox and verify it to edit your profile.</p>
-        </div>
-    </div>
-<?php elseif ($email_verified == true && $user_status != 'approved'): ?>
-    <div class="list_dt1 shadow p-3 mt-4">
-        <div class="list_1_right2_inner row mx-0">
-            <p class="text-info">✅ Your email has been verified. Please wait for admin approval to edit your profile.</p>
-        </div>
-    </div>
-<?php endif; ?>
+                        <div class="list_dt1 shadow p-3 mt-4">
+                            <div class="list_1_right2_inner row mx-0">
+                                <p class="text-danger">Your email has not been verified yet. Please check your inbox and
+                                    verify it to edit your profile.</p>
+                            </div>
+                        </div>
+                    <?php elseif ($email_verified == true && $user_status != 'approved'): ?>
+                        <div class="list_dt1 shadow p-3 mt-4">
+                            <div class="list_1_right2_inner row mx-0">
+                                <p class="text-info">✅ Your email has been verified. Please wait for admin approval to edit
+                                    your profile.</p>
+                            </div>
+                        </div>
+                    <?php endif; ?>
 
 
 
@@ -668,15 +674,15 @@ get_header();
                                         <i class="bi bi-gender-female theme-text-color me-1 align-middle"></i>
                                         About
                                         <button class="btn btn-sm float-end edit-btn" data-bs-toggle="modal"
-    data-bs-target="<?php 
-        if ($email_verified == true && $user_status == 'approved') {
-            echo '#aboutmodal';
-        } else {
-            echo '#verifyEmailModal';
-        }
-    ?>">
-    <i class="bi bi-pencil-square"></i>
-</button>
+                                            data-bs-target="<?php
+                                            if ($email_verified == true && $user_status == 'approved') {
+                                                echo '#aboutmodal';
+                                            } else {
+                                                echo '#verifyEmailModal';
+                                            }
+                                            ?>">
+                                            <i class="bi bi-pencil-square"></i>
+                                        </button>
 
                                     </h5>
                                     <p class="px_28 mb-0"><?php echo esc_html($about_yourself); ?></p>
@@ -706,6 +712,7 @@ get_header();
                                             <b class="d-block mt-2">Weight:</b>
                                             <b class="d-block mt-2">Mother Tongue:</b>
                                             <b class="d-block mt-2">Marital Status:</b>
+                                            <b class="d-block mt-2">Gender:</b>
                                         </li>
                                         <li>
                                             <span
@@ -715,6 +722,7 @@ get_header();
                                             <span class="d-block mt-2"><?php echo esc_html($weight); ?> Kg</span>
                                             <span class="d-block mt-2"><?php echo esc_html($mother_tongue); ?></span>
                                             <span class="d-block mt-2"><?php echo esc_html($marital_status); ?></span>
+                                            <span class="d-block mt-2"><?php echo esc_html($user_gender); ?></span>
                                         </li>
                                         <li>
                                             <b class="d-block">Body Type:</b>
@@ -740,13 +748,13 @@ get_header();
                                                     <i class="bi bi-phone theme-text-color me-1 align-middle"></i>
                                                     Contact Details
                                                     <button class="btn btn-sm float-end edit-btn" data-bs-toggle="modal"
-                                            data-bs-target="<?php if ($email_verified == true && $user_status == 'approved') {
-                                                echo "#contactdetailsmodal";
-                                            } else {
-                                                echo '#verifyEmailModal';
-                                            } ?>">
-                                            <i class="bi bi-pencil-square"></i>
-                                        </button>
+                                                        data-bs-target="<?php if ($email_verified == true && $user_status == 'approved') {
+                                                            echo "#contactdetailsmodal";
+                                                        } else {
+                                                            echo '#verifyEmailModal';
+                                                        } ?>">
+                                                        <i class="bi bi-pencil-square"></i>
+                                                    </button>
                                                     <!-- <button class="btn btn-sm float-end edit-btn" data-bs-toggle="modal"
                                                         data-bs-target="#contactdetailsmodal">
                                                         <i class="bi bi-pencil-square"></i>
@@ -761,17 +769,18 @@ get_header();
                                                         <b class="me-2">Parent Contact Number:</b>
                                                         <span><?php echo esc_html($parent_country_code . ' ' . $parent_phone); ?></span>
                                                     </li>
-                                                   
+
                                                     <li class="d-flex mt-2">
                                                         <b class="me-2">Email:</b>
-                                                        <span><?php
-if ($email_verified == true) {
-    echo esc_html($email) . ' <i class="fas fa-check-circle text-primary"></i>';
-} else {
-    echo esc_html($email);
-}
-?>
-</span>
+                                                        <span>
+                                                            <?php
+                                                            if ($email_verified == true) {
+                                                                echo esc_html($email) . ' <i class="fas fa-check-circle text-primary"></i>';
+                                                            } else {
+                                                                echo esc_html($email);
+                                                            }
+                                                            ?>
+                                                        </span>
                                                     </li>
                                                 </ul>
                                             </div>
@@ -782,13 +791,13 @@ if ($email_verified == true) {
                                                     <i class="bi bi-book theme-text-color me-1 align-middle"></i>
                                                     Religion Information
                                                     <button class="btn btn-sm float-end edit-btn" data-bs-toggle="modal"
-                                            data-bs-target="<?php if ($email_verified == true && $user_status == 'approved') {
-                                                echo "#userreligiondetailsmodal";
-                                            } else {
-                                                echo '#verifyEmailModal';
-                                            } ?>">
-                                            <i class="bi bi-pencil-square"></i>
-                                        </button>
+                                                        data-bs-target="<?php if ($email_verified == true && $user_status == 'approved') {
+                                                            echo "#userreligiondetailsmodal";
+                                                        } else {
+                                                            echo '#verifyEmailModal';
+                                                        } ?>">
+                                                        <i class="bi bi-pencil-square"></i>
+                                                    </button>
                                                     <!-- <button class="btn btn-sm float-end edit-btn" data-bs-toggle="modal"
                                                         data-bs-target="#userreligiondetailsmodal">
                                                         <i class="bi bi-pencil-square"></i>
@@ -855,13 +864,13 @@ if ($email_verified == true) {
                                                     <i class="bi bi-person theme-text-color me-1 align-middle"></i>
                                                     Professional Information
                                                     <button class="btn btn-sm float-end edit-btn" data-bs-toggle="modal"
-                                            data-bs-target="<?php if ($email_verified == true && $user_status == 'approved') {
-                                                echo "#professionaldetailsmodal";
-                                            } else {
-                                                echo '#verifyEmailModal';
-                                            } ?>">
-                                            <i class="bi bi-pencil-square"></i>
-                                        </button>
+                                                        data-bs-target="<?php if ($email_verified == true && $user_status == 'approved') {
+                                                            echo "#professionaldetailsmodal";
+                                                        } else {
+                                                            echo '#verifyEmailModal';
+                                                        } ?>">
+                                                        <i class="bi bi-pencil-square"></i>
+                                                    </button>
                                                     <!-- <button class="btn btn-sm float-end edit-btn" data-bs-toggle="modal"
                                                         data-bs-target="#professionaldetailsmodal">
                                                         <i class="bi bi-pencil-square"></i>
@@ -902,13 +911,13 @@ if ($email_verified == true) {
                                                         class="bi bi-life-preserver theme-text-color me-1 align-middle"></i>
                                                     Astro Details
                                                     <button class="btn btn-sm float-end edit-btn" data-bs-toggle="modal"
-                                            data-bs-target="<?php if ($email_verified == true && $user_status == 'approved') {
-                                                echo "#astrodetailsmodal";
-                                            } else {
-                                                echo '#verifyEmailModal';
-                                            } ?>">
-                                            <i class="bi bi-pencil-square"></i>
-                                        </button>
+                                                        data-bs-target="<?php if ($email_verified == true && $user_status == 'approved') {
+                                                            echo "#astrodetailsmodal";
+                                                        } else {
+                                                            echo '#verifyEmailModal';
+                                                        } ?>">
+                                                        <i class="bi bi-pencil-square"></i>
+                                                    </button>
                                                     <!-- <button class="btn btn-sm float-end edit-btn" data-bs-toggle="modal"
                                                         data-bs-target="#astrodetailsmodal">
                                                         <i class="bi bi-pencil-square"></i>
@@ -933,13 +942,13 @@ if ($email_verified == true) {
                                                         class="bi bi-life-preserver theme-text-color me-1 align-middle"></i>
                                                     Linked Account
                                                     <button class="btn btn-sm float-end edit-btn" data-bs-toggle="modal"
-                                            data-bs-target="<?php if ($email_verified == true && $user_status == 'approved') {
-                                                echo "#socialaccounts";
-                                            } else {
-                                                echo '#verifyEmailModal';
-                                            } ?>">
-                                            <i class="bi bi-pencil-square"></i>
-                                        </button>
+                                                        data-bs-target="<?php if ($email_verified == true && $user_status == 'approved') {
+                                                            echo "#socialaccounts";
+                                                        } else {
+                                                            echo '#verifyEmailModal';
+                                                        } ?>">
+                                                        <i class="bi bi-pencil-square"></i>
+                                                    </button>
                                                     <!-- <button class="btn btn-sm float-end edit-btn" data-bs-toggle="modal"
                                                         data-bs-target="#socialaccounts">
                                                         <i class="bi bi-pencil-square"></i>
@@ -977,7 +986,7 @@ if ($email_verified == true) {
                                     <h5 class="mb-3">
                                         <i class="bi bi-gender-male theme-text-color me-1 align-middle"></i>
                                         About Partner
-                                        
+
                                         <button class="btn btn-sm float-end edit-btn" data-bs-toggle="modal"
                                             data-bs-target="<?php if ($email_verified == true && $user_status == 'approved') {
                                                 echo "#about_partner_modal";
@@ -996,8 +1005,7 @@ if ($email_verified == true) {
                                                 echo "#partner_basic_modal";
                                             } else {
                                                 echo '#verifyEmailModal';
-                                            } ?>"><i
-                                                class="bi bi-pencil-square"></i></button>
+                                            } ?>"><i class="bi bi-pencil-square"></i></button>
                                     </h5>
                                     <ul class="px_28 font_14 justify-content-between d-flex mb-0 flex-wrap">
                                         <li>
@@ -1041,10 +1049,10 @@ if ($email_verified == true) {
                                                     Professional Preferences
                                                     <button class="btn btn-sm float-end edit-btn" data-bs-toggle="modal"
                                                         data-bs-target="<?php if ($email_verified == true && $user_status == 'approved') {
-                                                echo "#partner_professional_modal";
-                                            } else {
-                                                echo '#verifyEmailModal';
-                                            } ?>">
+                                                            echo "#partner_professional_modal";
+                                                        } else {
+                                                            echo '#verifyEmailModal';
+                                                        } ?>">
                                                         <i class="bi bi-pencil-square"></i>
                                                     </button>
                                                 </h5>
@@ -1071,10 +1079,10 @@ if ($email_verified == true) {
                                                     Religious Preferences
                                                     <button class="btn btn-sm float-end edit-btn" data-bs-toggle="modal"
                                                         data-bs-target="<?php if ($email_verified == true && $user_status == 'approved') {
-                                                echo "#partnerreligiondetailsmodal";
-                                            } else {
-                                                echo '#verifyEmailModal';
-                                            } ?>">
+                                                            echo "#partnerreligiondetailsmodal";
+                                                        } else {
+                                                            echo '#verifyEmailModal';
+                                                        } ?>">
                                                         <i class="bi bi-pencil-square"></i>
                                                     </button>
                                                 </h5>
@@ -1094,8 +1102,7 @@ if ($email_verified == true) {
                                                 echo "#partnerlocationdetailsmodal";
                                             } else {
                                                 echo '#verifyEmailModal';
-                                            } ?>"><i
-                                                class="bi bi-pencil-square"></i></button></h5>
+                                            } ?>"><i class="bi bi-pencil-square"></i></button></h5>
                                     <ul class="px_28 font_14 mb-0">
                                         <li class="d-flex">
                                             <b class="me-2">Country:</b>
@@ -1131,8 +1138,7 @@ if ($email_verified == true) {
 
                                         <!-- Upload Option -->
                                         <div class="col-md-2 mb-2">
-                                            <div class="gallery-item upload-item" data-toggle="modal"
-                                                data-target="<?php if ($email_verified == true && $user_status == 'approved') {
+                                            <div class="gallery-item upload-item" data-toggle="modal" data-target="<?php if ($email_verified == true && $user_status == 'approved') {
                                                 echo "#uploadModal";
                                             } else {
                                                 echo '#verifyEmailModal';
@@ -1292,6 +1298,31 @@ if ($email_verified == true) {
                                 </option>
                             </select>
                         </div>
+                        <div class="justify-content-between d-flex mt-3">
+                            <span class="d-inline-block mt-2 w-25">Gender</span>
+                            <select id="user_gender" name="user_gender" class="form-control w-75" required>
+                                <option value="" disabled selected>Select Gender</option>
+                                <option value="Male" <?php selected($user_gender, 'Male'); ?>>Male</option>
+                                <option value="Female" <?php selected($user_gender, 'Female'); ?>>Female</option>
+                                <option value="Transgender Male" <?php selected($user_gender, 'Transgender Male'); ?>>
+                                    Transgender Male</option>
+                                <option value="Transgender Female" <?php selected($user_gender, 'Transgender Female'); ?>>Transgender Female</option>
+                                <option value="Non-Binary" <?php selected($user_gender, 'Non-Binary'); ?>>Non-Binary
+                                </option>
+                                <option value="Genderqueer" <?php selected($user_gender, 'Genderqueer'); ?>>Genderqueer
+                                </option>
+                                <option value="Genderfluid" <?php selected($user_gender, 'Genderfluid'); ?>>Genderfluid
+                                </option>
+                                <option value="Agender" <?php selected($user_gender, 'Agender'); ?>>Agender</option>
+                                <option value="Intersex" <?php selected($user_gender, 'Intersex'); ?>>Intersex</option>
+                                <option value="Two-Spirit" <?php selected($user_gender, 'Two-Spirit'); ?>>Two-Spirit
+                                </option>
+                                <option value="Other" <?php selected($user_gender, 'Other'); ?>>Other</option>
+                                <option value="Prefer not to say" <?php selected($user_gender, 'Prefer not to say'); ?>>
+                                    Prefer not to say</option>
+                            </select>
+                        </div>
+
                         <!-- Body Type Dropdown -->
                         <div class="justify-content-between d-flex mt-3">
                             <span class="d-inline-block mt-2 w-25">Body Type</span>
@@ -2565,19 +2596,19 @@ if ($email_verified == true) {
                 <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
             </div>
             <div class="modal-body">
-            <?php
-if ($email_verified == false) {
-    echo 'Your email is not verified yet. Please check your inbox and verify it to edit your profile.';
-} elseif ($email_verified == true && $approval_status !== 'approved') {
-    echo '✅ Your email has been verified. Please wait for admin approval to edit your profile.';
-}
-?>
-</div>
+                <?php
+                if ($email_verified == false) {
+                    echo 'Your email is not verified yet. Please check your inbox and verify it to edit your profile.';
+                } elseif ($email_verified == true && $approval_status !== 'approved') {
+                    echo '✅ Your email has been verified. Please wait for admin approval to edit your profile.';
+                }
+                ?>
+            </div>
 
 
             <div class="modal-footer">
                 <button type="button" class="btn btn-secondary" data-bs-dismiss="modal">Close</button>
-                
+
             </div>
         </div>
     </div>
