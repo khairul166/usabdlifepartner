@@ -151,6 +151,33 @@ if (empty($profile_picture)) {
     $profile_picture = get_template_directory_uri() . '/image/avater.webp'; // Path to your default avatar
 }
     ?>
+<li class="nav-item dropdown drop_border">
+    <?php
+    if (is_user_logged_in()) {
+        global $wpdb;
+        $user_id = get_current_user_id();
+
+        $notifications = $wpdb->get_results($wpdb->prepare("
+            SELECT * FROM {$wpdb->prefix}notifications 
+            WHERE user_id = %d AND read_status = 0 
+            ORDER BY created_at DESC 
+            LIMIT 5
+        ", $user_id));
+
+        $count = count($notifications);
+    ?>
+    <div class="notification-bell">
+        <a href="<?php echo esc_url(home_url('/notifications')); ?>">
+            🔔
+            <?php if ($count > 0): ?>
+                <span class="badge"><?php echo esc_html($count); ?></span>
+            <?php endif; ?>
+        </a>
+    </div>
+    <?php } ?>
+</li>
+
+
     <li class="nav-item dropdown drop_border">
         <a class="nav-link dropdown-toggle fs-4" href="#" id="userDropdown" role="button"
             data-bs-toggle="dropdown" aria-expanded="false">
