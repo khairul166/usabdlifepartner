@@ -661,6 +661,8 @@ get_header();
                                     Detals</a>
                                 <a class="nav-item nav-link" id="nav-profile-tab" data-toggle="tab" href="#nav-profile"
                                     role="tab" aria-controls="nav-profile" aria-selected="false">Settings</a>
+                                <a class="nav-item nav-link" id="nav-interest-tab" data-toggle="tab" href="#received-interests"
+                                    role="tab" aria-controls="received-interests" aria-selected="false">Interests</a>
                             </div>
                         </nav>
                         <div class="tab-content py-3 px-3 px-sm-0" id="nav-tabContent">
@@ -1186,6 +1188,24 @@ get_header();
                                     </form>
                                 </div>
                             </div>
+                            <div id="received-interests" class="tab-pane fade">
+    <h4 class="mt-4">Interests You've Received</h4>
+    <?php
+    global $wpdb;
+    $current_user = get_current_user_id();
+    $interests = $wpdb->get_results("
+        SELECT * FROM {$wpdb->prefix}interests 
+        WHERE to_user_id = $current_user AND status = 'pending'
+    ");
+    ?>
+    <?php foreach ($interests as $interest): ?>
+        <div class="border p-3 mb-2 rounded shadow-sm">
+            <p><strong>User ID:</strong> <?= esc_html($interest->from_user_id); ?></p>
+            <button class="btn btn-success respond-interest-btn" data-id="<?= $interest->id ?>" data-action="accept">Accept</button>
+            <button class="btn btn-danger respond-interest-btn" data-id="<?= $interest->id ?>" data-action="reject">Reject</button>
+        </div>
+    <?php endforeach; ?>
+</div>
 
                         </div>
                     </div>

@@ -843,99 +843,23 @@ function usabdlp_render_profile_tabs() {
 // Example: usabdlp_render_profile_tabs();
 
 
-function usabdlifepartner_create_custom_tables() {
-    global $wpdb;
-    $charset_collate = $wpdb->get_charset_collate();
-
-    // Table: interests
-    $table_name = $wpdb->prefix . 'interests';
-    $sql1 = "CREATE TABLE $table_name (
-        id INT NOT NULL AUTO_INCREMENT,
-        from_user_id INT NOT NULL,
-        to_user_id INT NOT NULL,
-        status ENUM('pending', 'accepted', 'rejected') DEFAULT 'pending',
-        sent_at DATETIME DEFAULT CURRENT_TIMESTAMP,
-        responded_at DATETIME NULL,
-        PRIMARY KEY (id)
-    ) $charset_collate;";
-
-    // Table: notifications
-    $table_name2 = $wpdb->prefix . 'notifications';
-    $sql2 = "CREATE TABLE $table_name2 (
-        id INT NOT NULL AUTO_INCREMENT,
-        user_id INT NOT NULL,
-        type ENUM('interest_sent', 'interest_accepted') NOT NULL,
-        message TEXT NOT NULL,
-        read_status BOOLEAN DEFAULT FALSE,
-        created_at DATETIME DEFAULT CURRENT_TIMESTAMP,
-        PRIMARY KEY (id)
-    ) $charset_collate;";
-
-    // Table: memberships
-    $table_name3 = $wpdb->prefix . 'memberships';
-    $sql3 = "CREATE TABLE $table_name3 (
-        id INT NOT NULL AUTO_INCREMENT,
-        user_id INT NOT NULL,
-        plan VARCHAR(50),
-        price DECIMAL(10,2),
-        start_date DATE,
-        end_date DATE,
-        status ENUM('active', 'expired') DEFAULT 'active',
-        PRIMARY KEY (id)
-    ) $charset_collate;";
-
-    // Table: messages
-    $table_name4 = $wpdb->prefix . 'messages';
-    $sql4 = "CREATE TABLE $table_name4 (
-        id INT NOT NULL AUTO_INCREMENT,
-        from_user_id INT NOT NULL,
-        to_user_id INT NOT NULL,
-        message TEXT NOT NULL,
-        timestamp DATETIME DEFAULT CURRENT_TIMESTAMP,
-        read_status BOOLEAN DEFAULT FALSE,
-        PRIMARY KEY (id)
-    ) $charset_collate;";
-
-    require_once(ABSPATH . 'wp-admin/includes/upgrade.php');
-    dbDelta($sql1);
-    dbDelta($sql2);
-    dbDelta($sql3);
-    dbDelta($sql4);
-}
-add_action('after_switch_theme', 'usabdlifepartner_create_custom_tables');
-
-
-// usabdlifepartner_create_custom_tables(); // <-- Add this line temporarily
-
-
-// add_action('init', function() {
-//     if (isset($_GET['create_usabdl_tables']) && $_GET['create_usabdl_tables'] == 'yes') {
-//         usabdlifepartner_create_custom_tables();
-//         echo "Tables created successfully.";
-//         exit;
-//     }
-// });
-
-add_action('wp_ajax_send_interest', 'handle_send_interest');
-
 add_action('wp_ajax_send_interest', 'handle_send_interest');
 
 function handle_send_interest() {
     check_ajax_referer('send_interest_nonce', 'security');
 
+    global $wpdb;
     $from_user_id = get_current_user_id();
     $to_user_id = intval($_POST['to_user_id']);
 
-    global $wpdb;
-
-    // Check for active membership
+    // Check active membership
     $membership_table = $wpdb->prefix . 'memberships';
     $has_membership = $wpdb->get_var("SELECT COUNT(*) FROM $membership_table WHERE user_id = $from_user_id AND status = 'active'");
     if (!$has_membership) {
         wp_send_json_error(['message' => 'Please upgrade your membership to send interest.']);
     }
 
-    // Check if already sent
+    // Prevent duplicate interest
     $interests_table = $wpdb->prefix . 'interests';
     $already_sent = $wpdb->get_var("SELECT COUNT(*) FROM $interests_table WHERE from_user_id = $from_user_id AND to_user_id = $to_user_id");
     if ($already_sent) {
@@ -950,17 +874,16 @@ function handle_send_interest() {
         'sent_at'      => current_time('mysql')
     ]);
 
-    // Create notification
+    // Add notification
     $notifications_table = $wpdb->prefix . 'notifications';
     $wpdb->insert($notifications_table, [
-        'user_id' => $to_user_id,
-        'type'    => 'interest_sent',
-        'message' => 'You received a new interest.',
+        'user_id'    => $to_user_id,
+        'type'       => 'interest_sent',
+        'message'    => 'You have received a new interest.',
         'created_at' => current_time('mysql')
     ]);
 
     wp_send_json_success(['message' => 'Interest sent successfully!']);
 }
-
 
 

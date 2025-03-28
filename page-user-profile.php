@@ -194,33 +194,12 @@ if ($is_online) {
                                                     </a>
                                                 </li>
                                             </ul>
-                                            <?php if ($user_id !== $logged_in_user_id): ?>
+                                            <?php if (is_user_logged_in() && get_current_user_id() !== $user_id): ?>
     <button 
         class="button button_1 text-uppercase send-interest-btn" 
-        data-to-user-id="<?= $user_id ?>">
+        data-to-user-id="<?= esc_attr($user_id); ?>">
         <i class="bi bi-heart me-1 align-middle"></i> Send Interest
     </button>
-<?php endif; ?>
-
-
-                                           <?php  $my_id = $_SESSION['user_id'];
-$profile_id = $user_id; // person being viewed
-
-$check = mysqli_query($conn, "
-    SELECT * FROM interests
-    WHERE ((from_user_id = '$my_id' AND to_user_id = '$profile_id') OR
-           (from_user_id = '$profile_id' AND to_user_id = '$my_id'))
-      AND status = 'accepted'
-");
-
-if (mysqli_num_rows($check) == 2): // mutual interest
-?>
-    <div>
-        <p>Phone: <?= $profile['phone'] ?></p>
-        <p>Email: <?= $profile['email'] ?></p>
-    </div>
-<?php else: ?>
-    <p><em>Contact details will be visible after mutual interest.</em></p>
 <?php endif; ?>
 
                                         </div>

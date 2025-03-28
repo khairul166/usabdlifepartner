@@ -151,31 +151,7 @@ if (empty($profile_picture)) {
     $profile_picture = get_template_directory_uri() . '/image/avater.webp'; // Path to your default avatar
 }
     ?>
-<li class="nav-item dropdown drop_border">
-    <?php
-    if (is_user_logged_in()) {
-        global $wpdb;
-        $user_id = get_current_user_id();
 
-        $notifications = $wpdb->get_results($wpdb->prepare("
-            SELECT * FROM {$wpdb->prefix}notifications 
-            WHERE user_id = %d AND read_status = 0 
-            ORDER BY created_at DESC 
-            LIMIT 5
-        ", $user_id));
-
-        $count = count($notifications);
-    ?>
-    <div class="notification-bell">
-        <a href="<?php echo esc_url(home_url('/notifications')); ?>">
-            🔔
-            <?php if ($count > 0): ?>
-                <span class="badge"><?php echo esc_html($count); ?></span>
-            <?php endif; ?>
-        </a>
-    </div>
-    <?php } ?>
-</li>
 
 
     <li class="nav-item dropdown drop_border">
@@ -205,24 +181,27 @@ if (empty($profile_picture)) {
 
 
     <li class="nav-item dropdown drop_border">
-        <a class="nav-link dropdown-toggle border-0 bg_blue_dark fs-5" href="#"
-            id="searchDropdown" role="button" data-bs-toggle="dropdown" aria-expanded="false">
-            <i class="bi bi-search"></i>
+    <?php if (is_user_logged_in()): ?>
+    <?php
+    global $wpdb;
+    $user_id = get_current_user_id();
+    $notifications = $wpdb->get_results($wpdb->prepare("
+        SELECT * FROM {$wpdb->prefix}notifications 
+        WHERE user_id = %d AND read_status = 0 
+        ORDER BY created_at DESC LIMIT 5
+    ", $user_id));
+    $count = count($notifications);
+    ?>
+    <div class="notification-bell">
+        <a href="<?php echo esc_url(home_url('/notifications')); ?>">
+            🔔
+            <?php if ($count > 0): ?>
+                <span class="badge"><?php echo esc_html($count); ?></span>
+            <?php endif; ?>
         </a>
-        <ul class="dropdown-menu drop_1 drop_search shadow p-3"
-            aria-labelledby="searchDropdown">
-            <li>
-                <div class="input-group">
-                    <input type="text" class="form-control" placeholder="Search Here">
-                    <span class="input-group-btn">
-                        <button class="btn btn-primary bg_blue rounded-0 p-2 px-3 border-0"
-                            type="button">
-                            <i class="bi bi-search"></i> 
-                        </button>
-                    </span>
-                </div>
-            </li>
-        </ul>
+    </div>
+<?php endif; ?>
+
     </li>
 </ul>
 
