@@ -1762,3 +1762,6 @@ Licence: <a href="https://www.templateonweb.com/license">Website Template Licenc
 .gallery-item:hover img {
     transform: scale(1.05);
 }
+.send-interest{
+	padding-top: 20px;
+}

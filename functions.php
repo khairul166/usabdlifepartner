@@ -839,51 +839,155 @@ function usabdlp_render_profile_tabs() {
     <?php
 }
 
-// You can call this function wherever you want to display the section
-// Example: usabdlp_render_profile_tabs();
 
 
-add_action('wp_ajax_send_interest', 'handle_send_interest');
 
-function handle_send_interest() {
-    check_ajax_referer('send_interest_nonce', 'security');
+////////////////
+function usabdlp_create_custom_tables() {
+    global $wpdb;
+    $charset_collate = $wpdb->get_charset_collate();
+
+    $interests_table = $wpdb->prefix . 'interests';
+    $notifications_table = $wpdb->prefix . 'notifications';
+
+    $sql = "
+    CREATE TABLE IF NOT EXISTS $interests_table (
+        id BIGINT UNSIGNED AUTO_INCREMENT PRIMARY KEY,
+        from_user_id BIGINT NOT NULL,
+        to_user_id BIGINT NOT NULL,
+        status VARCHAR(20) DEFAULT 'pending',
+        sent_at DATETIME DEFAULT CURRENT_TIMESTAMP,
+        responded_at DATETIME DEFAULT NULL
+    ) $charset_collate;
+
+    CREATE TABLE IF NOT EXISTS $notifications_table (
+        id BIGINT UNSIGNED AUTO_INCREMENT PRIMARY KEY,
+        user_id BIGINT NOT NULL,
+        message TEXT NOT NULL,
+        read_status TINYINT(1) DEFAULT 0,
+        created_at DATETIME DEFAULT CURRENT_TIMESTAMP
+    ) $charset_collate;
+    ";
+
+    require_once ABSPATH . 'wp-admin/includes/upgrade.php';
+    dbDelta($sql);
+}
+add_action('after_setup_theme', 'usabdlp_create_custom_tables');
+
+
+
+
+add_action('wp_ajax_toggle_interest', 'handle_toggle_interest');
+
+function handle_toggle_interest() {
+    check_ajax_referer('interest_nonce', 'security');
+
+    if (!is_user_logged_in()) {
+        wp_send_json_error(['message' => 'Not logged in']);
+    }
 
     global $wpdb;
-    $from_user_id = get_current_user_id();
+    $current_user = get_current_user_id();
     $to_user_id = intval($_POST['to_user_id']);
+    $type = sanitize_text_field($_POST['type']);
 
-    // Check active membership
-    $membership_table = $wpdb->prefix . 'memberships';
-    $has_membership = $wpdb->get_var("SELECT COUNT(*) FROM $membership_table WHERE user_id = $from_user_id AND status = 'active'");
-    if (!$has_membership) {
-        wp_send_json_error(['message' => 'Please upgrade your membership to send interest.']);
+    $interest_table = $wpdb->prefix . "interests";
+    $notification_table = $wpdb->prefix . "notifications";
+
+    // Cancel interest
+    if ($type === 'cancel') {
+        $wpdb->delete($interest_table, [
+            'from_user_id' => $current_user,
+            'to_user_id'   => $to_user_id
+        ]);
+
+        // Add cancel notification
+        $wpdb->insert($notification_table, [
+            'user_id'     => $to_user_id,
+            'message'     => "A user has cancelled the interest.",
+            'read_status' => 0,
+            'created_at'  => current_time('mysql')
+        ]);
+
+        wp_send_json_success(['action' => 'cancelled']);
     }
 
-    // Prevent duplicate interest
-    $interests_table = $wpdb->prefix . 'interests';
-    $already_sent = $wpdb->get_var("SELECT COUNT(*) FROM $interests_table WHERE from_user_id = $from_user_id AND to_user_id = $to_user_id");
-    if ($already_sent) {
-        wp_send_json_error(['message' => 'You have already sent interest to this user.']);
+    // Send interest
+    if ($type === 'send') {
+        // Prevent duplicate interest
+        $exists = $wpdb->get_var($wpdb->prepare(
+            "SELECT id FROM $interest_table WHERE from_user_id = %d AND to_user_id = %d",
+            $current_user, $to_user_id
+        ));
+
+        if ($exists) {
+            wp_send_json_error(['message' => 'Already sent']);
+        }
+
+        // Insert interest with all columns filled
+        $wpdb->insert(
+            $interest_table,
+            [
+                'from_user_id' => $current_user,
+                'to_user_id'   => $to_user_id,
+                'status'       => 'pending',
+                'sent_at'      => current_time('mysql'),
+                'responded_at' => null
+            ],
+            ['%d', '%d', '%s', '%s', 'NULL']
+        );
+
+        // Add notification
+        $wpdb->insert($notification_table, [
+            'user_id'     => $to_user_id,
+            'message'     => "You have received an interest from user ID: $current_user",
+            'read_status' => 0,
+            'created_at'  => current_time('mysql')
+        ]);
+
+        wp_send_json_success(['action' => 'sent']);
     }
 
-    // Insert interest
-    $wpdb->insert($interests_table, [
-        'from_user_id' => $from_user_id,
-        'to_user_id'   => $to_user_id,
-        'status'       => 'pending',
-        'sent_at'      => current_time('mysql')
+    wp_send_json_error(['message' => 'Unknown action']);
+}
+
+
+function usabdlp_update_interest_table_schema() {
+    global $wpdb;
+    $table = $wpdb->prefix . 'interests';
+
+    // Check if 'status' column exists
+    $column = $wpdb->get_results("SHOW COLUMNS FROM $table LIKE 'status'");
+    if (empty($column)) {
+        // If not exists, add it
+        $wpdb->query("ALTER TABLE $table ADD COLUMN status VARCHAR(20) DEFAULT 'pending'");
+    }
+}
+add_action('after_setup_theme', 'usabdlp_update_interest_table_schema');
+
+add_action('wp_ajax_respond_to_interest', 'usabdlp_respond_to_interest');
+
+function usabdlp_respond_to_interest() {
+    check_ajax_referer('interest_nonce', 'security');
+
+    $interest_id = intval($_POST['interest_id']);
+    $response = sanitize_text_field($_POST['response']);
+
+    if (!in_array($response, ['accepted', 'rejected'])) {
+        wp_send_json_error();
+    }
+
+    global $wpdb;
+    $table = $wpdb->prefix . 'interests';
+
+    $wpdb->update($table, [
+        'status' => $response,
+        'responded_at' => current_time('mysql')
+    ], [
+        'id' => $interest_id
     ]);
 
-    // Add notification
-    $notifications_table = $wpdb->prefix . 'notifications';
-    $wpdb->insert($notifications_table, [
-        'user_id'    => $to_user_id,
-        'type'       => 'interest_sent',
-        'message'    => 'You have received a new interest.',
-        'created_at' => current_time('mysql')
-    ]);
-
-    wp_send_json_success(['message' => 'Interest sent successfully!']);
+    wp_send_json_success();
 }
 
 

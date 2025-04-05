@@ -180,29 +180,27 @@ if (empty($profile_picture)) {
 
 
 
-    <li class="nav-item dropdown drop_border">
-    <?php if (is_user_logged_in()): ?>
-    <?php
+<?php if (is_user_logged_in()) {
     global $wpdb;
     $user_id = get_current_user_id();
-    $notifications = $wpdb->get_results($wpdb->prepare("
-        SELECT * FROM {$wpdb->prefix}notifications 
-        WHERE user_id = %d AND read_status = 0 
-        ORDER BY created_at DESC LIMIT 5
-    ", $user_id));
-    $count = count($notifications);
+    $notif_table = $wpdb->prefix . "notifications";
+    $count = $wpdb->get_var($wpdb->prepare(
+        "SELECT COUNT(*) FROM $notif_table WHERE user_id = %d AND read_status = 0", 
+        $user_id
+    ));
     ?>
-    <div class="notification-bell">
-        <a href="<?php echo esc_url(home_url('/notifications')); ?>">
-            🔔
-            <?php if ($count > 0): ?>
-                <span class="badge"><?php echo esc_html($count); ?></span>
-            <?php endif; ?>
-        </a>
-    </div>
-<?php endif; ?>
-
+    <li class="nav-item dropdown drop_border">
+        <div class="notification-bell">
+            <a href="<?php echo esc_url(home_url('/notifications')); ?>">
+                🔔
+                <?php if ($count > 0): ?>
+                    <span class="badge bg-danger"><?php echo esc_html($count); ?></span>
+                <?php endif; ?>
+            </a>
+        </div>
     </li>
+<?php } ?>
+
 </ul>
 
                     </div>

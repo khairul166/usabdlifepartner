@@ -1189,22 +1189,96 @@ get_header();
                                 </div>
                             </div>
                             <div id="received-interests" class="tab-pane fade">
-    <h4 class="mt-4">Interests You've Received</h4>
+                            <h4 class="mb-4">💌 Interests Received</h4>
     <?php
     global $wpdb;
-    $current_user = get_current_user_id();
+    $user_id = get_current_user_id();
     $interests = $wpdb->get_results("
-        SELECT * FROM {$wpdb->prefix}interests 
-        WHERE to_user_id = $current_user AND status = 'pending'
+        SELECT i.*, u.display_name, um.meta_value AS profile_picture
+        FROM {$wpdb->prefix}interests i
+        JOIN {$wpdb->users} u ON i.from_user_id = u.ID
+        LEFT JOIN {$wpdb->prefix}usermeta um ON u.ID = um.user_id AND um.meta_key = 'profile_picture'
+        WHERE i.to_user_id = $user_id
+        ORDER BY i.sent_at DESC
     ");
+
+    if ($interests):
+        foreach ($interests as $row):
+            $profile_picture = get_user_meta($row->from_user_id, 'user_avatar', true);
+            $avatar = $profile_picture ?: get_template_directory_uri() . '/assets/img/default-avatar.png';
+            
     ?>
-    <?php foreach ($interests as $interest): ?>
-        <div class="border p-3 mb-2 rounded shadow-sm">
-            <p><strong>User ID:</strong> <?= esc_html($interest->from_user_id); ?></p>
-            <button class="btn btn-success respond-interest-btn" data-id="<?= $interest->id ?>" data-action="accept">Accept</button>
-            <button class="btn btn-danger respond-interest-btn" data-id="<?= $interest->id ?>" data-action="reject">Reject</button>
+    <div class="d-flex align-items-center gap-4 mb-4 p-3 border rounded shadow-sm" style="background-color: #fff;">
+    <img src="<?= esc_url($avatar); ?>" alt="Avatar" width="70" height="70" class="rounded-circle" style="object-fit: cover;">
+
+
+        <div style="flex: 1;">
+            <p class="mb-2 fs-5" style="font-family: 'Poppins', sans-serif; font-weight: 500;">
+            <a href="<?= esc_url(home_url('/user-details/?user_id=' . $row->from_user_id)); ?>" class="fw-bold text-dark text-decoration-none">
+    <?= esc_html($row->display_name); ?>
+</a>
+<span class="text-muted">sent you an interest.</span>
+
+            </p>
+
+            <?php if ($row->status === 'pending'): ?>
+            <div class="d-flex gap-2">
+                <button class="btn btn-sm" style="background-color: #5e2ced; color: white; padding: 8px 24px; font-weight: bold;"
+                    data-id="<?= $row->id ?>" data-action="accepted"
+                    >
+                    Accept
+                </button>
+                <button class="btn btn-sm" style="background-color: #f44336; color: white; padding: 8px 24px; font-weight: bold;"
+                    data-id="<?= $row->id ?>" data-action="rejected"
+                    >
+                    Reject
+                </button>
+            </div>
+            <?php else: ?>
+                <span class="badge bg-success"><?= ucfirst($row->status); ?></span>
+            <?php endif; ?>
         </div>
-    <?php endforeach; ?>
+    </div>
+    <?php
+        endforeach;
+    else:
+        echo '<p>No interests received yet.</p>';
+    endif;
+    ?>
+
+<h4 class="mb-3 mt-4">📤 Interests Sent</h4>
+<?php
+$current_user = get_current_user_id();
+$sent_interests = $wpdb->get_results("
+    SELECT i.*, u.display_name, u.ID 
+    FROM {$wpdb->prefix}interests i
+    JOIN {$wpdb->users} u ON i.to_user_id = u.ID
+    WHERE i.from_user_id = $current_user
+    ORDER BY i.sent_at DESC
+");
+
+if ($sent_interests):
+    foreach ($sent_interests as $row):
+        $profile_picture = get_user_meta($row->to_user_id, 'user_avatar', true);
+        $avatar = $profile_picture ?: 'https://via.placeholder.com/70';
+?>
+    <div class="d-flex align-items-center p-3 mb-3 border rounded">
+        <img src="<?= esc_url($avatar); ?>" alt="Avatar" width="50" height="50" class="rounded-circle me-3" style="object-fit: cover;">
+        <div>
+            <a href="<?= esc_url(home_url('/user-details/?user_id=' . $row->to_user_id)); ?>" class="fw-bold text-dark text-decoration-none">
+                <?= esc_html($row->display_name); ?>
+            </a>
+            <span class="text-muted">– you sent an interest.</span>
+            <p class="mb-0"><small>Status: <strong><?= ucfirst($row->status); ?></strong></small></p>
+        </div>
+    </div>
+<?php
+    endforeach;
+else:
+    echo '<p class="text-muted">You haven\'t sent any interests yet.</p>';
+endif;
+?>
+
 </div>
 
                         </div>

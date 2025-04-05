@@ -1,10 +1,10 @@
 <?php
 /**
- * Template Name: User Profile Page
- *
- * This template is used to display user profiles.
+ * Template Name: User Profile
  */
 get_header();
+
+
 
 // Ensure user ID is passed in the URL
 $user_id = isset($_GET['user_id']) ? $_GET['user_id'] : 0;
@@ -17,8 +17,8 @@ if ($user_id) {
         // Fetch user meta data
         $profile_pic = get_user_meta($user_id, 'user_avatar', true);
         //If no profile picture is set, use a default placeholder
-if (empty($profile_picture)) {
-    $profile_picture = get_template_directory_uri() . '/image/avater.webp'; // Path to your default avatar
+if (empty($profile_pic)) {
+    $profile_pic = get_template_directory_uri() . '/image/avater.webp'; // Path to your default avatar
 }
         $about_yourself = get_user_meta($user_id, 'about_yourself', true);
         $name = $user_info->first_name . ' ' . $user_info->last_name;
@@ -194,13 +194,44 @@ if ($is_online) {
                                                     </a>
                                                 </li>
                                             </ul>
-                                            <?php if (is_user_logged_in() && get_current_user_id() !== $user_id): ?>
-    <button 
-        class="button button_1 text-uppercase send-interest-btn" 
-        data-to-user-id="<?= esc_attr($user_id); ?>">
-        <i class="bi bi-heart me-1 align-middle"></i> Send Interest
-    </button>
+                                    
+
+                                            <?php if (is_user_logged_in()): ?>
+    <?php
+    global $wpdb;
+    $current_user = get_current_user_id(); // Safe now — inside is_user_logged_in() check
+    $profile_id = isset($_GET['user_id']) ? intval($_GET['user_id']) : 0;
+
+    if ($current_user !== $profile_id && $profile_id > 0) {
+        $interest_table = $wpdb->prefix . "interests";
+
+        $already_sent = $wpdb->get_var($wpdb->prepare(
+            "SELECT COUNT(*) FROM $interest_table WHERE from_user_id = %d AND to_user_id = %d",
+            $current_user, $profile_id
+        ));
+        ?>
+        <div class="send-interest">
+        <button 
+            class="button button_1 text-uppercase interest-toggle-btn" 
+            data-to-user-id="<?= esc_attr($profile_id); ?>" 
+            data-action="<?= $already_sent ? 'cancel' : 'send'; ?>">
+            <i class="bi <?= $already_sent ? 'bi-x-circle' : 'bi-heart' ?> me-1 align-middle"></i> 
+            <?= $already_sent ? 'Cancel Interest' : 'Send Interest'; ?>
+        </button>
+        </div>
+
+    <?php } ?>
 <?php endif; ?>
+
+
+
+
+
+
+
+
+
+
 
                                         </div>
                                     </div>
@@ -541,5 +572,34 @@ if ($is_online) {
 
         </div>
 </section>
+<script>
+jQuery(document).ready(function($) {
+    $('.interest-toggle-btn').click(function(e) {
+        e.preventDefault();
+        let btn = $(this);
+        let toUserId = btn.data('to-user-id');
+        let currentAction = btn.data('action');
+
+        $.post(interest_ajax.ajax_url, {
+            action: 'toggle_interest',
+            to_user_id: toUserId,
+            type: currentAction,
+            security: interest_ajax.nonce
+        }, function(response) {
+            if (response.success) {
+                if (response.data.action === 'sent') {
+                    btn.html('<i class="bi bi-heart me-1 align-middle"></i> Cancel Interest');
+                    btn.data('action', 'cancel');
+                } else {
+                    btn.html('<i class="bi bi-heart me-1 align-middle"></i> Send Interest');
+                    btn.data('action', 'send');
+                }
+            } else {
+                alert(response.data.message || 'Something went wrong.');
+            }
+        });
+    });
+});
+</script>
 
 <?php get_footer(); ?>
