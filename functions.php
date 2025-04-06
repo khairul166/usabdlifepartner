@@ -934,6 +934,23 @@ function handle_toggle_interest() {
 
     $interest_table = $wpdb->prefix . "interests";
     $notification_table = $wpdb->prefix . "notifications";
+    $sender_id = get_current_user_id();
+    $first_name = get_user_meta($sender_id, 'first_name', true);
+    $last_name  = get_user_meta($sender_id, 'last_name', true);
+    $full_name  = trim("$first_name $last_name");
+
+    // Fallback if no first/last name is set
+    if (empty($full_name)) {
+        $user_info = get_userdata($sender_id);
+        $full_name = $user_info->display_name;
+    }
+
+    // Generate profile link
+    $profile_link = esc_url(home_url("/user-details/?user_id=$sender_id"));
+
+    // Message with clickable name
+    $notification_message = "<a href='$profile_link' style='color:#563d7c;font-weight:600;'>$full_name</a> sent you an interest.";
+    $notification_cancel_massage= "<a href='$profile_link' style='color:#563d7c;font-weight:600;'>$full_name</a> has cancelled the interest.";
 
     // Cancel interest
     if ($type === 'cancel') {
@@ -945,7 +962,7 @@ function handle_toggle_interest() {
         // Add cancel notification
         $wpdb->insert($notification_table, [
             'user_id'     => $to_user_id,
-            'message'     => "A user has cancelled the interest.",
+            'message'     => $notification_cancel_massage,
             'read_status' => 0,
             'created_at'  => current_time('mysql')
         ]);
@@ -981,7 +998,7 @@ function handle_toggle_interest() {
         // Add notification
         $wpdb->insert($notification_table, [
             'user_id'     => $to_user_id,
-            'message'     => "You have received an interest from user ID: $current_user",
+            'message'     => $notification_message,
             'read_status' => 0,
             'created_at'  => current_time('mysql')
         ]);
@@ -1008,6 +1025,8 @@ add_action('after_setup_theme', 'usabdlp_update_interest_table_schema');
 
 add_action('wp_ajax_respond_to_interest', 'usabdlp_respond_to_interest');
 
+add_action('wp_ajax_respond_to_interest', 'usabdlp_respond_to_interest');
+
 function usabdlp_respond_to_interest() {
     check_ajax_referer('interest_nonce', 'security');
 
@@ -1015,12 +1034,20 @@ function usabdlp_respond_to_interest() {
     $response = sanitize_text_field($_POST['response']);
 
     if (!in_array($response, ['accepted', 'rejected'])) {
-        wp_send_json_error();
+        wp_send_json_error(['message' => 'Invalid response type.']);
     }
 
     global $wpdb;
     $table = $wpdb->prefix . 'interests';
+    $notif_table = $wpdb->prefix . 'notifications';
 
+    // Get interest row
+    $interest = $wpdb->get_row($wpdb->prepare("SELECT * FROM $table WHERE id = %d", $interest_id));
+    if (!$interest) {
+        wp_send_json_error(['message' => 'Interest not found.']);
+    }
+
+    // Update interest status
     $wpdb->update($table, [
         'status' => $response,
         'responded_at' => current_time('mysql')
@@ -1028,7 +1055,26 @@ function usabdlp_respond_to_interest() {
         'id' => $interest_id
     ]);
 
-    wp_send_json_success();
+    // Only notify if accepted
+    if ($response === 'accepted') {
+        $sender_id = $interest->from_user_id;
+
+        $first_name = get_user_meta(get_current_user_id(), 'first_name', true);
+        $last_name = get_user_meta(get_current_user_id(), 'last_name', true);
+        $receiver_name = trim($first_name . ' ' . $last_name);
+        $receiver_link = home_url('/user-details/?user_id=' . get_current_user_id());
+
+        $message = "<a href='{$receiver_link}'><strong>" . esc_html($receiver_name) . "</strong></a> has accepted your interest request.";
+
+        $wpdb->insert($notif_table, [
+            'user_id'    => $sender_id,
+            'message'    => $message,
+            'read_status' => 0,
+            'created_at' => current_time('mysql')
+        ]);
+    }
+
+    wp_send_json_success(['message' => 'Interest ' . $response . ' successfully.']);
 }
 
 

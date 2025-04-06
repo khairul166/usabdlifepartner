@@ -16,7 +16,7 @@ jQuery(document).ready(function($) {
             success: function(response) {
                 if (response.success) {
                     button.closest('.card').fadeOut(); // Optional: remove from list
-                    alert("Response recorded: " + action);
+                    
                 } else {
                     alert('Something went wrong!');
                 }

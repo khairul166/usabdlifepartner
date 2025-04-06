@@ -196,32 +196,55 @@ if ($is_online) {
                                             </ul>
                                     
 
+
+
                                             <?php if (is_user_logged_in()): ?>
     <?php
     global $wpdb;
-    $current_user = get_current_user_id(); // Safe now — inside is_user_logged_in() check
+    $current_user = get_current_user_id();
     $profile_id = isset($_GET['user_id']) ? intval($_GET['user_id']) : 0;
 
-    if ($current_user !== $profile_id && $profile_id > 0) {
+    if ($current_user !== $profile_id && $profile_id > 0):
         $interest_table = $wpdb->prefix . "interests";
 
-        $already_sent = $wpdb->get_var($wpdb->prepare(
-            "SELECT COUNT(*) FROM $interest_table WHERE from_user_id = %d AND to_user_id = %d",
+        $interest = $wpdb->get_row($wpdb->prepare(
+            "SELECT * FROM $interest_table WHERE from_user_id = %d AND to_user_id = %d",
             $current_user, $profile_id
         ));
-        ?>
-        <div class="send-interest">
-        <button 
-            class="button button_1 text-uppercase interest-toggle-btn" 
-            data-to-user-id="<?= esc_attr($profile_id); ?>" 
-            data-action="<?= $already_sent ? 'cancel' : 'send'; ?>">
-            <i class="bi <?= $already_sent ? 'bi-x-circle' : 'bi-heart' ?> me-1 align-middle"></i> 
-            <?= $already_sent ? 'Cancel Interest' : 'Send Interest'; ?>
-        </button>
-        </div>
 
-    <?php } ?>
+        if ($interest && $interest->status === 'accepted'):
+            ?>
+            <span class="badge bg-success mt-2 px-3 py-2 fs-6 fw-semibold">✅ Interest Accepted</span>
+
+        <?php elseif ($interest && $interest->status === 'rejected'): ?>
+            <span class="badge bg-danger mt-2 px-3 py-2 fs-6 fw-semibold">❌ Interest Rejected</span>
+
+        <?php elseif ($interest && $interest->status === 'pending'): ?>
+            <div class="send-interest">
+                            <button 
+                class="button button_1 text-uppercase interest-toggle-btn" 
+                data-to-user-id="<?= esc_attr($profile_id); ?>" 
+                data-action="cancel">
+                <i class="bi bi-x-circle me-1 align-middle"></i> Cancel Interest
+            </button>
+            </div>
+
+
+        <?php else: ?>
+            <div class="send-interest">
+                            <button 
+                class="button button_1 text-uppercase interest-toggle-btn" 
+                data-to-user-id="<?= esc_attr($profile_id); ?>" 
+                data-action="send">
+                <i class="bi bi-heart me-1 align-middle"></i> Send Interest
+            </button>
+            </div>
+
+        <?php endif; ?>
+    <?php endif; ?>
 <?php endif; ?>
+
+
 
 
 
