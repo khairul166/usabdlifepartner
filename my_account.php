@@ -1209,9 +1209,9 @@ get_header();
                                         $avatar = $profile_picture ?: get_template_directory_uri() . '/assets/img/default-avatar.png';
                                         $u_first_name = get_user_meta($row->from_user_id, 'first_name', true);
                                         $u_last_name = get_user_meta($row->from_user_id, 'last_name', true);
-                                        $full_name  = trim("$u_first_name $u_last_name");
+                                        $full_name = trim("$u_first_name $u_last_name");
                                         ?>
-                                        
+
                                         <div class="d-flex align-items-center gap-4 mb-4 p-3 border rounded shadow-sm"
                                             style="background-color: #fff;">
                                             <img src="<?= esc_url($avatar); ?>" alt="Avatar" width="70" height="70"
@@ -1230,19 +1230,19 @@ get_header();
                                                 </p>
 
                                                 <?php if ($row->status === 'pending'): ?>
-    <div class="d-flex gap-2">
-        <button class="btn btn-sm respond-interest"
-            style="background-color: #5e2ced; color: white; padding: 8px 24px; font-weight: bold;"
-            data-id="<?= esc_attr($row->id); ?>" data-action="accepted">
-            Accept
-        </button>
-        <button class="btn btn-sm respond-interest"
-            style="background-color: #f44336; color: white; padding: 8px 24px; font-weight: bold;"
-            data-id="<?= esc_attr($row->id); ?>" data-action="rejected">
-            Reject
-        </button>
-    </div>
-<?php else: ?>
+                                                    <div class="d-flex gap-2">
+                                                        <button class="btn btn-sm respond-interest"
+                                                            style="background-color: #5e2ced; color: white; padding: 8px 24px; font-weight: bold;"
+                                                            data-id="<?= esc_attr($row->id); ?>" data-action="accepted">
+                                                            Accept
+                                                        </button>
+                                                        <button class="btn btn-sm respond-interest"
+                                                            style="background-color: #f44336; color: white; padding: 8px 24px; font-weight: bold;"
+                                                            data-id="<?= esc_attr($row->id); ?>" data-action="rejected">
+                                                            Reject
+                                                        </button>
+                                                    </div>
+                                                <?php else: ?>
 
                                                     <span class="badge bg-success"><?= ucfirst($row->status); ?></span>
                                                 <?php endif; ?>

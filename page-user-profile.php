@@ -17,9 +17,9 @@ if ($user_id) {
         // Fetch user meta data
         $profile_pic = get_user_meta($user_id, 'user_avatar', true);
         //If no profile picture is set, use a default placeholder
-if (empty($profile_pic)) {
-    $profile_pic = get_template_directory_uri() . '/image/avater.webp'; // Path to your default avatar
-}
+        if (empty($profile_pic)) {
+            $profile_pic = get_template_directory_uri() . '/image/avater.webp'; // Path to your default avatar
+        }
         $about_yourself = get_user_meta($user_id, 'about_yourself', true);
         $name = $user_info->first_name . ' ' . $user_info->last_name;
         $age = get_user_meta($user_id, 'age', true);
@@ -52,6 +52,7 @@ if (empty($profile_pic)) {
         $parent_country_code = get_user_meta($user_id, 'guardian_country_code', true);
         $user_data = get_userdata($user_id);
         $email = $user_data->user_email;
+        $email_verified = get_user_meta($user_id, 'email_verified', true);
 
         $country = get_user_meta($user_id, 'country', true);
         $division = get_user_meta($user_id, 'division', true);
@@ -64,30 +65,30 @@ if (empty($profile_pic)) {
         $city = get_user_meta($user_id, 'city', true);
         $usaLandmark = get_user_meta($user_id, 'usaLandmark', true);
         // Fetch professional details from user meta
-$education = get_user_meta($user_id, 'education', true);
-$education_detail = get_user_meta($user_id, 'education_detail', true);
-$employed_in = get_user_meta($user_id, 'employed_in', true);
-$profession = get_user_meta($user_id, 'profession', true);
-$profession_detail = get_user_meta($user_id, 'profession_detail', true);
-$annual_income = get_user_meta($user_id, 'annual_income', true);
-$dob = get_user_meta($user_id, 'dob', true);
-$place_of_birth = get_user_meta($user_id, 'place_of_birth', true);
-$about_partner = get_user_meta($user_id, 'about_partner', true);
-$partner_min_age = get_user_meta($user_id, 'partner_min_age', true);
-$partner_max_age = get_user_meta($user_id, 'partner_max_age', true);
-$partner_min_height = get_user_meta($user_id, 'partner_min_height', true);
-$partner_max_height = get_user_meta($user_id, 'partner_max_height', true);
-$partner_marital_status = get_user_meta($user_id, 'partner_marital_status', true);
-$partner_mother_tongue = get_user_meta($user_id, 'partner_mother_tongue', true);
-$partner_physical_status = get_user_meta($user_id, 'partner_physical_status', true);
-$partner_eating_habits = get_user_meta($user_id, 'partner_eating_habits', true);
-$partner_smoking_habits = get_user_meta($user_id, 'partner_smoking_habits', true);
-$partner_drinking_habits = get_user_meta($user_id, 'partner_drinking_habits', true);
-$partner_education = get_user_meta($user_id, 'partner_education', true);
-$partner_profession = get_user_meta($user_id, 'partner_profession', true);
-$partner_annual_income = get_user_meta($user_id, 'partner_annual_income', true);
-$partner_religion = get_user_meta($user_id, 'partner_religion', true);
-$partner_country = get_user_meta($user_id, 'partner_country', true);
+        $education = get_user_meta($user_id, 'education', true);
+        $education_detail = get_user_meta($user_id, 'education_detail', true);
+        $employed_in = get_user_meta($user_id, 'employed_in', true);
+        $profession = get_user_meta($user_id, 'profession', true);
+        $profession_detail = get_user_meta($user_id, 'profession_detail', true);
+        $annual_income = get_user_meta($user_id, 'annual_income', true);
+        $dob = get_user_meta($user_id, 'dob', true);
+        $place_of_birth = get_user_meta($user_id, 'place_of_birth', true);
+        $about_partner = get_user_meta($user_id, 'about_partner', true);
+        $partner_min_age = get_user_meta($user_id, 'partner_min_age', true);
+        $partner_max_age = get_user_meta($user_id, 'partner_max_age', true);
+        $partner_min_height = get_user_meta($user_id, 'partner_min_height', true);
+        $partner_max_height = get_user_meta($user_id, 'partner_max_height', true);
+        $partner_marital_status = get_user_meta($user_id, 'partner_marital_status', true);
+        $partner_mother_tongue = get_user_meta($user_id, 'partner_mother_tongue', true);
+        $partner_physical_status = get_user_meta($user_id, 'partner_physical_status', true);
+        $partner_eating_habits = get_user_meta($user_id, 'partner_eating_habits', true);
+        $partner_smoking_habits = get_user_meta($user_id, 'partner_smoking_habits', true);
+        $partner_drinking_habits = get_user_meta($user_id, 'partner_drinking_habits', true);
+        $partner_education = get_user_meta($user_id, 'partner_education', true);
+        $partner_profession = get_user_meta($user_id, 'partner_profession', true);
+        $partner_annual_income = get_user_meta($user_id, 'partner_annual_income', true);
+        $partner_religion = get_user_meta($user_id, 'partner_religion', true);
+        $partner_country = get_user_meta($user_id, 'partner_country', true);
 
 
     } else {
@@ -112,25 +113,25 @@ $partner_country = get_user_meta($user_id, 'partner_country', true);
                                         alt="Profile Picture">
                                     <?php $user_id = isset($_GET['user_id']) ? $_GET['user_id'] : 0;
 
-$last_login = get_user_meta($user_id, 'last_login', true);
-$last_activity = get_user_meta($user_id, 'last_activity', true);
+                                    $last_login = get_user_meta($user_id, 'last_login', true);
+                                    $last_activity = get_user_meta($user_id, 'last_activity', true);
 
-// Check if the user is online (e.g., if their last activity was within the last 5 minutes)
-$is_online = false;
-if ($last_activity && (time() - $last_activity < 300)) {
-    $is_online = true;
-}
+                                    // Check if the user is online (e.g., if their last activity was within the last 5 minutes)
+                                    $is_online = false;
+                                    if ($last_activity && (time() - $last_activity < 300)) {
+                                        $is_online = true;
+                                    }
 
-if ($is_online) {
-    echo '<span class="font_14 d-block mt-2">Online</span>';
-} else {
-    // If the user is offline, display the last login time
-    if ($last_login) {
-        $last_login_time = human_time_diff(strtotime($last_login), current_time('timestamp')) . ' ago';
-        echo '<span class="font_14 d-block mt-2">Last Login: ' . esc_html($last_login_time) . '</span>';
-    }
-}
- ?>
+                                    if ($is_online) {
+                                        echo '<span class="font_14 d-block mt-2">Online</span>';
+                                    } else {
+                                        // If the user is offline, display the last login time
+                                        if ($last_login) {
+                                            $last_login_time = human_time_diff(strtotime($last_login), current_time('timestamp')) . ' ago';
+                                            echo '<span class="font_14 d-block mt-2">Last Login: ' . esc_html($last_login_time) . '</span>';
+                                        }
+                                    }
+                                    ?>
                                 </div>
                             </div>
                             <div class="col-md-9 col-sm-8">
@@ -141,19 +142,26 @@ if ($is_online) {
                                                     href="#"><?php echo esc_html($name); ?></a></b>
                                             <ul class="font_15 mb-0">
                                                 <li class="d-flex"><b class="me-2">Age:</b>
-                                                    <span><?php echo esc_html($age); ?> Yrs</span></li>
+                                                    <span><?php echo esc_html($age); ?> Yrs</span>
+                                                </li>
                                                 <li class="d-flex mt-2"><b class="me-2">Height:</b>
-                                                    <span><?php echo esc_html($height); ?> Ft</span></li>
+                                                    <span><?php echo esc_html($height); ?> Ft</span>
+                                                </li>
                                                 <li class="d-flex mt-2"><b class="me-2">Religion:</b>
-                                                    <span><?php echo esc_html($religion); ?></span></li>
+                                                    <span><?php echo esc_html($religion); ?></span>
+                                                </li>
                                                 <li class="d-flex mt-2"><b class="me-2">Location:</b>
-                                                    <span><?php echo esc_html($location); ?></span></li>
+                                                    <span><?php echo esc_html($location); ?></span>
+                                                </li>
                                                 <li class="d-flex mt-2"><b class="me-2">Education:</b>
-                                                    <span><?php echo esc_html($education); ?></span></li>
+                                                    <span><?php echo esc_html($education); ?></span>
+                                                </li>
                                                 <li class="d-flex mt-2"><b class="me-2">Profession:</b>
-                                                    <span><?php echo esc_html($profession); ?></span></li>
+                                                    <span><?php echo esc_html($profession); ?></span>
+                                                </li>
                                                 <li class="d-flex mt-2"><b class="me-2">Annual Income:</b>
-                                                    <span><?php echo esc_html($annual_income); ?></span></li>
+                                                    <span><?php echo esc_html($annual_income); ?></span>
+                                                </li>
                                             </ul>
                                         </div>
                                     </div>
@@ -194,67 +202,55 @@ if ($is_online) {
                                                     </a>
                                                 </li>
                                             </ul>
-                                    
+
 
 
 
                                             <?php if (is_user_logged_in()): ?>
-    <?php
-    global $wpdb;
-    $current_user = get_current_user_id();
-    $profile_id = isset($_GET['user_id']) ? intval($_GET['user_id']) : 0;
+                                                <?php
+                                                global $wpdb;
+                                                $current_user = get_current_user_id();
+                                                $profile_id = isset($_GET['user_id']) ? intval($_GET['user_id']) : 0;
 
-    if ($current_user !== $profile_id && $profile_id > 0):
-        $interest_table = $wpdb->prefix . "interests";
+                                                if ($current_user !== $profile_id && $profile_id > 0):
+                                                    $interest_table = $wpdb->prefix . "interests";
 
-        $interest = $wpdb->get_row($wpdb->prepare(
-            "SELECT * FROM $interest_table WHERE from_user_id = %d AND to_user_id = %d",
-            $current_user, $profile_id
-        ));
+                                                    $interest = $wpdb->get_row($wpdb->prepare(
+                                                        "SELECT * FROM $interest_table WHERE from_user_id = %d AND to_user_id = %d",
+                                                        $current_user,
+                                                        $profile_id
+                                                    ));
 
-        if ($interest && $interest->status === 'accepted'):
-            ?>
-            <span class="badge bg-success mt-2 px-3 py-2 fs-6 fw-semibold">✅ Interest Accepted</span>
+                                                    if ($interest && $interest->status === 'accepted'):
+                                                        ?>
+                                                        <span class="badge bg-success mt-2 px-3 py-2 fs-6 fw-semibold">✅ Interest
+                                                            Accepted</span>
 
-        <?php elseif ($interest && $interest->status === 'rejected'): ?>
-            <span class="badge bg-danger mt-2 px-3 py-2 fs-6 fw-semibold">❌ Interest Rejected</span>
+                                                    <?php elseif ($interest && $interest->status === 'rejected'): ?>
+                                                        <span class="badge bg-danger mt-2 px-3 py-2 fs-6 fw-semibold">❌ Interest
+                                                            Rejected</span>
 
-        <?php elseif ($interest && $interest->status === 'pending'): ?>
-            <div class="send-interest">
-                            <button 
-                class="button button_1 text-uppercase interest-toggle-btn" 
-                data-to-user-id="<?= esc_attr($profile_id); ?>" 
-                data-action="cancel">
-                <i class="bi bi-x-circle me-1 align-middle"></i> Cancel Interest
-            </button>
-            </div>
-
-
-        <?php else: ?>
-            <div class="send-interest">
-                            <button 
-                class="button button_1 text-uppercase interest-toggle-btn" 
-                data-to-user-id="<?= esc_attr($profile_id); ?>" 
-                data-action="send">
-                <i class="bi bi-heart me-1 align-middle"></i> Send Interest
-            </button>
-            </div>
-
-        <?php endif; ?>
-    <?php endif; ?>
-<?php endif; ?>
+                                                    <?php elseif ($interest && $interest->status === 'pending'): ?>
+                                                        <div class="send-interest">
+                                                            <button class="button button_1 text-uppercase interest-toggle-btn"
+                                                                data-to-user-id="<?= esc_attr($profile_id); ?>"
+                                                                data-action="cancel">
+                                                                <i class="bi bi-x-circle me-1 align-middle"></i> Cancel Interest
+                                                            </button>
+                                                        </div>
 
 
+                                                    <?php else: ?>
+                                                        <div class="send-interest">
+                                                            <button class="button button_1 text-uppercase interest-toggle-btn"
+                                                                data-to-user-id="<?= esc_attr($profile_id); ?>" data-action="send">
+                                                                <i class="bi bi-heart me-1 align-middle"></i> Send Interest
+                                                            </button>
+                                                        </div>
 
-
-
-
-
-
-
-
-
-
+                                                    <?php endif; ?>
+                                                <?php endif; ?>
+                                            <?php endif; ?>
 
                                         </div>
                                     </div>
@@ -263,7 +259,11 @@ if ($is_online) {
                         </div>
                     </div>
 
+<?php 
+global $access_granted, $access_debug;
+?>
                     <!-- Personal Information Section -->
+                    <?php if ($access_granted): ?>
                     <div class="list_dt2 mt-4 p-3 shadow">
                         <h3>Personal Information</h3>
                         <hr class="line mb-4">
@@ -324,7 +324,13 @@ if ($is_online) {
                                         </li>
                                         <li class="d-flex mt-2">
                                             <b class="me-2">Email:</b>
-                                            <span><?php echo esc_html($email); ?></span>
+                                            <span><?php
+                                                            if ($email_verified == true) {
+                                                                echo esc_html($email) . ' <i class="fas fa-check-circle text-primary"></i>';
+                                                            } else {
+                                                                echo esc_html($email);
+                                                            }
+                                                            ?></span>
                                         </li>
                                     </ul>
                                 </div>
@@ -445,153 +451,156 @@ if ($is_online) {
                         </div>
                     </div>
                     <div class="list_dt2 mt-4 p-3 shadow">
-                                    <h3>Partner Preferences</h3>
-                                    <hr class="line mb-4">
-                                    <h5 class="mb-3">
-                                        <i class="bi bi-gender-male theme-text-color me-1 align-middle"></i>
-                                        About Partner
+                        <h3>Partner Preferences</h3>
+                        <hr class="line mb-4">
+                        <h5 class="mb-3">
+                            <i class="bi bi-gender-male theme-text-color me-1 align-middle"></i>
+                            About Partner
+                        </h5>
+                        <p class="px_28 mb-0"><?php echo esc_html($about_partner); ?></p>
+                        <h5 class="mb-3 mt-4"><i class="bi bi-person theme-text-color me-1 align-middle"></i>
+                            Basic
+                            Preferences
+                        </h5>
+                        <ul class="px_28 font_14 justify-content-between d-flex mb-0 flex-wrap">
+                            <li>
+                                <b class="d-block">Groom's Age:</b>
+                                <b class="d-block mt-2">Height:</b>
+                                <b class="d-block mt-2">Marital Status:</b>
+                                <b class="d-block mt-2">Mother Tongue:</b>
+                                <b class="d-block mt-2">Physical Status:</b>
+                                <b class="d-block mt-2">Eating Habits:</b>
+                            </li>
+                            <li>
+                                <span class="d-block"><?php echo esc_html($partner_min_age); ?> -
+                                    <?php echo esc_html($partner_max_age); ?> Yrs</span>
+                                <span class="d-block mt-2"><?php echo esc_html($partner_min_height); ?> -
+                                    <?php echo esc_html($partner_max_height); ?></span>
+                                <span class="d-block mt-2"><?php echo esc_html($partner_marital_status); ?></span>
+                                <span class="d-block mt-2"><?php echo esc_html($partner_mother_tongue); ?></span>
+                                <span class="d-block mt-2"><?php echo esc_html($partner_physical_status); ?></span>
+                                <span class="d-block mt-2"><?php echo esc_html($partner_eating_habits); ?></span>
+                            </li>
+                            <li>
+                                <b class="d-block">Smoking Habits:</b>
+                                <b class="d-block mt-2">Drinking Habits:</b>
+                            </li>
+                            <li>
+                                <span class="d-block"><?php echo esc_html($partner_smoking_habits); ?></span>
+                                <span class="d-block mt-2"><?php echo esc_html($partner_drinking_habits); ?></span>
+                            </li>
+                        </ul>
+                        <div class="row row-cols-1 row-cols-md-2 list_dt2_inner">
+                            <div class="col">
+                                <div class="list_dt2_inner_left">
+                                    <h5 class="mb-3 mt-4">
+                                        <i class="bi bi-person theme-text-color me-1 align-middle"></i>
+                                        Professional Preferences
                                     </h5>
-                                    <p class="px_28 mb-0"><?php echo esc_html($about_partner); ?></p>
-                                    <h5 class="mb-3 mt-4"><i
-                                            class="bi bi-person theme-text-color me-1 align-middle"></i>
-                                        Basic
-                                        Preferences 
-                                    </h5>
-                                    <ul class="px_28 font_14 justify-content-between d-flex mb-0 flex-wrap">
-                                        <li>
-                                            <b class="d-block">Groom's Age:</b>
-                                            <b class="d-block mt-2">Height:</b>
-                                            <b class="d-block mt-2">Marital Status:</b>
-                                            <b class="d-block mt-2">Mother Tongue:</b>
-                                            <b class="d-block mt-2">Physical Status:</b>
-                                            <b class="d-block mt-2">Eating Habits:</b>
-                                        </li>
-                                        <li>
-                                            <span class="d-block"><?php echo esc_html($partner_min_age); ?> -
-                                                <?php echo esc_html($partner_max_age); ?> Yrs</span>
-                                            <span class="d-block mt-2"><?php echo esc_html($partner_min_height); ?> -
-                                                <?php echo esc_html($partner_max_height); ?></span>
-                                            <span
-                                                class="d-block mt-2"><?php echo esc_html($partner_marital_status); ?></span>
-                                            <span
-                                                class="d-block mt-2"><?php echo esc_html($partner_mother_tongue); ?></span>
-                                            <span
-                                                class="d-block mt-2"><?php echo esc_html($partner_physical_status); ?></span>
-                                            <span
-                                                class="d-block mt-2"><?php echo esc_html($partner_eating_habits); ?></span>
-                                        </li>
-                                        <li>
-                                            <b class="d-block">Smoking Habits:</b>
-                                            <b class="d-block mt-2">Drinking Habits:</b>
-                                        </li>
-                                        <li>
-                                            <span
-                                                class="d-block"><?php echo esc_html($partner_smoking_habits); ?></span>
-                                            <span
-                                                class="d-block mt-2"><?php echo esc_html($partner_drinking_habits); ?></span>
-                                        </li>
-                                    </ul>
-                                    <div class="row row-cols-1 row-cols-md-2 list_dt2_inner">
-                                        <div class="col">
-                                            <div class="list_dt2_inner_left">
-                                                <h5 class="mb-3 mt-4">
-                                                    <i class="bi bi-person theme-text-color me-1 align-middle"></i>
-                                                    Professional Preferences
-                                                </h5>
-                                                <ul class="px_28 font_14 mb-0">
-                                                    <li class="d-flex">
-                                                        <b class="me-2">Education:</b>
-                                                        <span><?php echo esc_html($partner_education); ?></span>
-                                                    </li>
-                                                    <li class="d-flex mt-2">
-                                                        <b class="me-2">profession:</b>
-                                                        <span><?php echo esc_html($partner_profession); ?></span>
-                                                    </li>
-                                                    <li class="d-flex mt-2">
-                                                        <b class="me-2">Annual Income:</b>
-                                                        <span><?php echo esc_html($partner_annual_income); ?></span>
-                                                    </li>
-                                                </ul>
-                                            </div>
-                                        </div>
-                                        <div class="col">
-                                            <div class="list_dt2_inner_left">
-                                                <h5 class="mb-3 mt-4">
-                                                    <i class="bi bi-book theme-text-color me-1 align-middle"></i>
-                                                    Religious Preferences
-                                                </h5>
-                                                <ul class="px_28 font_14 mb-0">
-                                                    <li class="d-flex">
-                                                        <b class="me-2">Religion:</b>
-                                                        <span><?php echo esc_html($partner_religion); ?></span>
-                                                    </li>
-                                                </ul>
-                                            </div>
-                                        </div>
-                                    </div>
-                                    <h5 class="mb-3 mt-4"><i class="bi bi-map theme-text-color me-1 align-middle"></i>
-                                        Location
-                                        Preferences</h5>
                                     <ul class="px_28 font_14 mb-0">
                                         <li class="d-flex">
-                                            <b class="me-2">Country:</b>
-                                            <span><?php echo esc_html($partner_country); ?></span>
+                                            <b class="me-2">Education:</b>
+                                            <span><?php echo esc_html($partner_education); ?></span>
+                                        </li>
+                                        <li class="d-flex mt-2">
+                                            <b class="me-2">profession:</b>
+                                            <span><?php echo esc_html($partner_profession); ?></span>
+                                        </li>
+                                        <li class="d-flex mt-2">
+                                            <b class="me-2">Annual Income:</b>
+                                            <span><?php echo esc_html($partner_annual_income); ?></span>
                                         </li>
                                     </ul>
-
                                 </div>
-                                <div class="list_dt2 mt-4 p-3 shadow">
-    <h3>Photo Gallery</h3>
-    <hr class="line mb-4">
-    <!-- Photo Gallery Grid -->
-    <div class="row">
-        <?php 
-        // Fetch user photos from user meta (assuming photos are stored as an array of attachment IDs)
-        $user_photos = get_user_meta($user_id, 'user_photos', true);
+                            </div>
+                            <div class="col">
+                                <div class="list_dt2_inner_left">
+                                    <h5 class="mb-3 mt-4">
+                                        <i class="bi bi-book theme-text-color me-1 align-middle"></i>
+                                        Religious Preferences
+                                    </h5>
+                                    <ul class="px_28 font_14 mb-0">
+                                        <li class="d-flex">
+                                            <b class="me-2">Religion:</b>
+                                            <span><?php echo esc_html($partner_religion); ?></span>
+                                        </li>
+                                    </ul>
+                                </div>
+                            </div>
+                        </div>
+                        <h5 class="mb-3 mt-4"><i class="bi bi-map theme-text-color me-1 align-middle"></i>
+                            Location
+                            Preferences</h5>
+                        <ul class="px_28 font_14 mb-0">
+                            <li class="d-flex">
+                                <b class="me-2">Country:</b>
+                                <span><?php echo esc_html($partner_country); ?></span>
+                            </li>
+                        </ul>
 
-        // If no photos are set, initialize an empty array
-        if (empty($user_photos)) {
-            $user_photos = [];
-        }
-
-        // Check if there are any user photos
-        if (!empty($user_photos)) {
-            // Loop through the photos and display them
-            foreach ($user_photos as $photo_id) {
-                $photo_url = wp_get_attachment_url($photo_id);
-                ?>
-                <div class="col-md-4 mb-4">
-                    <div class="gallery-item">
-                        <!-- Link to open the image in lightbox -->
-                        <a href="<?php echo esc_url($photo_url); ?>" data-lightbox="user-gallery" data-title="User Photo">
-                            <img src="<?php echo esc_url($photo_url); ?>" alt="Gallery Image" class="img-fluid rounded">
-                        </a>
                     </div>
-                </div>
-                <?php
-            }
-        } else {
-            // If there are no photos, display a message
-            echo '<p>No photos available.</p>';
-        }
-        ?>
+                    <div class="list_dt2 mt-4 p-3 shadow">
+                        <h3>Photo Gallery</h3>
+                        <hr class="line mb-4">
+                        <!-- Photo Gallery Grid -->
+                        <div class="row">
+                            <?php
+                            // Fetch user photos from user meta (assuming photos are stored as an array of attachment IDs)
+                            $user_photos = get_user_meta($user_id, 'user_photos', true);
+
+                            // If no photos are set, initialize an empty array
+                            if (empty($user_photos)) {
+                                $user_photos = [];
+                            }
+
+                            // Check if there are any user photos
+                            if (!empty($user_photos)) {
+                                // Loop through the photos and display them
+                                foreach ($user_photos as $photo_id) {
+                                    $photo_url = wp_get_attachment_url($photo_id);
+                                    ?>
+                                    <div class="col-md-4 mb-4">
+                                        <div class="gallery-item">
+                                            <!-- Link to open the image in lightbox -->
+                                            <a href="<?php echo esc_url($photo_url); ?>" data-lightbox="user-gallery"
+                                                data-title="User Photo">
+                                                <img src="<?php echo esc_url($photo_url); ?>" alt="Gallery Image"
+                                                    class="img-fluid rounded">
+                                            </a>
+                                        </div>
+                                    </div>
+                                    <?php
+                                }
+                            } else {
+                                // If there are no photos, display a message
+                                echo '<p>No photos available.</p>';
+                            }
+                            ?>
+                        </div>
+                    </div>
+                    <?php else: ?>
+                        <div class="list_dt2 mt-4 p-3 shadow">
+                                <div class="alert alert-warning">
+                                     This user's personal details are locked. Interest must be accepted to view them.
     </div>
-</div>
+                        </div>
+
+<?php endif; ?>
                 </div>
 
             </div>
             <div class="col-lg-3 col-md-4 mt-4">
-    <div class="list_1_left">
-        <div class="list_1_left1">
-            <?php
-            // Display the Profile Page Widget Area
-            if ( is_active_sidebar( 'profile_page_widget_area' ) ) {
-                dynamic_sidebar( 'profile_page_widget_area' );
-            }
-            ?>
-        </div>
-    </div>
-</div>
+                <div class="list_1_left">
+                    <div class="list_1_left1">
+                        <?php
+                        // Display the Profile Page Widget Area
+                        if (is_active_sidebar('profile_page_widget_area')) {
+                            dynamic_sidebar('profile_page_widget_area');
+                        }
+                        ?>
+                    </div>
+                </div>
+            </div>
 
         </div>
 </section>

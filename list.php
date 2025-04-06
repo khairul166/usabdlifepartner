@@ -171,6 +171,7 @@ get_header(); ?>
 
                             // Define the query arguments to get users
                             $args = array(
+                                'role' => 'subscriber',
                                 'number' => 10,  // Limit to 2 users per page (adjust as needed)
                                 'paged' => $paged, // Current page
                                 'meta_query' => array(

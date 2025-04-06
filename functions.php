@@ -293,13 +293,13 @@ function handle_matrimonial_filter()
 
     // Define the query arguments to get users
     $args = array(
-        'number' => 2,  // Number of users per page (adjust as needed)
+        'role' => 'subscriber',
+        'number' => 10,  // Limit to 2 users per page (adjust as needed)
         'paged' => $paged, // Current page
         'meta_query' => array(
             'relation' => 'AND',
         ),
     );
-
     // Add conditions based on filters
     if ($looking_for) {
         $args['meta_query'][] = array(
@@ -1075,6 +1075,47 @@ function usabdlp_respond_to_interest() {
     }
 
     wp_send_json_success(['message' => 'Interest ' . $response . ' successfully.']);
+}
+
+
+add_action('wp', 'check_interest_access_status');
+function check_interest_access_status() {
+    global $wpdb;
+
+    // Must use global to access in template
+    global $access_granted;
+
+    $interest_table = $wpdb->prefix . 'interests';
+
+    $current_user = get_current_user_id();
+    $profile_user = isset($_GET['user_id']) ? intval($_GET['user_id']) : 0;
+
+    // Store current user & profile user in global for debugging
+    global $access_debug;
+    $access_debug = [
+        'logged_in' => is_user_logged_in(),
+        'current_user_id' => $current_user,
+        'profile_user_id' => $profile_user
+    ];
+
+    // Skip if not logged in
+    if (!$current_user || !$profile_user) {
+        $access_granted = false;
+        return;
+    }
+
+    // Check accepted interests in both directions
+    $sent_accepted = $wpdb->get_var($wpdb->prepare(
+        "SELECT COUNT(*) FROM $interest_table WHERE from_user_id = %d AND to_user_id = %d AND status = 'accepted'",
+        $current_user, $profile_user
+    ));
+
+    $received_accepted = $wpdb->get_var($wpdb->prepare(
+        "SELECT COUNT(*) FROM $interest_table WHERE from_user_id = %d AND to_user_id = %d AND status = 'accepted'",
+        $profile_user, $current_user
+    ));
+
+    $access_granted = ($sent_accepted || $received_accepted);
 }
 
 
