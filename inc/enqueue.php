@@ -195,14 +195,6 @@ function enqueue_matrimonial_search_script() {
 }
 add_action('wp_enqueue_scripts', 'enqueue_matrimonial_search_script');
 
-// function enqueue_interest_scripts() {
-//     wp_enqueue_script('interest-js', get_template_directory_uri() . '/js/interest.js', array('jquery'), null, true);
-//     wp_localize_script('interest-js', 'interest_ajax_object', array(
-//         'ajax_url' => admin_url('admin-ajax.php'),
-//         'nonce'    => wp_create_nonce('send_interest_nonce'),
-//     ));
-// }
-// add_action('wp_enqueue_scripts', 'enqueue_interest_scripts');
 
 add_action('wp_enqueue_scripts', function () {
     wp_enqueue_script('jquery');
@@ -226,7 +218,7 @@ add_action('wp_enqueue_scripts', function () {
 
 
 add_action('wp_enqueue_scripts', function () {
-    wp_enqueue_script('handle-interest', get_template_directory_uri() . '/js/handle-interest.js', ['jquery'], '1.0', true);
+    // wp_enqueue_script('handle-interest', get_template_directory_uri() . '/js/handle-interest.js', ['jquery'], '1.0', true);
 
 wp_localize_script('handle-interest', 'interest_ajax', [
     'ajax_url' => admin_url('admin-ajax.php'),

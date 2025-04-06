@@ -572,34 +572,6 @@ if ($is_online) {
 
         </div>
 </section>
-<script>
-jQuery(document).ready(function($) {
-    $('.interest-toggle-btn').click(function(e) {
-        e.preventDefault();
-        let btn = $(this);
-        let toUserId = btn.data('to-user-id');
-        let currentAction = btn.data('action');
 
-        $.post(interest_ajax.ajax_url, {
-            action: 'toggle_interest',
-            to_user_id: toUserId,
-            type: currentAction,
-            security: interest_ajax.nonce
-        }, function(response) {
-            if (response.success) {
-                if (response.data.action === 'sent') {
-                    btn.html('<i class="bi bi-heart me-1 align-middle"></i> Cancel Interest');
-                    btn.data('action', 'cancel');
-                } else {
-                    btn.html('<i class="bi bi-heart me-1 align-middle"></i> Send Interest');
-                    btn.data('action', 'send');
-                }
-            } else {
-                alert(response.data.message || 'Something went wrong.');
-            }
-        });
-    });
-});
-</script>
 
 <?php get_footer(); ?>

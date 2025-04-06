@@ -882,74 +882,115 @@ add_action('wp_ajax_toggle_interest', 'handle_toggle_interest');
 function handle_toggle_interest() {
     check_ajax_referer('interest_nonce', 'security');
 
-    if (!is_user_logged_in()) {
-        wp_send_json_error(['message' => 'Not logged in']);
-    }
-
     global $wpdb;
     $current_user = get_current_user_id();
     $to_user_id = intval($_POST['to_user_id']);
-    $type = sanitize_text_field($_POST['type']);
+    $action_type = sanitize_text_field($_POST['type']);
 
-    $interest_table = $wpdb->prefix . "interests";
-    $notification_table = $wpdb->prefix . "notifications";
+    $table = $wpdb->prefix . 'interests';
+    $existing = $wpdb->get_var($wpdb->prepare(
+        "SELECT COUNT(*) FROM $table WHERE from_user_id = %d AND to_user_id = %d",
+        $current_user, $to_user_id
+    ));
 
-    // Cancel interest
-    if ($type === 'cancel') {
-        $wpdb->delete($interest_table, [
-            'from_user_id' => $current_user,
-            'to_user_id'   => $to_user_id
-        ]);
-
-        // Add cancel notification
-        $wpdb->insert($notification_table, [
-            'user_id'     => $to_user_id,
-            'message'     => "A user has cancelled the interest.",
-            'read_status' => 0,
-            'created_at'  => current_time('mysql')
-        ]);
-
-        wp_send_json_success(['action' => 'cancelled']);
-    }
-
-    // Send interest
-    if ($type === 'send') {
-        // Prevent duplicate interest
-        $exists = $wpdb->get_var($wpdb->prepare(
-            "SELECT id FROM $interest_table WHERE from_user_id = %d AND to_user_id = %d",
-            $current_user, $to_user_id
-        ));
-
-        if ($exists) {
-            wp_send_json_error(['message' => 'Already sent']);
+    if ($action_type === 'send') {
+        if ($existing) {
+            wp_send_json_error(['message' => 'Already sent.']);
         }
 
-        // Insert interest with all columns filled
-        $wpdb->insert(
-            $interest_table,
-            [
-                'from_user_id' => $current_user,
-                'to_user_id'   => $to_user_id,
-                'status'       => 'pending',
-                'sent_at'      => current_time('mysql'),
-                'responded_at' => null
-            ],
-            ['%d', '%d', '%s', '%s', 'NULL']
-        );
-
-        // Add notification
-        $wpdb->insert($notification_table, [
-            'user_id'     => $to_user_id,
-            'message'     => "You have received an interest from user ID: $current_user",
-            'read_status' => 0,
-            'created_at'  => current_time('mysql')
+        $wpdb->insert($table, [
+            'from_user_id' => $current_user,
+            'to_user_id'   => $to_user_id,
+            'status'       => 'pending',
+            'sent_at'      => current_time('mysql')
         ]);
 
         wp_send_json_success(['action' => 'sent']);
     }
 
-    wp_send_json_error(['message' => 'Unknown action']);
+    if ($action_type === 'cancel') {
+        $wpdb->delete($table, [
+            'from_user_id' => $current_user,
+            'to_user_id'   => $to_user_id
+        ]);
+        wp_send_json_success(['action' => 'cancelled']);
+    }
+
+    wp_send_json_error(['message' => 'Invalid action']);
 }
+
+
+// function handle_toggle_interest() {
+//     check_ajax_referer('interest_nonce', 'security');
+
+//     if (!is_user_logged_in()) {
+//         wp_send_json_error(['message' => 'Not logged in']);
+//     }
+
+//     global $wpdb;
+//     $current_user = get_current_user_id();
+//     $to_user_id = intval($_POST['to_user_id']);
+//     $type = sanitize_text_field($_POST['type']);
+
+//     $interest_table = $wpdb->prefix . "interests";
+//     $notification_table = $wpdb->prefix . "notifications";
+
+//     // Cancel interest
+//     if ($type === 'cancel') {
+//         $wpdb->delete($interest_table, [
+//             'from_user_id' => $current_user,
+//             'to_user_id'   => $to_user_id
+//         ]);
+
+//         // Add cancel notification
+//         $wpdb->insert($notification_table, [
+//             'user_id'     => $to_user_id,
+//             'message'     => "A user has cancelled the interest.",
+//             'read_status' => 0,
+//             'created_at'  => current_time('mysql')
+//         ]);
+
+//         wp_send_json_success(['action' => 'cancelled']);
+//     }
+
+//     // Send interest
+//     if ($type === 'send') {
+//         // Prevent duplicate interest
+//         $exists = $wpdb->get_var($wpdb->prepare(
+//             "SELECT id FROM $interest_table WHERE from_user_id = %d AND to_user_id = %d",
+//             $current_user, $to_user_id
+//         ));
+
+//         if ($exists) {
+//             wp_send_json_error(['message' => 'Already sent']);
+//         }
+
+//         // Insert interest with all columns filled
+//         $wpdb->insert(
+//             $interest_table,
+//             [
+//                 'from_user_id' => $current_user,
+//                 'to_user_id'   => $to_user_id,
+//                 'status'       => 'pending',
+//                 'sent_at'      => current_time('mysql'),
+//                 'responded_at' => null
+//             ],
+//             ['%d', '%d', '%s', '%s', 'NULL']
+//         );
+
+//         // Add notification
+//         $wpdb->insert($notification_table, [
+//             'user_id'     => $to_user_id,
+//             'message'     => "You have received an interest from user ID: $current_user",
+//             'read_status' => 0,
+//             'created_at'  => current_time('mysql')
+//         ]);
+
+//         wp_send_json_success(['action' => 'sent']);
+//     }
+
+//     wp_send_json_error(['message' => 'Unknown action']);
+// }
 
 
 function usabdlp_update_interest_table_schema() {
