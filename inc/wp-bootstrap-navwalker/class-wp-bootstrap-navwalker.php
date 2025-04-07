@@ -64,7 +64,8 @@ if ( ! class_exists( 'WP_Bootstrap_Navwalker' ) ) :
 			}
 			$indent = str_repeat( $t, $depth );
 			// Default class to add to the file.
-			$classes = array( 'dropdown-menu' );
+			$classes = array( 'dropdown-menu', 'drop_1', 'shadow' ); // ✅ Added custom classes
+
 			/**
 			 * Filters the CSS class(es) applied to a menu list element.
 			 *
@@ -168,7 +169,9 @@ if ( ! class_exists( 'WP_Bootstrap_Navwalker' ) ) :
 			// Add .dropdown or .active classes where they are needed.
 			if ( $this->has_children ) {
 				$classes[] = 'dropdown';
+				$classes[] = 'drop_border'; // ✅ Add this line
 			}
+			
 			if ( in_array( 'current-menu-item', $classes, true ) || in_array( 'current-menu-parent', $classes, true ) ) {
 				$classes[] = 'active';
 			}
