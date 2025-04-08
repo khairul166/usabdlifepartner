@@ -63,7 +63,7 @@ wp_reset_postdata(); // Reset the post data
 			<div class="row center_home1">
 				<div class="col-md-8">
 					<div class="center_home1_left text-center">
-						<h1 class="font_50 text-white">Welcome to USABDLifepartner</h1>
+						<h1 class="usbdfont text-white">Welcome to USABDLifepartner</h1>
 						<b class="text-white">Finding your perfect match just became easier</b>
 					</div>
 				</div>
@@ -367,7 +367,7 @@ $success_stories = wp_count_posts('success_story')->publish;
 		<div class="row row-cols-1 row-cols-md-3 find_1">
 			<div class="col">
 				<div class="find_1_left">
-					<a href="#"><img src="<?php echo get_template_directory_uri(); ?>/image/5.jpg" class="img-fluid"
+					<a href="<?php echo esc_url(home_url('/')); ?>"><img src="<?php echo get_template_directory_uri(); ?>/image/5.jpg" class="img-fluid"
 							alt="abc"></a>
 					<b class="d-block d-flex mt-2"><span class="theme-text-color me-1">01.</span> Define Your Partner
 						Preferences</b>
@@ -376,14 +376,14 @@ $success_stories = wp_count_posts('success_story')->publish;
 			</div>
 			<div class="col">
 				<div class="find_1_left">
-					<a href="#"><img src="<?php echo get_template_directory_uri(); ?>/image/6.jpg" class="img-fluid"
+					<a href="<?php echo esc_url(home_url('/search-user')); ?>"><img src="<?php echo get_template_directory_uri(); ?>/image/6.jpg" class="img-fluid"
 							alt="abc"></a>
 					<b class="d-block d-flex mt-2"><span class="theme-text-color me-1">02.</span> Browse Profiles</b>
 				</div>
 			</div>
 			<div class="col">
 				<div class="find_1_left">
-					<a href="#"><img src="<?php echo get_template_directory_uri(); ?>/image/7.jpg" class="img-fluid"
+					<a href="<?php echo esc_url(home_url('/search-user')); ?>"><img src="<?php echo get_template_directory_uri(); ?>/image/7.jpg" class="img-fluid"
 							alt="abc"></a>
 					<b class="d-block d-flex mt-2"><span class="theme-text-color me-1">03.</span> Send Interests &
 						Connect</b>
@@ -392,7 +392,7 @@ $success_stories = wp_count_posts('success_story')->publish;
 		</div>
 		<div class="row find_2 text-center mt-4">
 			<div class="col-md-12">
-				<span class="d-block mt-3 text-center"><a class="button" href="<?php echo wp_registration_url(); ?>">Get
+				<span class="d-block mt-3 text-center"><a class="button" href="<?php echo esc_url(home_url('/signup')); ?>">Get
 						Started</a></span>
 			</div>
 		</div>
@@ -600,170 +600,6 @@ $success_stories = wp_count_posts('success_story')->publish;
 	</div>
 </section>
 
-
-<!-- <section id="profile" class="pt-5 pb-5">
-	<div class="container-xl">
-		<div class="row exep_1 mb-4 text-center">
-			<div class="col-md-12">
-				<span class="text-uppercase text-muted d-block">Browse</span>
-				<b class="d-block fs-3 mt-2">Profiles by <span class="theme-text-color">Matrimonials</span></b>
-			</div>
-		</div>
-		<div class="row profile_1">
-			<div class="col-md-12">
-				<ul class="nav nav-tabs mb-0  flex-wrap font_15 justify-content-center border-0 tab_click">
-					<li class="nav-item">
-						<a href="#profile1" data-bs-toggle="tab" aria-expanded="true" class="nav-link active">
-							<span class="d-md-block">Mother Tongue</span>
-						</a>
-					</li>
-					<li class="nav-item">
-						<a href="#profile3" data-bs-toggle="tab" aria-expanded="true" class="nav-link">
-							<span class="d-md-block">Religion</span>
-						</a>
-					</li>
-
-					<li class="nav-item">
-						<a href="#profile4" data-bs-toggle="tab" aria-expanded="true" class="nav-link">
-							<span class="d-md-block">City</span>
-						</a>
-					</li>
-
-					<li class="nav-item">
-						<a href="#profile5" data-bs-toggle="tab" aria-expanded="true" class="nav-link">
-							<span class="d-md-block">Occupation</span>
-						</a>
-					</li>
-
-
-				</ul>
-				<div class="tab-content mt-4">
-
-					<div class="tab-pane active" id="profile1">
-						<div class="profile1_inner">
-							<ul class="mb-0 d-flex flex-wrap justify-content-center">
-								<li><a href="#">Bihari</a></li>
-								<li class="text-muted mx-3">|</li>
-								<li><a href="#">Bengali</a></li>
-								<li class="text-muted mx-3">|</li>
-								<li><a href="#">Gujarati</a></li>
-								<li class="text-muted mx-3">|</li>
-								<li><a href="#">Hindi</a></li>
-								<li class="text-muted mx-3">|</li>
-								<li><a href="#">Kannada</a></li>
-								<li class="text-muted mx-3">|</li>
-								<li><a href="#">Malayalam</a></li>
-								<li class="text-muted mx-3">|</li>
-								<li><a href="#">Marathi</a></li>
-								<li class="text-muted mx-3">|</li>
-								<li><a href="#">Oriya</a></li>
-								<li class="text-muted mx-3">|</li>
-								<li><a href="#">Punjabi</a></li>
-								<li class="text-muted mx-3">|</li>
-								<li><a href="#">Rajasthani</a></li>
-								<li class="text-muted mx-3">|</li>
-								<li><a href="#">Tamil</a></li>
-								<li class="text-muted mx-3">|</li>
-								<li><a href="#">Telugu</a></li>
-								<li class="text-muted mx-3">|</li>
-								<li><a href="#">Konkani</a></li>
-								<li class="text-muted mx-3">|</li>
-								<li><a href="#">Haryanvi</a></li>
-								<li class="text-muted mx-3">|</li>
-								<li><a href="#">Kashmiri</a></li>
-								<li class="text-muted mx-3">|</li>
-								<li><a href="#">Nepali</a></li>
-								<li class="text-muted mx-3">|</li>
-								<li><a href="#">Assamese</a></li>
-								<li class="text-muted mx-3">|</li>
-							</ul>
-						</div>
-					</div>
-
-					<div class="tab-pane" id="profile3">
-						<div class="profile1_inner">
-							<ul class="mb-0 d-flex flex-wrap justify-content-center">
-								<li><a href="#">Hindu</a></li>
-								<li class="text-muted mx-3">|</li>
-								<li><a href="#">Muslim</a></li>
-								<li class="text-muted mx-3">|</li>
-								<li><a href="#">Christian</a></li>
-								<li class="text-muted mx-3">|</li>
-								<li><a href="#">Sikh</a></li>
-								<li class="text-muted mx-3">|</li>
-								<li><a href="#">Buddhist</a></li>
-								<li class="text-muted mx-3">|</li>
-								<li><a href="#">Jain</a></li>
-								<li class="text-muted mx-3">|</li>
-								<li><a href="#">Bahai</a></li>
-
-							</ul>
-						</div>
-
-					</div>
-
-					<div class="tab-pane" id="profile4">
-						<div class="profile1_inner">
-							<ul class="mb-0 d-flex flex-wrap justify-content-center">
-								<li><a href="#">Kanpur</a></li>
-								<li class="text-muted mx-3">|</li>
-								<li><a href="#">Lucknow</a></li>
-								<li class="text-muted mx-3">|</li>
-								<li><a href="#">Mumbai</a></li>
-								<li class="text-muted mx-3">|</li>
-								<li><a href="#">Delhi</a></li>
-								<li class="text-muted mx-3">|</li>
-								<li><a href="#">Agra</a></li>
-								<li class="text-muted mx-3">|</li>
-								<li><a href="#">Nagpur</a></li>
-								<li class="text-muted mx-3">|</li>
-								<li><a href="#">Ludhiana</a></li>
-								<li class="text-muted mx-3">|</li>
-								<li><a href="#">Jaipur</a></li>
-								<li class="text-muted mx-3">|</li>
-								<li><a href="#">Noida</a></li>
-								<li class="text-muted mx-3">|</li>
-								<li><a href="#">Patna</a></li>
-							</ul>
-						</div>
-
-					</div>
-
-					<div class="tab-pane" id="profile5">
-						<div class="profile1_inner">
-							<ul class="mb-0 d-flex flex-wrap justify-content-center">
-								<li><a href="#">Businessman</a></li>
-								<li class="text-muted mx-3">|</li>
-								<li><a href="#">Teacher</a></li>
-								<li class="text-muted mx-3">|</li>
-								<li><a href="#">IT Software</a></li>
-								<li class="text-muted mx-3">|</li>
-								<li><a href="#">Police</a></li>
-								<li class="text-muted mx-3">|</li>
-								<li><a href="#">Doctor</a></li>
-								<li class="text-muted mx-3">|</li>
-								<li><a href="#">Nurse</a></li>
-								<li class="text-muted mx-3">|</li>
-								<li><a href="#">IAS</a></li>
-								<li class="text-muted mx-3">|</li>
-								<li><a href="#">PCS</a></li>
-								<li class="text-muted mx-3">|</li>
-								<li><a href="#">Ngo</a></li>
-								<li class="text-muted mx-3">|</li>
-								<li><a href="#">Engineers</a></li>
-							</ul>
-						</div>
-
-					</div>
-
-
-
-
-				</div>
-			</div>
-		</div>
-	</div>
-</section> -->
 <?php usabdlp_render_profile_tabs(); ?>
 
 <section id="about" class="pt-5 pb-5 bg_light">

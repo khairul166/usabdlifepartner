@@ -366,11 +366,10 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST' && isset($_POST['register'])) {
                         </div>
                     </div>
 
-
                     <div class="addressinfo">
                         <h3 class="reg_form_head pb-2 pt-2 theme-text-color">Address Information</h3>
                         <div class="row">
-                            <div class="col-md-6">
+                            <div class="col-md-12">
                                 <label for="country" class="form-label">Country Of Present Location *</label>
                                 <select id="country" name="country" class="form-select">
                                     <option selected disabled>Select country</option>
@@ -378,42 +377,43 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST' && isset($_POST['register'])) {
                                     <option value="USA">USA</option>
                                 </select>
                             </div>
-                            <div class="col-md-6" id="user_divison">
+
+                        </div>
+
+                        <div id="bangladeshFields">
+                            <div class="row">
+                            <div class="col-md-6 mt-3" id="user_divison">
                                 <label for="division" class="form-label">Present Division *</label>
                                 <select id="division" name="division" class="form-select">
                                     <option value="">Select Division</option>
                                 </select>
                             </div>
-                        </div>
-
-                        <div id="bangladeshFields">
-                            <div class="row mt-3">
-                                <div class="col-md-6">
+                                <div class="col-md-6 mt-3">
                                     <label for="district" class="form-label">Present District *</label>
                                     <select id="district" name="district" class="form-select">
                                         <option value="">Select District</option>
                                     </select>
                                 </div>
-                                <div class="col-md-6">
+                                <div class="col-md-6 mt-3">
                                     <label for="upazila" class="form-label">Present Upazila / City *</label>
                                     <select id="upazila" name="upazila" class="form-select">
                                         <option value="">Select Upazila/City</option>
                                     </select>
                                 </div>
-                            </div>
-                            <div class="row mt-3" id="villageAreaRow">
-                                <div class="col-md-6">
+
+
+                                <div class="col-md-6 mt-3">
                                     <label for="village" class="form-label">Village / Area *</label>
                                     <select id="village" name="village" class="form-select">
                                         <option value="">Select Village/Area</option>
                                     </select>
                                 </div>
-                                <div class="col-md-6">
+                                <div class="col-md-6 mt-3">
                                     <label for="landmark" class="form-label">Location / Landmark / Area *</label>
                                     <input type="text" id="landmark" name="landmark" class="form-control"
                                         placeholder="Enter landmark">
                                 </div>
-                            </div>
+                                </div>
                         </div>
 
                         <div id="usaFields" style="display: none;">
@@ -440,6 +440,7 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST' && isset($_POST['register'])) {
                             </div>
                         </div>
                     </div>
+
 
                     <h3 class="reg_form_head pb-2 pt-2 theme-text-color">Account Information</h3>
                     <div class="row">

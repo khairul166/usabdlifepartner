@@ -16,9 +16,20 @@ Licence: <a href="https://www.templateonweb.com/license">Website Template Licenc
     --blue:#33475b;
 	--purple:#6557b7;
 }
+/* Make sure all elements don't go beyond screen
+* {
+    box-sizing: border-box;
+    max-width: 100%;
+} */
 
+html{
+	overflow-x: hidden;
+    width: 100%;
+}
 body{
 	font-family: "Roboto", serif;
+	overflow-x: hidden;
+    width: 100%;
 }
 
 ul{
@@ -150,7 +161,9 @@ hr{
 .font_50{
 	font-size:50px; 
 }
-
+.usbdfont{
+	font-size: 7vh;
+}
 
 .carousel_p {
 	padding-bottom: 90px!important;
@@ -1765,3 +1778,13 @@ Licence: <a href="https://www.templateonweb.com/license">Website Template Licenc
 .send-interest{
 	padding-top: 20px;
 }
+
+
+.carousel-item {
+    transition: transform 0.8s ease-in-out; /* smoother slide */
+}
+
+.carousel-item img {
+    transition: transform 1s ease;
+}
+
