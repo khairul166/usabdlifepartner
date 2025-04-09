@@ -79,6 +79,8 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST' && isset($_POST['register'])) {
             update_user_meta($user_id, 'landmark', $landmark);
             update_user_meta($user_id, 'user_phone', $user_phone);
             update_user_meta($user_id, 'user_g_phone', $user_g_phone);
+            update_user_meta($user_id, 'guardian_country_code', $guardian_country_code);
+            update_user_meta($user_id, 'candidate_country_code', $candidate_country_code);
 
             // Save USA Fields
             if ($country === 'USA') {
@@ -128,7 +130,7 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST' && isset($_POST['register'])) {
                             <h3 class="reg_form_head pb-2 pt-2 theme-text-color">Personal Information</h3>
                             <div class="col-md-6 pt-1 pb-2">
                                 <label for="profileby">Profile created by:</label>
-                                <select id="profileby" name="profileby" class="form-select form-select-sm">
+                                <select id="profileby" name="profileby" class="form-select form-select-sm" required>
                                     <option selected disabled>Select One</option>
                                     <option value="Self">Self</option>
                                     <option value="Friend">Friend</option>
@@ -140,7 +142,7 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST' && isset($_POST['register'])) {
                             </div>
                             <div class="col-md-6 pt-1 pb-2">
                                 <label for="lookingfor">Looking For:</label>
-                                <select id="lookingfor" name="lookingfor" class="form-select form-select-sm">
+                                <select id="lookingfor" name="lookingfor" class="form-select form-select-sm" required>
                                     <option selected disabled>Select One</option>
                                     <option value="Bride">Bride</option>
                                     <option value="Groom">Groom</option>
@@ -384,34 +386,33 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST' && isset($_POST['register'])) {
                             <div class="row">
                             <div class="col-md-6 mt-3" id="user_divison">
                                 <label for="division" class="form-label">Present Division *</label>
-                                <select id="division" name="division" class="form-select">
+                                <select id="division" name="division" class="form-select" required>
                                     <option value="">Select Division</option>
                                 </select>
                             </div>
                                 <div class="col-md-6 mt-3">
                                     <label for="district" class="form-label">Present District *</label>
-                                    <select id="district" name="district" class="form-select">
+                                    <select id="district" name="district" class="form-select" required>
                                         <option value="">Select District</option>
                                     </select>
                                 </div>
                                 <div class="col-md-6 mt-3">
                                     <label for="upazila" class="form-label">Present Upazila / City *</label>
-                                    <select id="upazila" name="upazila" class="form-select">
+                                    <select id="upazila" name="upazila" class="form-select" required>
                                         <option value="">Select Upazila/City</option>
                                     </select>
                                 </div>
 
 
                                 <div class="col-md-6 mt-3">
-                                    <label for="village" class="form-label">Village / Area *</label>
-                                    <select id="village" name="village" class="form-select">
-                                        <option value="">Select Village/Area</option>
-                                    </select>
+                                    <label for="village" class="form-label" required>Village / Area *</label>
+                                    <input type="text" id="village" name="village" class="form-control"
+                                        placeholder="Enter Village Name">
                                 </div>
                                 <div class="col-md-6 mt-3">
                                     <label for="landmark" class="form-label">Location / Landmark / Area *</label>
                                     <input type="text" id="landmark" name="landmark" class="form-control"
-                                        placeholder="Enter landmark">
+                                        placeholder="Enter landmark" required>
                                 </div>
                                 </div>
                         </div>
@@ -420,20 +421,20 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST' && isset($_POST['register'])) {
                             <div class="row mt-3">
                                 <div class="col-md-6">
                                     <label for="state" class="form-label">State Of Present Country *</label>
-                                    <select id="state" name="state" class="form-select">
+                                    <select id="state" name="state" class="form-select" required>
                                         <option value="">Select State</option>
                                     </select>
                                 </div>
                                 <div class="col-md-6">
                                     <label for="city" class="form-label">City Of Present State *</label>
-                                    <select id="city" name="city" class="form-select">
+                                    <select id="city" name="city" class="form-select" required>
                                         <option value="">Select City</option>
                                     </select>
                                 </div>
                             </div>
                             <div class="row mt-3">
                                 <div class="col-md-6">
-                                    <label for="usaLandmark" class="form-label">Location / Landmark / Area *</label>
+                                    <label for="usaLandmark" class="form-label" required>Location / Landmark / Area *</label>
                                     <input type="text" id="usaLandmark" name="usaLandmark" class="form-control"
                                         placeholder="Enter landmark">
                                 </div>
@@ -458,7 +459,7 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST' && isset($_POST['register'])) {
                             <label for="user_phone" class="form-label">Candidate Phone Number*</label>
                             <div class="input-group">
                                 <select class="form-select" id="candidate_country_code" name="candidate_country_code"
-                                    style="max-width: 100px;">
+                                    style="max-width: 100px;" required>
                                     <option value="+1">+1 (USA)</option>
                                     <option value="+880">+880 (Bangladesh)</option>
                                     <!-- Add more country codes as needed -->
@@ -471,7 +472,7 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST' && isset($_POST['register'])) {
                             <label for="user_g_phone" class="form-label">Guardian Phone Number*</label>
                             <div class="input-group">
                                 <select class="form-select" id="guardian_country_code" name="guardian_country_code"
-                                    style="max-width: 100px;">
+                                    style="max-width: 100px;" required>
                                     <option value="+1">+1 (USA)</option>
                                     <option value="+880">+880 (Bangladesh)</option>
                                     <!-- Add more country codes as needed -->
