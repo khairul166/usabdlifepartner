@@ -89,6 +89,7 @@ if ($user_id) {
         $partner_annual_income = get_user_meta($user_id, 'partner_annual_income', true);
         $partner_religion = get_user_meta($user_id, 'partner_religion', true);
         $partner_country = get_user_meta($user_id, 'partner_country', true);
+        $lookingfor = get_user_meta($user_id, 'looking_for', true);
 
 
     } else {
@@ -464,7 +465,8 @@ global $access_granted, $access_debug;
                         </h5>
                         <ul class="px_28 font_14 justify-content-between d-flex mb-0 flex-wrap">
                             <li>
-                                <b class="d-block">Groom's Age:</b>
+                                <b class="d-block">Looking For:</b>
+                                <b class="d-block mt-2">Groom's Age:</b>
                                 <b class="d-block mt-2">Height:</b>
                                 <b class="d-block mt-2">Marital Status:</b>
                                 <b class="d-block mt-2">Mother Tongue:</b>
@@ -472,7 +474,8 @@ global $access_granted, $access_debug;
                                 <b class="d-block mt-2">Eating Habits:</b>
                             </li>
                             <li>
-                                <span class="d-block"><?php echo esc_html($partner_min_age); ?> -
+                                <span class="d-block"><?php echo esc_html($lookingfor); ?></span>
+                                <span class="d-block mt-2"><?php echo esc_html($partner_min_age); ?> -
                                     <?php echo esc_html($partner_max_age); ?> Yrs</span>
                                 <span class="d-block mt-2"><?php echo esc_html($partner_min_height); ?> -
                                     <?php echo esc_html($partner_max_height); ?></span>

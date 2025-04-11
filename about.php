@@ -15,7 +15,51 @@
 get_header(); 
 
 $phone = get_theme_mod('contact_phone', '+1 234 567 890');
-$email = get_theme_mod('contact_email', 'info@yourdomain.com');?>
+$email = get_theme_mod('contact_email', 'info@yourdomain.com');
+// Count all approved users
+$approved_users = count(get_users([
+    'meta_key' => 'approval_status',
+    'meta_value' => 'approved',
+    'number' => -1,
+]));
+
+// Count approved male users
+$approved_males = count(get_users([
+    'meta_query' => [
+        [
+            'key' => 'approval_status',
+            'value' => 'approved',
+            'compare' => '='
+        ],
+        [
+            'key' => 'user_gender',
+            'value' => 'Male',
+            'compare' => '='
+        ]
+    ],
+    'number' => -1,
+]));
+
+// Count approved female users
+$approved_females = count(get_users([
+    'meta_query' => [
+        [
+            'key' => 'approval_status',
+            'value' => 'approved',
+            'compare' => '='
+        ],
+        [
+            'key' => 'user_gender',
+            'value' => 'Female',
+            'compare' => '='
+        ]
+    ],
+    'number' => -1,
+]));
+
+// Count success stories (published)
+$success_stories = wp_count_posts('success_story')->publish;
+?>
 
 <section id="center" class="center_about pt-4 theme-bg">
    <div class="container-xl">
@@ -49,7 +93,7 @@ $email = get_theme_mod('contact_email', 'info@yourdomain.com');?>
 	  <div class="col">
 	    <div class="about_pg1_left shadow bg-white p-4 rounded-3 text-center hvr-grow  mx-2">
 		   <span class="theme-text-color fs-1 mb-3 d-block"><i class="bi bi-arrow-through-heart"></i></span>
-		   <b class="d-block fs-5">1200+ weddings</b>
+		   <b class="d-block fs-5"><?php echo $success_stories; ?>+ weddings</b>
 		   <p class="mb-0 mt-3">The most trusted wedding matrimony brand</p>
 		</div>  
 	  </div>
@@ -65,12 +109,13 @@ $email = get_theme_mod('contact_email', 'info@yourdomain.com');?>
 			</div>
 		 </div>
 	  </div>
+
 	  <div class="col">
 	     <div class="about_pg2_right">
 		   <h1 class="text-uppercase font_50">Welcome to</h1>
 		   <h2 class="theme-text-color text-uppercase">Wedding matrimony</h2>
 		   <p class="mt-4 mb-4">Best wedding matrimony It is a long established fact that a reader will be distracted by the readable content of a page when looking at its layout.</p>
-		   <span><a class="theme-text-color" href="#">Click here</a> to Start you matrimony service now.</span>
+		   <span><a class="theme-text-color" href="<?php echo esc_url(home_url('/search-user')); ?>">Click here</a> to Start you matrimony service now.</span>
 		   <p class="border-top mt-4 pt-4 mb-4">Nulla quis sem at nibh elementum imperdiet. Duis sagittis ipsum. Praesent mauris. Fusce nec tellus sed augue semper porta. Mauris massa.Vestibulum lacinia arcu eget nulla.Class aptent taciti sociosqu ad litora torquent per conubia nostra, per inceptos himenaeos. Curabitursodales ligula in libero. Sed dignissim lacinia nunc.</p>
 		    <ul class="mb-0 d-flex justify-content-between flex-wrap">
 			 <li class="d-flex">
@@ -91,60 +136,72 @@ $email = get_theme_mod('contact_email', 'info@yourdomain.com');?>
 		 </div>
 	  </div>
 	</div>
-	<div class="row row-cols-1 row-cols-md-4 row-cols-sm-2 about_pg3 mt-5 border-top border-bottom">
-		<div class="col">
-		   <div class="about_pg3_left border-end py-4 px-3">
-			   <ul class="mb-0 d-flex">
-			   <li class="d-flex">
-				<span class="d-inline-block text-center theme-bg text-white rounded-circle cont_icon me-3 fs-5"><i class="bi bi-heart"></i></span>
-				 <span class="flex-column lh-1">
-				  <b class="fs-1 d-block count" data-target="3000">0</b>
-				  <span class="d-block text-uppercase text-muted mt-2 font_13">COUPLES PARED</span>
-				 </span>
-			   </li>
-			  </ul>
-		   </div>
+
+	<?php
+
+?>
+		<div class="row row-cols-1 row-cols-md-4 row-cols-sm-2 about_pg3 mt-5 border-top border-bottom">
+			<div class="col">
+				<div class="about_pg3_left border-end py-4 px-3">
+					<ul class="mb-0 d-flex">
+						<li class="d-flex">
+							<span
+								class="d-inline-block text-center theme-bg text-white rounded-circle cont_icon me-3 fs-5"><i
+									class="bi bi-heart"></i></span>
+							<span class="flex-column lh-1">
+								<b class="fs-1 d-block count" data-target="<?php echo esc_attr($success_stories); ?>">0</b>
+								<span class="d-block text-uppercase text-muted mt-2 font_13">COUPLES PARED</span>
+							</span>
+						</li>
+					</ul>
+				</div>
+			</div>
+			<div class="col">
+				<div class="about_pg3_left border-end py-4 px-3">
+					<ul class="mb-0 d-flex">
+						<li class="d-flex">
+							<span
+								class="d-inline-block text-center theme-bg text-white rounded-circle cont_icon me-3 fs-5"><i
+									class="bi bi-people"></i></span>
+							<span class="flex-column lh-1">
+								<b class="fs-1 d-block count" data-target="<?php echo esc_attr($approved_users); ?>">0</b>
+								<span class="d-block text-uppercase text-muted mt-2 font_13">REGISTERED USERS</span>
+							</span>
+						</li>
+					</ul>
+				</div>
+			</div>
+			<div class="col">
+				<div class="about_pg3_left border-end py-4 px-3">
+					<ul class="mb-0 d-flex">
+						<li class="d-flex">
+							<span
+								class="d-inline-block text-center theme-bg text-white rounded-circle cont_icon me-3 fs-5"><i
+									class="bi bi-gender-male"></i></span>
+							<span class="flex-column lh-1">
+								<b class="fs-1 d-block count" data-target="<?php echo esc_attr($approved_males); ?>">0</b>
+								<span class="d-block text-uppercase text-muted mt-2 font_13">Mens</span>
+							</span>
+						</li>
+					</ul>
+				</div>
+			</div>
+			<div class="col">
+				<div class="about_pg3_left py-4 px-3">
+					<ul class="mb-0 d-flex">
+						<li class="d-flex">
+							<span
+								class="d-inline-block text-center theme-bg text-white rounded-circle cont_icon me-3 fs-5"><i
+									class="bi bi-gender-female"></i></span>
+							<span class="flex-column lh-1">
+								<b class="fs-1 d-block count" data-target="<?php echo esc_attr($approved_females); ?>">0</b>
+								<span class="d-block text-uppercase text-muted mt-2 font_13">WOMENS</span>
+							</span>
+						</li>
+					</ul>
+				</div>
+			</div>
 		</div>
-		<div class="col">
-		   <div class="about_pg3_left border-end py-4 px-3">
-			   <ul class="mb-0 d-flex">
-			   <li class="d-flex">
-				<span class="d-inline-block text-center theme-bg text-white rounded-circle cont_icon me-3 fs-5"><i class="bi bi-people"></i></span>
-				 <span class="flex-column lh-1">
-				  <b class="fs-1 d-block count" data-target="3000">0</b>
-				  <span class="d-block text-uppercase text-muted mt-2 font_13">REGISTERED USERS</span>
-				 </span>
-			   </li>
-			  </ul>
-		   </div>
-		</div>
-		<div class="col">
-		   <div class="about_pg3_left border-end py-4 px-3">
-			   <ul class="mb-0 d-flex">
-			   <li class="d-flex">
-				<span class="d-inline-block text-center theme-bg text-white rounded-circle cont_icon me-3 fs-5"><i class="bi bi-gender-male"></i></span>
-				 <span class="flex-column lh-1">
-				  <b class="fs-1 d-block count" data-target="1200">0</b>
-				  <span class="d-block text-uppercase text-muted mt-2 font_13">Mens</span>
-				 </span>
-			   </li>
-			  </ul>
-		   </div>
-		</div>
-		<div class="col">
-		   <div class="about_pg3_left py-4 px-3">
-			   <ul class="mb-0 d-flex">
-			   <li class="d-flex">
-				<span class="d-inline-block text-center theme-bg text-white rounded-circle cont_icon me-3 fs-5"><i class="bi bi-gender-female"></i></span>
-				 <span class="flex-column lh-1">
-				  <b class="fs-1 d-block count" data-target="1700">0</b>
-				  <span class="d-block text-uppercase text-muted mt-2 font_13">WOMENS</span>
-				 </span>
-			   </li>
-			  </ul>
-		   </div>
-		</div>
-	  </div>
    </div>
  </section>
  
@@ -318,86 +375,6 @@ $email = get_theme_mod('contact_email', 'info@yourdomain.com');?>
 	</div>
   </section>
  
- <section id="team" class="pb-5 pt-5">
-   <div class="container-xl">
-     <div class="testim_1 row text-center mb-4">
-	  <div class="col-md-12">
-	   <h2 class="text-uppercase">Meet  <span class="theme-text-color">Our Team</span></h2>
-	   <span class="text-uppercase">OUR PROFESSIONALS</span>
-	  </div>
-	 </div>
-	 <div class="row team_1 mx-3">
-   <div class="col-md-6">
-    <div class="team_1i">
-	   <div class="team_1i1 row">
-	    <div class="col-md-6 pe-0 col-sm-6">
-		 <div class="team_1i1l position-relative">
-		  <div class="team_1i1li">
-		    <a href="#"><img src="<?php echo get_template_directory_uri(); ?>/image/12.jpg" class="img-fluid" alt="abc"></a>
-		  </div>
-		  <div class="team_1i1li1 position-absolute w-100 h-100 bg_back top-0 text-center">
-		      <div class="top_1r">
-      <ul class="mb-0">
-		<li class="d-inline-block"><a class="bg-white d-block rounded-circle text-center theme-text-color" href="#"><i class="bi bi-facebook"></i></a>  </li>
-		<li class="d-inline-block"><a class="bg-white d-block rounded-circle text-center theme-text-color" href="#"><i class="bi bi-twitter"></i></a>  </li>
-		<li class="d-inline-block"><a class="bg-white d-block rounded-circle text-center theme-text-color" href="#"><i class="bi bi-linkedin"></i></a>  </li>
-		<li class="d-inline-block"><a class="bg-white d-block rounded-circle text-center theme-text-color" href="#"><i class="bi bi-instagram"></i></a>  </li>
-		<li class="d-inline-block"><a class="bg-white d-block rounded-circle text-center theme-text-color" href="#"><i class="bi bi-youtube"></i></a>  </li>
-	</ul>
-   </div>
-		  </div>
-		 </div>
-		</div>
-		<div class="col-md-6 ps-0 col-sm-6">
-		 <div class="team_1i1r bg_light  px-4">
-		  <h5>Lorem Quis</h5>
-		  <h6 class="font_14">Masters in Website</h6>
-		  <hr class="line">
-		  <h6 class="font_14"><span class="fw-bold">Qualification:</span> Bsc., BEd., Phd</h6>
-		  <h6 class="font_14 mb-0 mt-2"><span class="fw-bold">Experience:</span> 16 Years</h6>
-		  <p class="mb-0 mt-3">Lorem ipsum dolor sit amet, consectetur adipiscing elit. Integer nec odio. Praesent libero.</p>
-		 </div>
-		</div>
-	   </div>
-	</div>
-   </div>
-   <div class="col-md-6">
-    <div class="team_1i">
-	   <div class="team_1i1 row">
-	    <div class="col-md-6 pe-0 col-sm-6">
-		 <div class="team_1i1l position-relative">
-		  <div class="team_1i1li">
-		    <a href="#"><img src="<?php echo get_template_directory_uri(); ?>/image/13.jpg" class="img-fluid" alt="abc"></a>
-		  </div>
-		  <div class="team_1i1li1 position-absolute w-100 h-100 bg_back top-0 text-center">
-		      <div class="top_1r">
-      <ul class="mb-0">
-		<li class="d-inline-block"><a class="bg-white d-block rounded-circle text-center theme-text-color" href="#"><i class="bi bi-facebook"></i></a>  </li>
-		<li class="d-inline-block"><a class="bg-white d-block rounded-circle text-center theme-text-color" href="#"><i class="bi bi-twitter"></i></a>  </li>
-		<li class="d-inline-block"><a class="bg-white d-block rounded-circle text-center theme-text-color" href="#"><i class="bi bi-linkedin"></i></a>  </li>
-		<li class="d-inline-block"><a class="bg-white d-block rounded-circle text-center theme-text-color" href="#"><i class="bi bi-instagram"></i></a>  </li>
-		<li class="d-inline-block"><a class="bg-white d-block rounded-circle text-center theme-text-color" href="#"><i class="bi bi-youtube"></i></a>  </li>
-	</ul>
-   </div>
-		  </div>
-		 </div>
-		</div>
-		<div class="col-md-6 ps-0 col-sm-6">
-		 <div class="team_1i1r bg_light  px-4">
-		  <h5>Semper Amet</h5>
-		  <h6 class="font_14">Manager</h6>
-		  <hr class="line">
-		  <h6 class="font_14"><span class="fw-bold">Qualification:</span> Bba., BEd., Phd</h6>
-		  <h6 class="font_14 mb-0 mt-2"><span class="fw-bold">Experience:</span> 18 Years</h6>
-		  <p class="mb-0 mt-3">Lorem ipsum dolor sit amet, consectetur adipiscing elit. Integer nec odio. Praesent libero.</p>
-		 </div>
-		</div>
-	   </div>
-	</div>
-   </div>
- </div>
-   </div>
- </section>
  
  <section id="faq" class="pb-5 pt-5 bg_light">
    <div class="container-xl">

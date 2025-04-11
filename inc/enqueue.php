@@ -225,3 +225,12 @@ wp_localize_script('handle-interest', 'interest_ajax', [
     'nonce'    => wp_create_nonce('interest_nonce')
 ]);
 });
+
+function kuki_enqueue_gallery_assets() {
+    // Lightbox2 CSS
+    wp_enqueue_style('lightbox2', 'https://cdnjs.cloudflare.com/ajax/libs/lightbox2/2.11.3/css/lightbox.min.css', [], '2.11.3');
+
+    // Lightbox2 JS
+    wp_enqueue_script('lightbox2', 'https://cdnjs.cloudflare.com/ajax/libs/lightbox2/2.11.3/js/lightbox.min.js', ['jquery'], '2.11.3', true);
+}
+add_action('wp_enqueue_scripts', 'kuki_enqueue_gallery_assets');

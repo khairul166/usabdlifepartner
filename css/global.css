@@ -1788,3 +1788,25 @@ Licence: <a href="https://www.templateonweb.com/license">Website Template Licenc
     transition: transform 1s ease;
 }
 
+.gallery-masonry {
+	column-count: 3;
+	column-gap: 1.5rem;
+  }
+  
+  .masonry-item {
+	break-inside: avoid;
+	margin-bottom: 1.5rem;
+  }
+  
+  @media (max-width: 992px) {
+	.gallery-masonry {
+	  column-count: 2;
+	}
+  }
+  
+  @media (max-width: 576px) {
+	.gallery-masonry {
+	  column-count: 1;
+	}
+  }
+  

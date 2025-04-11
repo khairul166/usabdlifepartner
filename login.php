@@ -79,12 +79,12 @@ get_header();
                     </div>
                 </form>
                             				 <!-- Or Sign Up Using Section -->
-				 <div class="text-center mt-4">
+				 <!-- <div class="text-center mt-4">
 					<span class="text-muted">Or Sign Up Using</span>
-				 </div>
+				 </div> -->
 	 
 				<!-- Social Login Buttons -->
-				<div class="row mt-3 justify-content-center">
+				<!-- <div class="row mt-3 justify-content-center">
 					<div class="col-auto text-center">
 					<a href="#" class="btn btn-circle btn-outline-danger">
 						<i class="bi bi-google"></i>
@@ -100,7 +100,7 @@ get_header();
 							<i class="bi bi-linkedin"></i>
 						</a>
 						</div>
-				</div>
+				</div> -->
             <?php } ?>
 
         </div>

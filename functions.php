@@ -9,6 +9,8 @@ require_once get_template_directory() . '/inc/widget.php';
 require_once get_template_directory() . '/inc/theme_settings.php';
 require_once get_template_directory() . '/inc/admin-controls.php';
 require_once get_template_directory() . '/inc/kirki-master/kirki.php';
+require_once get_template_directory() . '/inc/codestar-framework/cs-framework.php';
+
 
 // Include Custom Widgets
 require get_template_directory() . '/inc/custom-widgets.php';
@@ -43,6 +45,17 @@ function theme_customizer_settings($wp_customize)
         'label' => __('Email Address', 'yourtheme'),
         'section' => 'contact_info_section',
         'type' => 'email',
+    ));
+    // Address
+    $wp_customize->add_setting('contact_address', array(
+        'default' => ' ',
+        'sanitize_callback' => 'sanitize_text_field',
+    ));
+
+    $wp_customize->add_control('contact_address', array(
+        'label' => __('Address', 'yourtheme'),
+        'section' => 'contact_info_section',
+        'type' => 'text',
     ));
 
     // Add Section for Social Media
@@ -682,62 +695,7 @@ add_filter('retrieve_password_message', 'custom_password_reset_email', 10, 4);
 
 
 
-if (class_exists('Kirki')) {
 
-    Kirki::add_config('your_theme_config', array(
-        'capability'    => 'edit_theme_options',
-        'option_type'   => 'theme_mod',
-    ));
-
-    // Section: Theme Colors
-    Kirki::add_section('theme_colors', array(
-        'title'       => __('Theme Colors', 'your-theme-textdomain'),
-        'priority'    => 20,
-    ));
-
-    Kirki::add_field('your_theme_config', [
-        'type'        => 'color',
-        'settings'    => 'primary_color',
-        'label'       => __('Primary Color', 'your-theme-textdomain'),
-        'section'     => 'theme_colors',
-        'default'     => '#ff0000',
-        'transport'   => 'refresh',
-    ]);
-
-    // Section: Logo & Branding
-    Kirki::add_section('theme_logo', array(
-        'title'       => __('Logo & Branding', 'your-theme-textdomain'),
-        'priority'    => 10,
-    ));
-
-    Kirki::add_field('your_theme_config', [
-        'type'        => 'image',
-        'settings'    => 'site_logo',
-        'label'       => __('Upload Logo', 'your-theme-textdomain'),
-        'section'     => 'theme_logo',
-        'default'     => '',
-        'transport'   => 'refresh',
-    ]);
-
-    // Section: Layout Options
-    Kirki::add_section('layout_options', array(
-        'title'       => __('Layout Options', 'your-theme-textdomain'),
-        'priority'    => 30,
-    ));
-
-    Kirki::add_field('your_theme_config', [
-        'type'        => 'radio-buttonset',
-        'settings'    => 'sidebar_position',
-        'label'       => __('Sidebar Position', 'your-theme-textdomain'),
-        'section'     => 'layout_options',
-        'default'     => 'right',
-        'choices'     => [
-            'left'  => __('Left', 'your-theme-textdomain'),
-            'right' => __('Right', 'your-theme-textdomain'),
-            'none'  => __('No Sidebar', 'your-theme-textdomain'),
-        ],
-    ]);
-}
 
 
 // Dynamic Tab Pane Section for Profile Browsing
@@ -1117,5 +1075,7 @@ function check_interest_access_status() {
 
     $access_granted = ($sent_accepted || $received_accepted);
 }
+
+
 
 

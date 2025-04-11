@@ -511,12 +511,12 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST' && isset($_POST['register'])) {
                 </div>
 
                 <!-- Or Sign Up Using Section -->
-                <div class="text-center mt-4">
+                <!-- <div class="text-center mt-4">
                     <span class="text-muted">Or Sign Up Using</span>
-                </div>
+                </div> -->
 
                 <!-- Social Login Buttons -->
-                <div class="row mt-3 justify-content-center">
+                <!-- <div class="row mt-3 justify-content-center">
                     <div class="col-auto text-center">
                         <a href="#" class="btn btn-circle btn-outline-danger">
                             <i class="bi bi-google"></i>
@@ -532,7 +532,7 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST' && isset($_POST['register'])) {
                             <i class="bi bi-linkedin"></i>
                         </a>
                     </div>
-                </div>
+                </div> -->
             </div>
         </div>
     </div>

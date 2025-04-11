@@ -12,9 +12,14 @@
  * Template Name: Contact Us
  */
 
-get_header(); ?>
+get_header(); 
 
-<section id="center" class="center_about pt-4 bg-danger">
+$phone = get_theme_mod('contact_phone', '+1 234 567 890');
+$email = get_theme_mod('contact_email', 'info@yourdomain.com');
+$address = get_theme_mod('contact_address', '2548 Heverly United States');
+					?>
+
+<section id="center" class="center_about pt-4 theme-bg">
    <div class="container-xl">
     <div class="row center_price1 text-center">
 	  <div class="col-md-12">
@@ -36,15 +41,15 @@ get_header(); ?>
 		   <ul class="mb-0">
 		    <li class="d-flex">
 			  <span class="d-inline-block text-center bg_blue text-white rounded-circle cont_icon me-3"><i class="bi bi-telephone"></i></span>
-			   <span class="d-block text-muted mt-2">+01 1234 5678</span>
+			   <span class="d-block text-muted mt-2"><?php echo $phone; ?></span>
 			 </li>
 			 <li class="d-flex mt-2">
 			  <span class="d-inline-block text-center bg_blue text-white rounded-circle cont_icon me-3"><i class="bi bi-envelope"></i></span>
-			   <span class="d-block text-muted mt-2">info@gmaul.com</span>
+			   <span class="d-block text-muted mt-2"><?php echo $email; ?></span>
 			 </li>
 			 <li class="d-flex mt-2">
 			  <span class="d-inline-block text-center bg_blue text-white rounded-circle cont_icon me-3"><i class="bi bi-map"></i></span>
-			   <span class="d-block text-muted mt-2">2548 Heverly  United States.</span>
+			   <span class="d-block text-muted mt-2"><?php echo $address; ?></span>
 			 </li>
 		   </ul>
 		</div>  
@@ -72,7 +77,7 @@ get_header(); ?>
 		 <h1 class="mb-4">Now
 <span class="font_50">Contact to us</span>
 Easy and fast.</h1>
-      <a href="#"><img src="<?php echo get_template_directory_uri(); ?>/image/41.jpg" class="img-fluid rounded-circle" alt="abc"></a>
+      <a href="#"><img src="<?php echo get_template_directory_uri(); ?>/image/3.jpg" class="img-fluid rounded-circle" alt="abc"></a>
 	  <p class="mb-0 mt-4">Integer non nisl elit in ac tempor ante, eget iaculis augue. Nuncekon dolor mi, accumsan quis ante id, eleifend suscipit purus. Praesent augue eros, consectetur eu eleifend inno, eget condimentum auctor</p>
 		</div>
 	  </div>
@@ -87,7 +92,7 @@ Easy and fast.</h1>
 	</div>
 	<div class="row contact_3 mt-5">
     <div class="col-md-12">
-	  <iframe src="https://www.google.com/maps/embed?pb=!1m18!1m12!1m3!1d114964.53925916665!2d-80.29949920266738!3d25.782390733064336!2m3!1f0!2f0!3f0!3m2!1i1024!2i768!4f13.1!3m3!1m2!1s0x88d9b0a20ec8c111%3A0xff96f271ddad4f65!2sMiami%2C+FL%2C+USA!5e0!3m2!1sen!2sin!4v1530774403788" height="450" style="border:0; width:100%;" allowfullscreen=""></iframe>
+	  <iframe src="https://www.google.com/maps/embed?pb=!1m18!1m12!1m3!1d8355.952359412026!2d-85.62209517704407!3d42.22993140046881!2m3!1f0!2f0!3f0!3m2!1i1024!2i768!4f13.1!3m3!1m2!1s0x881775e032936199%3A0x7209273f1339b392!2s2548%20Heverly%20Dr%20E%2C%20Portage%2C%20MI%2049024%2C%20USA!5e0!3m2!1sen!2sbd!4v1744303801416!5m2!1sen!2sbd" height="450" style="border:0; width:100%;" allowfullscreen=""></iframe>
 	</div>
    </div>
    </div>
