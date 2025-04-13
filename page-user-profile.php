@@ -248,6 +248,21 @@ if ($user_id) {
                                                                 <i class="bi bi-heart me-1 align-middle"></i> Send Interest
                                                             </button>
                                                         </div>
+                                                        <?php
+                                                            global $wpdb;
+                                                            
+                                                            $is_shortlisted = $wpdb->get_var(
+                                                            $wpdb->prepare(
+                                                                "SELECT COUNT(*) FROM {$wpdb->prefix}user_shortlists WHERE user_id = %d AND shortlisted_user_id = %d",
+                                                                $current_user, $profile_id
+                                                            )
+                                                            );
+                                                            ?>
+                                                        <div class="shortlist mt-2">
+                                                        <button class="shortlist-btn px-5 py-2 theme-btn" data-userid="<?php echo $user_id; ?>"><?php echo $is_shortlisted ? 'Remove Shortlist' : 'Shortlist'; ?> </button>
+                                                        </div>
+                                                        
+
 
                                                     <?php endif; ?>
                                                 <?php endif; ?>

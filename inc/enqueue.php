@@ -234,3 +234,12 @@ function kuki_enqueue_gallery_assets() {
     wp_enqueue_script('lightbox2', 'https://cdnjs.cloudflare.com/ajax/libs/lightbox2/2.11.3/js/lightbox.min.js', ['jquery'], '2.11.3', true);
 }
 add_action('wp_enqueue_scripts', 'kuki_enqueue_gallery_assets');
+
+
+function enqueue_shortlist_script() {
+    wp_enqueue_script('shortlist-js', get_template_directory_uri() . '/js/shortlist.js', ['jquery'], null, true);
+    wp_localize_script('shortlist-js', 'my_ajax_object', [
+        'ajax_url' => admin_url('admin-ajax.php')
+    ]);
+}
+add_action('wp_enqueue_scripts', 'enqueue_shortlist_script');

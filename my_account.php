@@ -1,4 +1,5 @@
 <?php
+
 /**
  * The main template file
  *
@@ -654,646 +655,690 @@ get_header();
 
 
                     <div class="mt-4">
-                        <nav>
-                            <div class="nav nav-tabs nav-fill" id="nav-tab" role="tablist">
-                                <a class="nav-item nav-link active" id="nav-home-tab" data-toggle="tab" href="#nav-home"
-                                    role="tab" aria-controls="nav-home" aria-selected="true">Basic
-                                    Detals</a>
-                                <a class="nav-item nav-link" id="nav-profile-tab" data-toggle="tab" href="#nav-profile"
-                                    role="tab" aria-controls="nav-profile" aria-selected="false">Settings</a>
-                                <a class="nav-item nav-link" id="nav-interest-tab" data-toggle="tab"
-                                    href="#received-interests" role="tab" aria-controls="received-interests"
-                                    aria-selected="false">Interests</a>
-                            </div>
-                        </nav>
-                        <div class="tab-content py-3 px-3 px-sm-0" id="nav-tabContent">
-                            <div class="tab-pane fade show active" id="nav-home" role="tabpanel"
-                                aria-labelledby="nav-home-tab">
-                                <div class="list_dt2 mt-4 p-3 shadow">
-
-                                    <h3>Personal Information</h3>
-                                    <hr class="line mb-4">
-                                    <h5 class="mb-3">
-                                        <i class="bi bi-gender-female theme-text-color me-1 align-middle"></i>
-                                        About
-                                        <button class="btn btn-sm float-end edit-btn" data-bs-toggle="modal"
-                                            data-bs-target="<?php
-                                            if ($email_verified == true && $user_status == 'approved') {
-                                                echo '#aboutmodal';
-                                            } else {
-                                                echo '#verifyEmailModal';
-                                            }
-                                            ?>">
-                                            <i class="bi bi-pencil-square"></i>
-                                        </button>
-
-                                    </h5>
-                                    <p class="px_28 mb-0"><?php echo esc_html($about_yourself); ?></p>
-
-
-                                    <h5 class="mb-3 mt-4">
-                                        <i class="bi bi-person theme-text-color me-1 align-middle"></i>
-                                        Basic Details
-                                        <button class="btn btn-sm float-end edit-btn" data-bs-toggle="modal"
-                                            data-bs-target="<?php if ($email_verified == true && $user_status == 'approved') {
-                                                echo "#basicdetailsmodal";
-                                            } else {
-                                                echo '#verifyEmailModal';
-                                            } ?>">
-                                            <i class="bi bi-pencil-square"></i>
-                                        </button>
-                                        <!-- <button class="btn btn-sm float-end edit-btn" data-bs-toggle="modal"
-                                            data-bs-target="#basicdetailsmodal">
-                                            <i class="bi bi-pencil-square"></i>
-                                        </button> -->
-                                    </h5>
-                                    <ul class="px_28 font_14 justify-content-between d-flex mb-0 flex-wrap">
-                                        <li>
-                                            <b class="d-block">Name:</b>
-                                            <b class="d-block mt-2">Age:</b>
-                                            <b class="d-block mt-2">Height:</b>
-                                            <b class="d-block mt-2">Weight:</b>
-                                            <b class="d-block mt-2">Mother Tongue:</b>
-                                            <b class="d-block mt-2">Marital Status:</b>
-                                            <b class="d-block mt-2">Gender:</b>
-                                        </li>
-                                        <li>
-                                            <span
-                                                class="d-block"><?php echo esc_html($first_name . ' ' . $last_name); ?></span>
-                                            <span class="d-block mt-2"><?php echo esc_html($age); ?> Yrs</span>
-                                            <span class="d-block mt-2"><?php echo esc_html($height); ?> Inch</span>
-                                            <span class="d-block mt-2"><?php echo esc_html($weight); ?> Kg</span>
-                                            <span class="d-block mt-2"><?php echo esc_html($mother_tongue); ?></span>
-                                            <span class="d-block mt-2"><?php echo esc_html($marital_status); ?></span>
-                                            <span class="d-block mt-2"><?php echo esc_html($user_gender); ?></span>
-                                        </li>
-                                        <li>
-                                            <b class="d-block">Body Type:</b>
-                                            <b class="d-block mt-2">Complexion:</b>
-                                            <b class="d-block mt-2">Physical Status:</b>
-                                            <b class="d-block mt-2">Eating Habits:</b>
-                                            <b class="d-block mt-2">Drinking Habits:</b>
-                                            <b class="d-block mt-2">Smoking Habits:</b>
-                                        </li>
-                                        <li>
-                                            <span class="d-block"><?php echo esc_html($body_type); ?></span>
-                                            <span class="d-block mt-2"><?php echo esc_html($complexion); ?></span>
-                                            <span class="d-block mt-2"><?php echo esc_html($physical_status); ?></span>
-                                            <span class="d-block mt-2"><?php echo esc_html($eating_habits); ?></span>
-                                            <span class="d-block mt-2"><?php echo esc_html($drinking_habits); ?></span>
-                                            <span class="d-block mt-2"><?php echo esc_html($smoking_habits); ?></span>
-                                        </li>
-                                    </ul>
-                                    <div class="row row-cols-1 row-cols-md-2 list_dt2_inner">
-                                        <div class="col">
-                                            <div class="list_dt2_inner_left">
-                                                <h5 class="mb-3 mt-4">
-                                                    <i class="bi bi-phone theme-text-color me-1 align-middle"></i>
-                                                    Contact Details
-                                                    <button class="btn btn-sm float-end edit-btn" data-bs-toggle="modal"
-                                                        data-bs-target="<?php if ($email_verified == true && $user_status == 'approved') {
-                                                            echo "#contactdetailsmodal";
-                                                        } else {
-                                                            echo '#verifyEmailModal';
-                                                        } ?>">
-                                                        <i class="bi bi-pencil-square"></i>
-                                                    </button>
-                                                    <!-- <button class="btn btn-sm float-end edit-btn" data-bs-toggle="modal"
-                                                        data-bs-target="#contactdetailsmodal">
-                                                        <i class="bi bi-pencil-square"></i>
-                                                    </button> -->
-                                                </h5>
-                                                <ul class="px_28 font_14 mb-0">
-                                                    <li class="d-flex">
-                                                        <b class="me-2">Your Contact Number:</b>
-                                                        <span><?php echo esc_html($candidate_country_code . ' ' . $candidate_phone); ?></span>
-                                                    </li>
-                                                    <li class="d-flex mt-2">
-                                                        <b class="me-2">Parent Contact Number:</b>
-                                                        <span><?php echo esc_html($parent_country_code . ' ' . $parent_phone); ?></span>
-                                                    </li>
-
-                                                    <li class="d-flex mt-2">
-                                                        <b class="me-2">Email:</b>
-                                                        <span>
-                                                            <?php
-                                                            if ($email_verified == true) {
-                                                                echo esc_html($email) . ' <i class="fas fa-check-circle text-primary"></i>';
-                                                            } else {
-                                                                echo esc_html($email);
-                                                            }
-                                                            ?>
-                                                        </span>
-                                                    </li>
-                                                </ul>
-                                            </div>
-                                        </div>
-                                        <div class="col">
-                                            <div class="list_dt2_inner_left">
-                                                <h5 class="mb-3 mt-4">
-                                                    <i class="bi bi-book theme-text-color me-1 align-middle"></i>
-                                                    Religion Information
-                                                    <button class="btn btn-sm float-end edit-btn" data-bs-toggle="modal"
-                                                        data-bs-target="<?php if ($email_verified == true && $user_status == 'approved') {
-                                                            echo "#userreligiondetailsmodal";
-                                                        } else {
-                                                            echo '#verifyEmailModal';
-                                                        } ?>">
-                                                        <i class="bi bi-pencil-square"></i>
-                                                    </button>
-                                                    <!-- <button class="btn btn-sm float-end edit-btn" data-bs-toggle="modal"
-                                                        data-bs-target="#userreligiondetailsmodal">
-                                                        <i class="bi bi-pencil-square"></i>
-                                                    </button> -->
-                                                </h5>
-                                                <ul class="px_28 font_14 mb-0">
-                                                    <li class="d-flex">
-                                                        <b class="me-2">Religion:</b>
-                                                        <span><?php echo esc_html($religion); ?></span>
-                                                    </li>
-                                                </ul>
-                                            </div>
-                                        </div>
-                                    </div>
-                                    <h5 class="mb-3 mt-4"><i class="bi bi-map theme-text-color me-1 align-middle"></i>
-                                        Location</h5>
-                                    <?php
-                                    if ($country == "Bangladesh") {
-                                        ?>
-                                        <ul class="px_28 font_14 mb-0">
-                                            <li class="d-flex"><b class="me-2"> Country:</b>
-                                                <span><?php echo $country; ?></span>
-                                            </li>
-                                            <li class="d-flex mt-2"><b class="me-2"> Division:</b>
-                                                <span><?php echo $division; ?></span>
-                                            </li>
-                                            <li class="d-flex mt-2"><b class="me-2"> District:</b>
-                                                <span><?php echo $district; ?></span>
-                                            </li>
-                                            <li class="d-flex mt-2"><b class="me-2"> Thana:</b>
-                                                <span><?php echo $upazila; ?></span>
-                                            </li>
-                                            <li class="d-flex mt-2"><b class="me-2"> Village:</b>
-                                                <span><?php echo $village; ?></span>
-                                            </li>
-                                            <li class="d-flex mt-2"><b class="me-2"> Landmark:</b>
-                                                <span><?php echo $landmark; ?></span>
-                                            </li>
-                                        </ul>
-                                        <?php
-                                    } else {
-                                        ?>
-                                        <ul class="px_28 font_14 mb-0">
-                                            <li class="d-flex"><b class="me-2"> Country:</b>
-                                                <span><?php echo $country; ?></span>
-                                            </li>
-                                            <li class="d-flex mt-2"><b class="me-2"> State:</b> <span>
-                                                    <?php echo esc_html($state); ?></span></li>
-                                            <li class="d-flex mt-2"><b class="me-2"> Citizenship:</b>
-                                                <span><?php echo esc_html($city); ?></span>
-                                            </li>
-                                            <li class="d-flex mt-2"><b class="me-2"> City:</b>
-                                                <span><?php echo esc_html($usaLandmark); ?></span>
-                                            </li>
-                                        </ul>
-                                        <?php
-                                    }
-                                    ?>
-
-                                    <div class="row row-cols-1 row-cols-md-2 list_dt2_inner">
-                                        <div class="col">
-                                            <div class="list_dt2_inner_left">
-                                                <h5 class="mb-3 mt-4">
-                                                    <i class="bi bi-person theme-text-color me-1 align-middle"></i>
-                                                    Professional Information
-                                                    <button class="btn btn-sm float-end edit-btn" data-bs-toggle="modal"
-                                                        data-bs-target="<?php if ($email_verified == true && $user_status == 'approved') {
-                                                            echo "#professionaldetailsmodal";
-                                                        } else {
-                                                            echo '#verifyEmailModal';
-                                                        } ?>">
-                                                        <i class="bi bi-pencil-square"></i>
-                                                    </button>
-                                                    <!-- <button class="btn btn-sm float-end edit-btn" data-bs-toggle="modal"
-                                                        data-bs-target="#professionaldetailsmodal">
-                                                        <i class="bi bi-pencil-square"></i>
-                                                    </button> -->
-                                                </h5>
-                                                <ul class="px_28 font_14 mb-0">
-                                                    <li class="d-flex">
-                                                        <b class="me-2">Education:</b>
-                                                        <span><?php echo esc_html($education); ?></span>
-                                                    </li>
-                                                    <li class="d-flex mt-2">
-                                                        <b class="me-2">Education in Detail:</b>
-                                                        <span><?php echo esc_html($education_detail); ?></span>
-                                                    </li>
-                                                    <li class="d-flex mt-2">
-                                                        <b class="me-2">Employed in:</b>
-                                                        <span><?php echo esc_html($employed_in); ?></span>
-                                                    </li>
-                                                    <li class="d-flex mt-2">
-                                                        <b class="me-2">profession:</b>
-                                                        <span><?php echo esc_html($profession); ?></span>
-                                                    </li>
-                                                    <li class="d-flex mt-2">
-                                                        <b class="me-2">profession in Detail:</b>
-                                                        <span><?php echo esc_html($profession_detail); ?></span>
-                                                    </li>
-                                                    <li class="d-flex mt-2">
-                                                        <b class="me-2">Annual Income:</b>
-                                                        <span><?php echo esc_html($annual_income); ?></span>
-                                                    </li>
-                                                </ul>
-                                            </div>
-                                        </div>
-                                        <div class="col">
-                                            <div class="list_dt2_inner_left">
-                                                <h5 class="mb-3 mt-4">
-                                                    <i
-                                                        class="bi bi-life-preserver theme-text-color me-1 align-middle"></i>
-                                                    Astro Details
-                                                    <button class="btn btn-sm float-end edit-btn" data-bs-toggle="modal"
-                                                        data-bs-target="<?php if ($email_verified == true && $user_status == 'approved') {
-                                                            echo "#astrodetailsmodal";
-                                                        } else {
-                                                            echo '#verifyEmailModal';
-                                                        } ?>">
-                                                        <i class="bi bi-pencil-square"></i>
-                                                    </button>
-                                                    <!-- <button class="btn btn-sm float-end edit-btn" data-bs-toggle="modal"
-                                                        data-bs-target="#astrodetailsmodal">
-                                                        <i class="bi bi-pencil-square"></i>
-                                                    </button> -->
-                                                </h5>
-                                                <ul class="px_28 font_14 mb-0">
-                                                    <li class="d-flex">
-                                                        <b class="me-2">Date of Birth:</b>
-                                                        <span><?php echo esc_html($dob); ?></span>
-                                                    </li>
-                                                    <li class="d-flex mt-2">
-                                                        <b class="me-2">Place of Birth:</b>
-                                                        <span><?php echo esc_html($place_of_birth); ?></span>
-                                                    </li>
-                                                </ul>
-                                            </div>
-                                        </div>
-                                        <div class="col">
-                                            <div class="list_dt2_inner_left">
-                                                <h5 class="mb-3 mt-4">
-                                                    <i
-                                                        class="bi bi-life-preserver theme-text-color me-1 align-middle"></i>
-                                                    Linked Account
-                                                    <button class="btn btn-sm float-end edit-btn" data-bs-toggle="modal"
-                                                        data-bs-target="<?php if ($email_verified == true && $user_status == 'approved') {
-                                                            echo "#socialaccounts";
-                                                        } else {
-                                                            echo '#verifyEmailModal';
-                                                        } ?>">
-                                                        <i class="bi bi-pencil-square"></i>
-                                                    </button>
-                                                    <!-- <button class="btn btn-sm float-end edit-btn" data-bs-toggle="modal"
-                                                        data-bs-target="#socialaccounts">
-                                                        <i class="bi bi-pencil-square"></i>
-                                                    </button> -->
-                                                </h5>
-                                                <ul class="px_28 font_14 mb-0">
-                                                    <li class="d-flex">
-                                                        <b class="me-2">Facebook:</b>
-                                                        <span><?php echo esc_html($facebook); ?></span>
-                                                    </li>
-                                                    <li class="d-flex mt-2">
-                                                        <b class="me-2">Instagram:</b>
-                                                        <span><?php echo esc_html($instagram); ?></span>
-                                                    </li>
-                                                    <li class="d-flex mt-2">
-                                                        <b class="me-2">LinkedIn:</b>
-                                                        <span><?php echo esc_html($linkedin); ?></span>
-                                                    </li>
-                                                    <li class="d-flex mt-2">
-                                                        <b class="me-2">X:</b>
-                                                        <span><?php echo esc_html($x); ?></span>
-                                                    </li>
-                                                </ul>
-                                            </div>
-                                        </div>
-                                    </div>
-
-
-
-
-                                </div>
-                                <div class="list_dt2 mt-4 p-3 shadow">
-                                    <h3>Partner Preferences</h3>
-                                    <hr class="line mb-4">
-                                    <h5 class="mb-3">
-                                        <i class="bi bi-gender-male theme-text-color me-1 align-middle"></i>
-                                        About Partner
-
-                                        <button class="btn btn-sm float-end edit-btn" data-bs-toggle="modal"
-                                            data-bs-target="<?php if ($email_verified == true && $user_status == 'approved') {
-                                                echo "#about_partner_modal";
-                                            } else {
-                                                echo '#verifyEmailModal';
-                                            } ?>">
-                                            <i class="bi bi-pencil-square"></i>
-                                        </button>
-                                    </h5>
-                                    <p class="px_28 mb-0"><?php echo esc_html($about_partner); ?></p>
-                                    <h5 class="mb-3 mt-4"><i
-                                            class="bi bi-person theme-text-color me-1 align-middle"></i>
-                                        Basic
-                                        Preferences <button class="btn btn-sm float-end edit-btn" data-bs-toggle="modal"
-                                            data-bs-target="<?php if ($email_verified == true && $user_status == 'approved') {
-                                                echo "#partner_basic_modal";
-                                            } else {
-                                                echo '#verifyEmailModal';
-                                            } ?>"><i class="bi bi-pencil-square"></i></button>
-                                    </h5>
-                                    <ul class="px_28 font_14 justify-content-between d-flex mb-0 flex-wrap">
-                                        <li>
-                                            <b class="d-block">Groom's Age:</b>
-                                            <b class="d-block mt-2">Height:</b>
-                                            <b class="d-block mt-2">Marital Status:</b>
-                                            <b class="d-block mt-2">Mother Tongue:</b>
-                                            <b class="d-block mt-2">Physical Status:</b>
-                                            <b class="d-block mt-2">Eating Habits:</b>
-                                        </li>
-                                        <li>
-                                            <span class="d-block"><?php echo esc_html($partner_min_age); ?> -
-                                                <?php echo esc_html($partner_max_age); ?> Yrs</span>
-                                            <span class="d-block mt-2"><?php echo esc_html($partner_min_height); ?> -
-                                                <?php echo esc_html($partner_max_height); ?></span>
-                                            <span
-                                                class="d-block mt-2"><?php echo esc_html($partner_marital_status); ?></span>
-                                            <span
-                                                class="d-block mt-2"><?php echo esc_html($partner_mother_tongue); ?></span>
-                                            <span
-                                                class="d-block mt-2"><?php echo esc_html($partner_physical_status); ?></span>
-                                            <span
-                                                class="d-block mt-2"><?php echo esc_html($partner_eating_habits); ?></span>
-                                        </li>
-                                        <li>
-                                            <b class="d-block">Smoking Habits:</b>
-                                            <b class="d-block mt-2">Drinking Habits:</b>
-                                        </li>
-                                        <li>
-                                            <span
-                                                class="d-block"><?php echo esc_html($partner_smoking_habits); ?></span>
-                                            <span
-                                                class="d-block mt-2"><?php echo esc_html($partner_drinking_habits); ?></span>
-                                        </li>
-                                    </ul>
-                                    <div class="row row-cols-1 row-cols-md-2 list_dt2_inner">
-                                        <div class="col">
-                                            <div class="list_dt2_inner_left">
-                                                <h5 class="mb-3 mt-4">
-                                                    <i class="bi bi-person theme-text-color me-1 align-middle"></i>
-                                                    Professional Preferences
-                                                    <button class="btn btn-sm float-end edit-btn" data-bs-toggle="modal"
-                                                        data-bs-target="<?php if ($email_verified == true && $user_status == 'approved') {
-                                                            echo "#partner_professional_modal";
-                                                        } else {
-                                                            echo '#verifyEmailModal';
-                                                        } ?>">
-                                                        <i class="bi bi-pencil-square"></i>
-                                                    </button>
-                                                </h5>
-                                                <ul class="px_28 font_14 mb-0">
-                                                    <li class="d-flex">
-                                                        <b class="me-2">Education:</b>
-                                                        <span><?php echo esc_html($partner_education); ?></span>
-                                                    </li>
-                                                    <li class="d-flex mt-2">
-                                                        <b class="me-2">profession:</b>
-                                                        <span><?php echo esc_html($partner_profession); ?></span>
-                                                    </li>
-                                                    <li class="d-flex mt-2">
-                                                        <b class="me-2">Annual Income:</b>
-                                                        <span><?php echo esc_html($partner_annual_income); ?></span>
-                                                    </li>
-                                                </ul>
-                                            </div>
-                                        </div>
-                                        <div class="col">
-                                            <div class="list_dt2_inner_left">
-                                                <h5 class="mb-3 mt-4">
-                                                    <i class="bi bi-book theme-text-color me-1 align-middle"></i>
-                                                    Religious Preferences
-                                                    <button class="btn btn-sm float-end edit-btn" data-bs-toggle="modal"
-                                                        data-bs-target="<?php if ($email_verified == true && $user_status == 'approved') {
-                                                            echo "#partnerreligiondetailsmodal";
-                                                        } else {
-                                                            echo '#verifyEmailModal';
-                                                        } ?>">
-                                                        <i class="bi bi-pencil-square"></i>
-                                                    </button>
-                                                </h5>
-                                                <ul class="px_28 font_14 mb-0">
-                                                    <li class="d-flex">
-                                                        <b class="me-2">Religion:</b>
-                                                        <span><?php echo esc_html($partner_religion); ?></span>
-                                                    </li>
-                                                </ul>
-                                            </div>
-                                        </div>
-                                    </div>
-                                    <h5 class="mb-3 mt-4"><i class="bi bi-map theme-text-color me-1 align-middle"></i>
-                                        Location
-                                        Preferences <button class="btn btn-sm float-end edit-btn" data-bs-toggle="modal"
-                                            data-bs-target="<?php if ($email_verified == true && $user_status == 'approved') {
-                                                echo "#partnerlocationdetailsmodal";
-                                            } else {
-                                                echo '#verifyEmailModal';
-                                            } ?>"><i class="bi bi-pencil-square"></i></button></h5>
-                                    <ul class="px_28 font_14 mb-0">
-                                        <li class="d-flex">
-                                            <b class="me-2">Country:</b>
-                                            <span><?php echo esc_html($partner_country); ?></span>
-                                        </li>
-                                    </ul>
-
-                                </div>
-
-                                <div class="list_dt2 mt-4 p-3 shadow">
-                                    <h3>Photo Gallery</h3>
-                                    <hr class="line mb-4">
-                                    <!-- Photo Gallery Grid -->
-                                    <div class="row">
-                                        <!-- Display User Photos -->
-                                        <?php foreach ($user_photos as $photo_id): ?>
-                                            <?php $photo_url = wp_get_attachment_url($photo_id); ?>
-                                            <div class="col-md-2 mb-2">
-                                                <div class="gallery-item position-relative">
-                                                    <a href="<?php echo esc_url($photo_url); ?>" data-lightbox="gallery">
-                                                        <img src="<?php echo esc_url($photo_url); ?>" alt="Gallery Image"
-                                                            class="img-fluid rounded">
-                                                    </a>
-                                                    <!-- Delete Button -->
-                                                    <button
-                                                        class="delete-photo-btn btn btn-danger btn-sm position-absolute top-0 end-0 m-2"
-                                                        data-photo-id="<?php echo esc_attr($photo_id); ?>">
-                                                        <i class="bi bi-trash"></i>
-                                                    </button>
-                                                </div>
-                                            </div>
-                                        <?php endforeach; ?>
-
-                                        <!-- Upload Option -->
-                                        <div class="col-md-2 mb-2">
-                                            <div class="gallery-item upload-item" data-toggle="modal" data-target="<?php if ($email_verified == true && $user_status == 'approved') {
-                                                echo "#uploadModal";
-                                            } else {
-                                                echo '#verifyEmailModal';
-                                            } ?>">
-                                                <div class="upload-icon">
-                                                    <i class="bi bi-plus"></i>
-                                                </div>
-                                            </div>
-                                        </div>
-                                    </div>
-                                </div>
-
-                            </div>
-                            <div class="tab-pane fade" id="nav-profile" role="tabpanel"
-                                aria-labelledby="nav-profile-tab">
-                                <div class="list_dt2 mt-4 p-3 shadow">
-                                    <h3>Account Settings</h3>
-                                    <hr class="line mb-4">
-                                    <?php if (!empty($password_change_message)): ?>
-                                        <?php echo $password_change_message; ?>
-                                    <?php endif; ?>
-                                    <h5 class="mb-3">
-                                        <i class="bi bi-gender-male theme-text-color me-1 align-middle"></i>
-                                        Change Password
-                                    </h5>
-                                    <form method="post" action="">
-                                        <?php wp_nonce_field('change_password_action', 'change_password_nonce'); ?>
-                                        <div class="col-md-6 pt-1 pb-2">
-                                            <label for="c_password" class="form-label">Current Password</label>
-                                            <input type="password" id="c_password" name="c_password"
-                                                class="form-control" placeholder="Enter current Password" required>
-                                        </div>
-                                        <div class="col-md-6 pt-1 pb-2">
-                                            <label for="new_password" class="form-label">New Password</label>
-                                            <input type="password" id="new_password" name="new_password"
-                                                class="form-control" placeholder="Enter New Password" required>
-                                        </div>
-                                        <div class="col-md-6 pt-1 pb-2">
-                                            <label for="re_new_password" class="form-label">Re-type New Password</label>
-                                            <input type="password" id="re_new_password" name="re_new_password"
-                                                class="form-control" placeholder="Re-type New Password" required>
-                                        </div>
-                                        <button type="submit" name="change_password_submit" class="btn theme-btn">Change
-                                            Password</button>
-                                    </form>
+                        <div class="row">
+                            <!-- Sidebar Tabs -->
+                            <div class="col-md-3 border-end pe-0">
+                                <div class="list-group list-group-flush" id="account-tabs" role="tablist">
+                                    <a class="list-group-item list-group-item-action active" id="basic-tab" data-bs-toggle="pill" href="#basic" role="tab">📝 Basic Info</a>
+                                    <a class="list-group-item list-group-item-action" id="settings-tab" data-bs-toggle="pill" href="#settings" role="tab">⚙️ Settings</a>
+                                    <a class="list-group-item list-group-item-action" id="interests-tab" data-bs-toggle="pill" href="#interests" role="tab">💌 Interests</a>
+                                    <a class="list-group-item list-group-item-action" id="membership-tab" data-bs-toggle="pill" href="#membership" role="tab">💳 Membership</a>
+                                    <a class="list-group-item list-group-item-action" id="membership-tab" data-bs-toggle="pill" href="#sortlist" role="tab">💳 Shortlist</a>
+                                    
                                 </div>
                             </div>
-                            <div id="received-interests" class="tab-pane fade">
-                                <h4 class="mb-4">💌 Interests Received</h4>
-                                <?php
-                                global $wpdb;
-                                $user_id = get_current_user_id();
-                                $interests = $wpdb->get_results("
-        SELECT i.*, u.display_name, um.meta_value AS profile_picture
-        FROM {$wpdb->prefix}interests i
-        JOIN {$wpdb->users} u ON i.from_user_id = u.ID
-        LEFT JOIN {$wpdb->prefix}usermeta um ON u.ID = um.user_id AND um.meta_key = 'profile_picture'
-        WHERE i.to_user_id = $user_id
-        ORDER BY i.sent_at DESC
-    ");
 
-                                if ($interests):
-                                    foreach ($interests as $row):
-                                        $profile_picture = get_user_meta($row->from_user_id, 'user_avatar', true);
-                                        $avatar = $profile_picture ?: get_template_directory_uri() . '/assets/img/default-avatar.png';
-                                        $u_first_name = get_user_meta($row->from_user_id, 'first_name', true);
-                                        $u_last_name = get_user_meta($row->from_user_id, 'last_name', true);
-                                        $full_name = trim("$u_first_name $u_last_name");
-                                        ?>
+                            <!-- Content Area -->
+                            <div class="col-md-9 ps-4">
+                                <div class="tab-content" id="account-tabs-content">
+                                    <!-- Basic Info -->
+                                    <div class="tab-pane fade show active" id="basic" role="tabpanel">
+                                        <div class="list_dt2 mt-4 p-3 shadow">
 
-                                        <div class="d-flex align-items-center gap-4 mb-4 p-3 border rounded shadow-sm"
-                                            style="background-color: #fff;">
-                                            <img src="<?= esc_url($avatar); ?>" alt="Avatar" width="70" height="70"
-                                                class="rounded-circle" style="object-fit: cover;">
+                                            <h3>Personal Information</h3>
+                                            <hr class="line mb-4">
+                                            <h5 class="mb-3">
+                                                <i class="bi bi-gender-female theme-text-color me-1 align-middle"></i>
+                                                About
+                                                <button class="btn btn-sm float-end edit-btn" data-bs-toggle="modal"
+                                                    data-bs-target="<?php
+                                                                    if ($email_verified == true && $user_status == 'approved') {
+                                                                        echo '#aboutmodal';
+                                                                    } else {
+                                                                        echo '#verifyEmailModal';
+                                                                    }
+                                                                    ?>">
+                                                    <i class="bi bi-pencil-square"></i>
+                                                </button>
+
+                                            </h5>
+                                            <p class="px_28 mb-0"><?php echo esc_html($about_yourself); ?></p>
 
 
-                                            <div style="flex: 1;">
-                                                <p class="mb-2 fs-5"
-                                                    style="font-family: 'Poppins', sans-serif; font-weight: 500;">
-                                                    <a href="<?= esc_url(home_url('/user-details/?user_id=' . $row->from_user_id)); ?>"
-                                                        class="fw-bold text-dark text-decoration-none">
-                                                        <?= esc_html($full_name); ?>
-                                                    </a>
-                                                    <span class="text-muted">sent you an interest.</span>
+                                            <h5 class="mb-3 mt-4">
+                                                <i class="bi bi-person theme-text-color me-1 align-middle"></i>
+                                                Basic Details
+                                                <button class="btn btn-sm float-end edit-btn" data-bs-toggle="modal"
+                                                    data-bs-target="<?php if ($email_verified == true && $user_status == 'approved') {
+                                                                        echo "#basicdetailsmodal";
+                                                                    } else {
+                                                                        echo '#verifyEmailModal';
+                                                                    } ?>">
+                                                    <i class="bi bi-pencil-square"></i>
+                                                </button>
 
-                                                </p>
+                                            </h5>
+                                            <ul class="px_28 font_14 justify-content-between d-flex mb-0 flex-wrap">
+                                                <li>
+                                                    <b class="d-block">Name:</b>
+                                                    <b class="d-block mt-2">Age:</b>
+                                                    <b class="d-block mt-2">Height:</b>
+                                                    <b class="d-block mt-2">Weight:</b>
+                                                    <b class="d-block mt-2">Mother Tongue:</b>
+                                                    <b class="d-block mt-2">Marital Status:</b>
+                                                    <b class="d-block mt-2">Gender:</b>
+                                                </li>
+                                                <li>
+                                                    <span
+                                                        class="d-block"><?php echo esc_html($first_name . ' ' . $last_name); ?></span>
+                                                    <span class="d-block mt-2"><?php echo esc_html($age); ?> Yrs</span>
+                                                    <span class="d-block mt-2"><?php echo esc_html($height); ?> Inch</span>
+                                                    <span class="d-block mt-2"><?php echo esc_html($weight); ?> Kg</span>
+                                                    <span class="d-block mt-2"><?php echo esc_html($mother_tongue); ?></span>
+                                                    <span class="d-block mt-2"><?php echo esc_html($marital_status); ?></span>
+                                                    <span class="d-block mt-2"><?php echo esc_html($user_gender); ?></span>
+                                                </li>
+                                                <li>
+                                                    <b class="d-block">Body Type:</b>
+                                                    <b class="d-block mt-2">Complexion:</b>
+                                                    <b class="d-block mt-2">Physical Status:</b>
+                                                    <b class="d-block mt-2">Eating Habits:</b>
+                                                    <b class="d-block mt-2">Drinking Habits:</b>
+                                                    <b class="d-block mt-2">Smoking Habits:</b>
+                                                </li>
+                                                <li>
+                                                    <span class="d-block"><?php echo esc_html($body_type); ?></span>
+                                                    <span class="d-block mt-2"><?php echo esc_html($complexion); ?></span>
+                                                    <span class="d-block mt-2"><?php echo esc_html($physical_status); ?></span>
+                                                    <span class="d-block mt-2"><?php echo esc_html($eating_habits); ?></span>
+                                                    <span class="d-block mt-2"><?php echo esc_html($drinking_habits); ?></span>
+                                                    <span class="d-block mt-2"><?php echo esc_html($smoking_habits); ?></span>
+                                                </li>
+                                            </ul>
+                                            <div class="row row-cols-1 row-cols-md-2 list_dt2_inner">
+                                                <div class="col">
+                                                    <div class="list_dt2_inner_left">
+                                                        <h5 class="mb-3 mt-4">
+                                                            <i class="bi bi-phone theme-text-color me-1 align-middle"></i>
+                                                            Contact Details
+                                                            <button class="btn btn-sm float-end edit-btn" data-bs-toggle="modal"
+                                                                data-bs-target="<?php if ($email_verified == true && $user_status == 'approved') {
+                                                                                    echo "#contactdetailsmodal";
+                                                                                } else {
+                                                                                    echo '#verifyEmailModal';
+                                                                                } ?>">
+                                                                <i class="bi bi-pencil-square"></i>
+                                                            </button>
+                                                           
+                                                        </h5>
+                                                        <ul class="px_28 font_14 mb-0">
+                                                            <li class="d-flex">
+                                                                <b class="me-2">Your Contact Number:</b>
+                                                                <span><?php echo esc_html($candidate_country_code . ' ' . $candidate_phone); ?></span>
+                                                            </li>
+                                                            <li class="d-flex mt-2">
+                                                                <b class="me-2">Parent Contact Number:</b>
+                                                                <span><?php echo esc_html($parent_country_code . ' ' . $parent_phone); ?></span>
+                                                            </li>
 
-                                                <?php if ($row->status === 'pending'): ?>
-                                                    <div class="d-flex gap-2">
-                                                        <button class="btn btn-sm respond-interest"
-                                                            style="background-color: #5e2ced; color: white; padding: 8px 24px; font-weight: bold;"
-                                                            data-id="<?= esc_attr($row->id); ?>" data-action="accepted">
-                                                            Accept
-                                                        </button>
-                                                        <button class="btn btn-sm respond-interest"
-                                                            style="background-color: #f44336; color: white; padding: 8px 24px; font-weight: bold;"
-                                                            data-id="<?= esc_attr($row->id); ?>" data-action="rejected">
-                                                            Reject
-                                                        </button>
+                                                            <li class="d-flex mt-2">
+                                                                <b class="me-2">Email:</b>
+                                                                <span>
+                                                                    <?php
+                                                                    if ($email_verified == true) {
+                                                                        echo esc_html($email) . ' <i class="fas fa-check-circle text-primary"></i>';
+                                                                    } else {
+                                                                        echo esc_html($email);
+                                                                    }
+                                                                    ?>
+                                                                </span>
+                                                            </li>
+                                                        </ul>
                                                     </div>
-                                                <?php else: ?>
+                                                </div>
+                                                <div class="col">
+                                                    <div class="list_dt2_inner_left">
+                                                        <h5 class="mb-3 mt-4">
+                                                            <i class="bi bi-book theme-text-color me-1 align-middle"></i>
+                                                            Religion Information
+                                                            <button class="btn btn-sm float-end edit-btn" data-bs-toggle="modal"
+                                                                data-bs-target="<?php if ($email_verified == true && $user_status == 'approved') {
+                                                                                    echo "#userreligiondetailsmodal";
+                                                                                } else {
+                                                                                    echo '#verifyEmailModal';
+                                                                                } ?>">
+                                                                <i class="bi bi-pencil-square"></i>
+                                                            </button>
+                                                          
+                                                        </h5>
+                                                        <ul class="px_28 font_14 mb-0">
+                                                            <li class="d-flex">
+                                                                <b class="me-2">Religion:</b>
+                                                                <span><?php echo esc_html($religion); ?></span>
+                                                            </li>
+                                                        </ul>
+                                                    </div>
+                                                </div>
+                                            </div>
+                                            <h5 class="mb-3 mt-4"><i class="bi bi-map theme-text-color me-1 align-middle"></i>
+                                                Location</h5>
+                                            <?php
+                                            if ($country == "Bangladesh") {
+                                            ?>
+                                                <ul class="px_28 font_14 mb-0">
+                                                    <li class="d-flex"><b class="me-2"> Country:</b>
+                                                        <span><?php echo $country; ?></span>
+                                                    </li>
+                                                    <li class="d-flex mt-2"><b class="me-2"> Division:</b>
+                                                        <span><?php echo $division; ?></span>
+                                                    </li>
+                                                    <li class="d-flex mt-2"><b class="me-2"> District:</b>
+                                                        <span><?php echo $district; ?></span>
+                                                    </li>
+                                                    <li class="d-flex mt-2"><b class="me-2"> Thana:</b>
+                                                        <span><?php echo $upazila; ?></span>
+                                                    </li>
+                                                    <li class="d-flex mt-2"><b class="me-2"> Village:</b>
+                                                        <span><?php echo $village; ?></span>
+                                                    </li>
+                                                    <li class="d-flex mt-2"><b class="me-2"> Landmark:</b>
+                                                        <span><?php echo $landmark; ?></span>
+                                                    </li>
+                                                </ul>
+                                            <?php
+                                            } else {
+                                            ?>
+                                                <ul class="px_28 font_14 mb-0">
+                                                    <li class="d-flex"><b class="me-2"> Country:</b>
+                                                        <span><?php echo $country; ?></span>
+                                                    </li>
+                                                    <li class="d-flex mt-2"><b class="me-2"> State:</b> <span>
+                                                            <?php echo esc_html($state); ?></span></li>
+                                                    <li class="d-flex mt-2"><b class="me-2"> Citizenship:</b>
+                                                        <span><?php echo esc_html($city); ?></span>
+                                                    </li>
+                                                    <li class="d-flex mt-2"><b class="me-2"> City:</b>
+                                                        <span><?php echo esc_html($usaLandmark); ?></span>
+                                                    </li>
+                                                </ul>
+                                            <?php
+                                            }
+                                            ?>
 
-                                                    <span class="badge bg-success"><?= ucfirst($row->status); ?></span>
-                                                <?php endif; ?>
+                                            <div class="row row-cols-1 row-cols-md-2 list_dt2_inner">
+                                                <div class="col">
+                                                    <div class="list_dt2_inner_left">
+                                                        <h5 class="mb-3 mt-4">
+                                                            <i class="bi bi-person theme-text-color me-1 align-middle"></i>
+                                                            Professional Information
+                                                            <button class="btn btn-sm float-end edit-btn" data-bs-toggle="modal"
+                                                                data-bs-target="<?php if ($email_verified == true && $user_status == 'approved') {
+                                                                                    echo "#professionaldetailsmodal";
+                                                                                } else {
+                                                                                    echo '#verifyEmailModal';
+                                                                                } ?>">
+                                                                <i class="bi bi-pencil-square"></i>
+                                                            </button>
+                                                            
+                                                        </h5>
+                                                        <ul class="px_28 font_14 mb-0">
+                                                            <li class="d-flex">
+                                                                <b class="me-2">Education:</b>
+                                                                <span><?php echo esc_html($education); ?></span>
+                                                            </li>
+                                                            <li class="d-flex mt-2">
+                                                                <b class="me-2">Education in Detail:</b>
+                                                                <span><?php echo esc_html($education_detail); ?></span>
+                                                            </li>
+                                                            <li class="d-flex mt-2">
+                                                                <b class="me-2">Employed in:</b>
+                                                                <span><?php echo esc_html($employed_in); ?></span>
+                                                            </li>
+                                                            <li class="d-flex mt-2">
+                                                                <b class="me-2">profession:</b>
+                                                                <span><?php echo esc_html($profession); ?></span>
+                                                            </li>
+                                                            <li class="d-flex mt-2">
+                                                                <b class="me-2">profession in Detail:</b>
+                                                                <span><?php echo esc_html($profession_detail); ?></span>
+                                                            </li>
+                                                            <li class="d-flex mt-2">
+                                                                <b class="me-2">Annual Income:</b>
+                                                                <span><?php echo esc_html($annual_income); ?></span>
+                                                            </li>
+                                                        </ul>
+                                                    </div>
+                                                </div>
+                                                <div class="col">
+                                                    <div class="list_dt2_inner_left">
+                                                        <h5 class="mb-3 mt-4">
+                                                            <i
+                                                                class="bi bi-life-preserver theme-text-color me-1 align-middle"></i>
+                                                            Astro Details
+                                                            <button class="btn btn-sm float-end edit-btn" data-bs-toggle="modal"
+                                                                data-bs-target="<?php if ($email_verified == true && $user_status == 'approved') {
+                                                                                    echo "#astrodetailsmodal";
+                                                                                } else {
+                                                                                    echo '#verifyEmailModal';
+                                                                                } ?>">
+                                                                <i class="bi bi-pencil-square"></i>
+                                                            </button>
+
+                                                        </h5>
+                                                        <ul class="px_28 font_14 mb-0">
+                                                            <li class="d-flex">
+                                                                <b class="me-2">Date of Birth:</b>
+                                                                <span><?php echo esc_html($dob); ?></span>
+                                                            </li>
+                                                            <li class="d-flex mt-2">
+                                                                <b class="me-2">Place of Birth:</b>
+                                                                <span><?php echo esc_html($place_of_birth); ?></span>
+                                                            </li>
+                                                        </ul>
+                                                    </div>
+                                                </div>
+                                                <div class="col">
+                                                    <div class="list_dt2_inner_left">
+                                                        <h5 class="mb-3 mt-4">
+                                                            <i
+                                                                class="bi bi-life-preserver theme-text-color me-1 align-middle"></i>
+                                                            Linked Account
+                                                            <button class="btn btn-sm float-end edit-btn" data-bs-toggle="modal"
+                                                                data-bs-target="<?php if ($email_verified == true && $user_status == 'approved') {
+                                                                                    echo "#socialaccounts";
+                                                                                } else {
+                                                                                    echo '#verifyEmailModal';
+                                                                                } ?>">
+                                                                <i class="bi bi-pencil-square"></i>
+                                                            </button>
+                                                           
+                                                        </h5>
+                                                        <ul class="px_28 font_14 mb-0">
+                                                            <li class="d-flex">
+                                                                <b class="me-2">Facebook:</b>
+                                                                <span><?php echo esc_html($facebook); ?></span>
+                                                            </li>
+                                                            <li class="d-flex mt-2">
+                                                                <b class="me-2">Instagram:</b>
+                                                                <span><?php echo esc_html($instagram); ?></span>
+                                                            </li>
+                                                            <li class="d-flex mt-2">
+                                                                <b class="me-2">LinkedIn:</b>
+                                                                <span><?php echo esc_html($linkedin); ?></span>
+                                                            </li>
+                                                            <li class="d-flex mt-2">
+                                                                <b class="me-2">X:</b>
+                                                                <span><?php echo esc_html($x); ?></span>
+                                                            </li>
+                                                        </ul>
+                                                    </div>
+                                                </div>
+                                            </div>
+
+
+
+
+                                        </div>
+                                        <div class="list_dt2 mt-4 p-3 shadow">
+                                            <h3>Partner Preferences</h3>
+                                            <hr class="line mb-4">
+                                            <h5 class="mb-3">
+                                                <i class="bi bi-gender-male theme-text-color me-1 align-middle"></i>
+                                                About Partner
+
+                                                <button class="btn btn-sm float-end edit-btn" data-bs-toggle="modal"
+                                                    data-bs-target="<?php if ($email_verified == true && $user_status == 'approved') {
+                                                                        echo "#about_partner_modal";
+                                                                    } else {
+                                                                        echo '#verifyEmailModal';
+                                                                    } ?>">
+                                                    <i class="bi bi-pencil-square"></i>
+                                                </button>
+                                            </h5>
+                                            <p class="px_28 mb-0"><?php echo esc_html($about_partner); ?></p>
+                                            <h5 class="mb-3 mt-4"><i
+                                                    class="bi bi-person theme-text-color me-1 align-middle"></i>
+                                                Basic
+                                                Preferences <button class="btn btn-sm float-end edit-btn" data-bs-toggle="modal"
+                                                    data-bs-target="<?php if ($email_verified == true && $user_status == 'approved') {
+                                                                        echo "#partner_basic_modal";
+                                                                    } else {
+                                                                        echo '#verifyEmailModal';
+                                                                    } ?>"><i class="bi bi-pencil-square"></i></button>
+                                            </h5>
+                                            <ul class="px_28 font_14 justify-content-between d-flex mb-0 flex-wrap">
+                                                <li>
+                                                    <b class="d-block">Groom's Age:</b>
+                                                    <b class="d-block mt-2">Height:</b>
+                                                    <b class="d-block mt-2">Marital Status:</b>
+                                                    <b class="d-block mt-2">Mother Tongue:</b>
+                                                    <b class="d-block mt-2">Physical Status:</b>
+                                                    <b class="d-block mt-2">Eating Habits:</b>
+                                                </li>
+                                                <li>
+                                                    <span class="d-block"><?php echo esc_html($partner_min_age); ?> -
+                                                        <?php echo esc_html($partner_max_age); ?> Yrs</span>
+                                                    <span class="d-block mt-2"><?php echo esc_html($partner_min_height); ?> -
+                                                        <?php echo esc_html($partner_max_height); ?></span>
+                                                    <span
+                                                        class="d-block mt-2"><?php echo esc_html($partner_marital_status); ?></span>
+                                                    <span
+                                                        class="d-block mt-2"><?php echo esc_html($partner_mother_tongue); ?></span>
+                                                    <span
+                                                        class="d-block mt-2"><?php echo esc_html($partner_physical_status); ?></span>
+                                                    <span
+                                                        class="d-block mt-2"><?php echo esc_html($partner_eating_habits); ?></span>
+                                                </li>
+                                                <li>
+                                                    <b class="d-block">Smoking Habits:</b>
+                                                    <b class="d-block mt-2">Drinking Habits:</b>
+                                                </li>
+                                                <li>
+                                                    <span
+                                                        class="d-block"><?php echo esc_html($partner_smoking_habits); ?></span>
+                                                    <span
+                                                        class="d-block mt-2"><?php echo esc_html($partner_drinking_habits); ?></span>
+                                                </li>
+                                            </ul>
+                                            <div class="row row-cols-1 row-cols-md-2 list_dt2_inner">
+                                                <div class="col">
+                                                    <div class="list_dt2_inner_left">
+                                                        <h5 class="mb-3 mt-4">
+                                                            <i class="bi bi-person theme-text-color me-1 align-middle"></i>
+                                                            Professional Preferences
+                                                            <button class="btn btn-sm float-end edit-btn" data-bs-toggle="modal"
+                                                                data-bs-target="<?php if ($email_verified == true && $user_status == 'approved') {
+                                                                                    echo "#partner_professional_modal";
+                                                                                } else {
+                                                                                    echo '#verifyEmailModal';
+                                                                                } ?>">
+                                                                <i class="bi bi-pencil-square"></i>
+                                                            </button>
+                                                        </h5>
+                                                        <ul class="px_28 font_14 mb-0">
+                                                            <li class="d-flex">
+                                                                <b class="me-2">Education:</b>
+                                                                <span><?php echo esc_html($partner_education); ?></span>
+                                                            </li>
+                                                            <li class="d-flex mt-2">
+                                                                <b class="me-2">profession:</b>
+                                                                <span><?php echo esc_html($partner_profession); ?></span>
+                                                            </li>
+                                                            <li class="d-flex mt-2">
+                                                                <b class="me-2">Annual Income:</b>
+                                                                <span><?php echo esc_html($partner_annual_income); ?></span>
+                                                            </li>
+                                                        </ul>
+                                                    </div>
+                                                </div>
+                                                <div class="col">
+                                                    <div class="list_dt2_inner_left">
+                                                        <h5 class="mb-3 mt-4">
+                                                            <i class="bi bi-book theme-text-color me-1 align-middle"></i>
+                                                            Religious Preferences
+                                                            <button class="btn btn-sm float-end edit-btn" data-bs-toggle="modal"
+                                                                data-bs-target="<?php if ($email_verified == true && $user_status == 'approved') {
+                                                                                    echo "#partnerreligiondetailsmodal";
+                                                                                } else {
+                                                                                    echo '#verifyEmailModal';
+                                                                                } ?>">
+                                                                <i class="bi bi-pencil-square"></i>
+                                                            </button>
+                                                        </h5>
+                                                        <ul class="px_28 font_14 mb-0">
+                                                            <li class="d-flex">
+                                                                <b class="me-2">Religion:</b>
+                                                                <span><?php echo esc_html($partner_religion); ?></span>
+                                                            </li>
+                                                        </ul>
+                                                    </div>
+                                                </div>
+                                            </div>
+                                            <h5 class="mb-3 mt-4"><i class="bi bi-map theme-text-color me-1 align-middle"></i>
+                                                Location
+                                                Preferences <button class="btn btn-sm float-end edit-btn" data-bs-toggle="modal"
+                                                    data-bs-target="<?php if ($email_verified == true && $user_status == 'approved') {
+                                                                        echo "#partnerlocationdetailsmodal";
+                                                                    } else {
+                                                                        echo '#verifyEmailModal';
+                                                                    } ?>"><i class="bi bi-pencil-square"></i></button></h5>
+                                            <ul class="px_28 font_14 mb-0">
+                                                <li class="d-flex">
+                                                    <b class="me-2">Country:</b>
+                                                    <span><?php echo esc_html($partner_country); ?></span>
+                                                </li>
+                                            </ul>
+
+                                        </div>
+
+                                        <div class="list_dt2 mt-4 p-3 shadow">
+                                            <h3>Photo Gallery</h3>
+                                            <hr class="line mb-4">
+                                            <!-- Photo Gallery Grid -->
+                                            <div class="row">
+                                                <!-- Display User Photos -->
+                                                <?php foreach ($user_photos as $photo_id): ?>
+                                                    <?php $photo_url = wp_get_attachment_url($photo_id); ?>
+                                                    <div class="col-md-2 mb-2">
+                                                        <div class="gallery-item position-relative">
+                                                            <a href="<?php echo esc_url($photo_url); ?>" data-lightbox="gallery">
+                                                                <img src="<?php echo esc_url($photo_url); ?>" alt="Gallery Image"
+                                                                    class="img-fluid rounded">
+                                                            </a>
+                                                            <!-- Delete Button -->
+                                                            <button
+                                                                class="delete-photo-btn btn btn-danger btn-sm position-absolute top-0 end-0 m-2"
+                                                                data-photo-id="<?php echo esc_attr($photo_id); ?>">
+                                                                <i class="bi bi-trash"></i>
+                                                            </button>
+                                                        </div>
+                                                    </div>
+                                                <?php endforeach; ?>
+
+                                                <!-- Upload Option -->
+                                                <div class="col-md-2 mb-2">
+                                                    <div class="gallery-item upload-item" data-toggle="modal" data-target="<?php if ($email_verified == true && $user_status == 'approved') {
+                                                                                                                                echo "#uploadModal";
+                                                                                                                            } else {
+                                                                                                                                echo '#verifyEmailModal';
+                                                                                                                            } ?>">
+                                                        <div class="upload-icon">
+                                                            <i class="bi bi-plus"></i>
+                                                        </div>
+                                                    </div>
+                                                </div>
                                             </div>
                                         </div>
+                                    </div>
+
+                                    <!-- Settings -->
+                                    <div class="tab-pane fade" id="settings" role="tabpanel">
+                                        <div class="list_dt2 mt-4 p-3 shadow">
+                                            <h3>Account Settings</h3>
+                                            <hr class="line mb-4">
+                                            <?php if (!empty($password_change_message)): ?>
+                                                <?php echo $password_change_message; ?>
+                                            <?php endif; ?>
+                                            <h5 class="mb-3">
+                                                <i class="bi bi-gender-male theme-text-color me-1 align-middle"></i>
+                                                Change Password
+                                            </h5>
+                                            <form method="post" action="">
+                                                <?php wp_nonce_field('change_password_action', 'change_password_nonce'); ?>
+                                                <div class="col-md-6 pt-1 pb-2">
+                                                    <label for="c_password" class="form-label">Current Password</label>
+                                                    <input type="password" id="c_password" name="c_password"
+                                                        class="form-control" placeholder="Enter current Password" required>
+                                                </div>
+                                                <div class="col-md-6 pt-1 pb-2">
+                                                    <label for="new_password" class="form-label">New Password</label>
+                                                    <input type="password" id="new_password" name="new_password"
+                                                        class="form-control" placeholder="Enter New Password" required>
+                                                </div>
+                                                <div class="col-md-6 pt-1 pb-2">
+                                                    <label for="re_new_password" class="form-label">Re-type New Password</label>
+                                                    <input type="password" id="re_new_password" name="re_new_password"
+                                                        class="form-control" placeholder="Re-type New Password" required>
+                                                </div>
+                                                <button type="submit" name="change_password_submit" class="btn theme-btn">Change
+                                                    Password</button>
+                                            </form>
+                                        </div>
+                                    </div>
+
+                                    <!-- Interests -->
+                                    <div class="tab-pane fade" id="interests" role="tabpanel">
+                                        <h4 class="mb-4">💌 Interests Received</h4>
                                         <?php
-                                    endforeach;
-                                else:
-                                    echo '<p>No interests received yet.</p>';
-                                endif;
-                                ?>
+                                        global $wpdb;
+                                        $user_id = get_current_user_id();
+                                        $interests = $wpdb->get_results("
+                                            SELECT i.*, u.display_name, um.meta_value AS profile_picture
+                                            FROM {$wpdb->prefix}interests i
+                                            JOIN {$wpdb->users} u ON i.from_user_id = u.ID
+                                            LEFT JOIN {$wpdb->prefix}usermeta um ON u.ID = um.user_id AND um.meta_key = 'profile_picture'
+                                            WHERE i.to_user_id = $user_id
+                                            ORDER BY i.sent_at DESC
+                                        ");
 
-                                <h4 class="mb-3 mt-4">📤 Interests Sent</h4>
-                                <?php
-                                $current_user = get_current_user_id();
-                                $sent_interests = $wpdb->get_results("
-    SELECT i.*, u.display_name, u.ID 
-    FROM {$wpdb->prefix}interests i
-    JOIN {$wpdb->users} u ON i.to_user_id = u.ID
-    WHERE i.from_user_id = $current_user
-    ORDER BY i.sent_at DESC
-");
-
-                                if ($sent_interests):
-                                    foreach ($sent_interests as $row):
-                                        $profile_picture = get_user_meta($row->to_user_id, 'user_avatar', true);
-                                        $avatar = $profile_picture ?: 'https://via.placeholder.com/70';
+                                        if ($interests):
+                                            foreach ($interests as $row):
+                                                $profile_picture = get_user_meta($row->from_user_id, 'user_avatar', true);
+                                                $avatar = $profile_picture ?: get_template_directory_uri() . '/assets/img/default-avatar.png';
+                                                $u_first_name = get_user_meta($row->from_user_id, 'first_name', true);
+                                                $u_last_name = get_user_meta($row->from_user_id, 'last_name', true);
+                                                $full_name = trim("$u_first_name $u_last_name");
                                         ?>
-                                        <div class="d-flex align-items-center p-3 mb-3 border rounded">
-                                            <img src="<?= esc_url($avatar); ?>" alt="Avatar" width="50" height="50"
-                                                class="rounded-circle me-3" style="object-fit: cover;">
-                                            <div>
-                                                <a href="<?= esc_url(home_url('/user-details/?user_id=' . $row->to_user_id)); ?>"
-                                                    class="fw-bold text-dark text-decoration-none">
-                                                    <?= esc_html($row->display_name); ?>
-                                                </a>
-                                                <span class="text-muted">– you sent an interest.</span>
-                                                <p class="mb-0"><small>Status:
-                                                        <strong><?= ucfirst($row->status); ?></strong></small></p>
-                                            </div>
-                                        </div>
+
+                                                <div class="d-flex align-items-center gap-4 mb-4 p-3 border rounded shadow-sm"
+                                                    style="background-color: #fff;">
+                                                    <img src="<?= esc_url($avatar); ?>" alt="Avatar" width="70" height="70"
+                                                        class="rounded-circle" style="object-fit: cover;">
+
+
+                                                    <div style="flex: 1;">
+                                                        <p class="mb-2 fs-5"
+                                                            style="font-family: 'Poppins', sans-serif; font-weight: 500;">
+                                                            <a href="<?= esc_url(home_url('/user-details/?user_id=' . $row->from_user_id)); ?>"
+                                                                class="fw-bold text-dark text-decoration-none">
+                                                                <?= esc_html($full_name); ?>
+                                                            </a>
+                                                            <span class="text-muted">sent you an interest.</span>
+
+                                                        </p>
+
+                                                        <?php if ($row->status === 'pending'): ?>
+                                                            <div class="d-flex gap-2">
+                                                                <button class="btn btn-sm respond-interest"
+                                                                    style="background-color: #5e2ced; color: white; padding: 8px 24px; font-weight: bold;"
+                                                                    data-id="<?= esc_attr($row->id); ?>" data-action="accepted">
+                                                                    Accept
+                                                                </button>
+                                                                <button class="btn btn-sm respond-interest"
+                                                                    style="background-color: #f44336; color: white; padding: 8px 24px; font-weight: bold;"
+                                                                    data-id="<?= esc_attr($row->id); ?>" data-action="rejected">
+                                                                    Reject
+                                                                </button>
+                                                            </div>
+                                                        <?php else: ?>
+
+                                                            <span class="badge bg-success"><?= ucfirst($row->status); ?></span>
+                                                        <?php endif; ?>
+                                                    </div>
+                                                </div>
                                         <?php
-                                    endforeach;
-                                else:
-                                    echo '<p class="text-muted">You haven\'t sent any interests yet.</p>';
-                                endif;
-                                ?>
+                                            endforeach;
+                                        else:
+                                            echo '<p>No interests received yet.</p>';
+                                        endif;
+                                        ?>
 
+                                        <h4 class="mb-3 mt-4">📤 Interests Sent</h4>
+                                        <?php
+                                        $current_user = get_current_user_id();
+                                        $sent_interests = $wpdb->get_results("
+                                            SELECT i.*, u.display_name, u.ID 
+                                            FROM {$wpdb->prefix}interests i
+                                            JOIN {$wpdb->users} u ON i.to_user_id = u.ID
+                                            WHERE i.from_user_id = $current_user
+                                            ORDER BY i.sent_at DESC
+                                        ");
+
+                                        if ($sent_interests):
+                                            foreach ($sent_interests as $row):
+                                                $profile_picture = get_user_meta($row->to_user_id, 'user_avatar', true);
+                                                if (empty($profile_pic)) {
+                                                    $profile_pic = get_template_directory_uri() . '/image/avater.webp'; // Path to your default avatar
+                                                }
+                                                
+                                        ?>
+                                                <div class="d-flex align-items-center p-3 mb-3 border rounded">
+                                                    <img src="<?= esc_url($profile_pic); ?>" alt="Avatar" width="50" height="50"
+                                                        class="rounded-circle me-3" style="object-fit: cover;">
+                                                    <div>
+                                                        <a href="<?= esc_url(home_url('/user-details/?user_id=' . $row->to_user_id)); ?>"
+                                                            class="fw-bold text-dark text-decoration-none">
+                                                            <?= esc_html($row->display_name); ?>
+                                                        </a>
+                                                        <span class="text-muted">– you sent an interest.</span>
+                                                        <p class="mb-0"><small>Status:
+                                                                <strong><?= ucfirst($row->status); ?></strong></small></p>
+                                                    </div>
+                                                </div>
+                                        <?php
+                                            endforeach;
+                                        else:
+                                            echo '<p class="text-muted">You haven\'t sent any interests yet.</p>';
+                                        endif;
+                                        ?>
+
+                                    </div>
+
+                                    <!-- Membership -->
+                                    <div class="tab-pane fade" id="membership" role="tabpanel">
+                                        <?php include 'account-sections/membership.php'; ?>
+                                    </div>
+                                    <div class="tab-pane fade" id="sortlist" role="tabpanel">
+                                    <?php
+global $wpdb;
+$table_name = $wpdb->prefix . 'user_shortlists';
+// $current_user_id= get_current_user_id();
+$shortlisted = $wpdb->get_results(
+    $wpdb->prepare("SELECT shortlisted_user_id FROM $table_name WHERE user_id = %d", $current_user)
+);
+
+if (!empty($shortlisted)) {
+    echo '<div class="row">';
+
+    foreach ($shortlisted as $entry) {
+        $profile_id = $entry->shortlisted_user_id;
+        $profile_user = get_userdata($profile_id);
+
+        if ($profile_user) {
+            $profile_pic = get_user_meta($profile_user->ID, 'user_avatar', true);
+            $user_first_name = get_user_meta($profile_user->ID, 'first_name', true);
+            $user_last_name = get_user_meta($profile_user->ID, 'last_name', true);
+            $user_full_name = trim("$user_first_name $user_last_name");
+            ?>
+
+                               <div class="d-flex align-items-center p-3 mb-3 border rounded">
+                            <img src="<?= esc_url($profile_pic); ?>" alt="Avatar" width="100" height="100"
+                                class="rounded-circle me-3" style="object-fit: cover;">
+                            <div>
+                                <a href="<?= esc_url(home_url('/user-details/?user_id=' . $profile_user->ID)); ?>"
+                                    class="fw-bold text-dark text-decoration-none">
+                                    <?= esc_html($user_full_name); ?>
+                                </a>
+                                <p class="mb-0">
+                                <a href="<?= esc_url(home_url('/user-details/?user_id=' . $profile_user->ID)); ?>" class="btn theme-btn">View Profile</a>
+                                </p>
                             </div>
-
                         </div>
+
+        <?php }
+    }
+
+    echo '</div>';
+} else {
+    echo '<p>No shortlisted profiles found.</p>';
+}
+?>
+
+                                    </div>
+                                </div>
+                            </div>
+                        </div>
+
                     </div>
 
 

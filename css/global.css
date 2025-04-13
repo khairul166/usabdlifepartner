@@ -1810,3 +1810,15 @@ Licence: <a href="https://www.templateonweb.com/license">Website Template Licenc
 	}
   }
   
+
+  .list-group-item {
+	font-weight: 500;
+	border: none;
+	padding: 15px 20px;
+  }
+  .list-group-item.active {
+	background-color: #6f42c1;
+	color: white;
+	border-left: 5px solid #5a2a9c;
+  }
+  

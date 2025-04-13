@@ -1077,5 +1077,114 @@ function check_interest_access_status() {
 }
 
 
+add_action('wp_ajax_toggle_shortlist', 'toggle_shortlist_user');
+
+function create_shortlist_table() {
+    global $wpdb;
+    $table_name = $wpdb->prefix . 'user_shortlists';
+
+    // Check if the table already exists
+    $table_exists = $wpdb->get_var(
+        $wpdb->prepare(
+            "SHOW TABLES LIKE %s",
+            $table_name
+        )
+    );
+
+    if ($table_exists === $table_name) {
+        return; // Table already exists, do nothing
+    }
+
+    // Create the table
+    $charset_collate = $wpdb->get_charset_collate();
+
+    $sql = "CREATE TABLE $table_name (
+        id INT AUTO_INCREMENT PRIMARY KEY,
+        user_id INT NOT NULL,
+        shortlisted_user_id INT NOT NULL,
+        created_at TIMESTAMP DEFAULT CURRENT_TIMESTAMP,
+        UNIQUE KEY unique_shortlist (user_id, shortlisted_user_id)
+    ) $charset_collate;";
+
+    require_once ABSPATH . 'wp-admin/includes/upgrade.php';
+    dbDelta($sql);
+}
 
 
+add_action('wp_ajax_toggle_shortlist', 'toggle_shortlist_user');
+
+function toggle_shortlist_user() {
+    if (!is_user_logged_in()) {
+        wp_send_json_error('Unauthorized');
+    }
+
+    $current_user_id = get_current_user_id();
+    $shortlisted_user_id = intval($_POST['shortlisted_user_id']);
+    global $wpdb;
+    $table = $wpdb->prefix . 'user_shortlists';
+
+    // Check if already shortlisted
+    $exists = $wpdb->get_var($wpdb->prepare(
+        "SELECT id FROM $table WHERE user_id = %d AND shortlisted_user_id = %d",
+        $current_user_id, $shortlisted_user_id
+    ));
+
+    if ($exists) {
+        $wpdb->delete($table, [
+            'user_id' => $current_user_id,
+            'shortlisted_user_id' => $shortlisted_user_id
+        ]);
+        wp_send_json_success(['action' => 'removed']);
+    } else {
+        $wpdb->insert($table, [
+            'user_id' => $current_user_id,
+            'shortlisted_user_id' => $shortlisted_user_id
+        ]);
+        wp_send_json_success(['action' => 'added']);
+    }
+}
+
+
+function usabdlp_render_shortlist_profiles() {
+    // if (!is_user_logged_in()) {
+    //     return '<p>Please log in to see your shortlisted profiles.</p>';
+    // }
+    return '<p>Login status: ' . (is_user_logged_in() ? 'YES' : 'NO') . '</p>' .
+    '<p>Current user ID: ' . get_current_user_id() . '</p>';
+
+    global $wpdb;
+    $user_id = get_current_user_id();
+    $shortlisted = $wpdb->get_results(
+        $wpdb->prepare(
+            "SELECT shortlisted_user_id FROM {$wpdb->prefix}user_shortlists WHERE user_id = %d",
+            $user_id
+        )
+    );
+
+    if (empty($shortlisted)) {
+        return '<p>You haven’t shortlisted anyone yet.</p>';
+    }
+
+    ob_start();
+    echo '<div class="shortlisted-profiles row">';
+    foreach ($shortlisted as $entry) {
+        $shortlisted_id = $entry->shortlisted_user_id;
+        $user_info = get_userdata($shortlisted_id);
+        $profile_img = get_avatar_url($shortlisted_id);
+        $name = esc_html($user_info->display_name);
+        $location = get_user_meta($shortlisted_id, 'country', true); // Replace with your meta key
+
+        echo '<div class="col-md-4 mb-4">';
+        echo '<div class="card">';
+        echo '<img class="card-img-top" src="' . esc_url($profile_img) . '" alt="' . $name . '">';
+        echo '<div class="card-body">';
+        echo '<h5 class="card-title">' . $name . '</h5>';
+        echo '<p class="card-text">Location: ' . esc_html($location) . '</p>';
+        echo '<a href="' . site_url('/profile/' . $shortlisted_id) . '" class="btn btn-primary btn-sm">View Profile</a>';
+        echo '</div></div></div>';
+    }
+    echo '</div>';
+
+    return ob_get_clean();
+}
+add_shortcode('usabdlp_shortlist', 'usabdlp_render_shortlist_profiles');
