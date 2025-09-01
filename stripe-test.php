@@ -1,7 +1,8 @@
 <?php
 // Include the Stripe PHP SDK
 require_once get_template_directory() . '/inc/stripe/lib/Stripe.php'; // Adjust path if needed
-\Stripe\Stripe::setApiKey('sk_test_51RD9q2Qq0KZUzGNUcMChuivZRD2oXsKZxvN7ps6B6DkaOqXLvhY3BN9RROFxUKe1HFNZkjN0IZaSsc0yZf6d78ha00mpguVCol'); // Replace with your actual secret key
+$stripe_secret_key = get_option('usabdlp_payment_client_secret', '');
+\Stripe\Stripe::setApiKey($stripe_secret_key); // Replace with your actual secret key
 
 // Test the connection to Stripe
 try {

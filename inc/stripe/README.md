@@ -52,7 +52,8 @@ If you use Composer, these dependencies should be handled automatically. If you 
 Simple usage looks like:
 
 ```php
-$stripe = new \Stripe\StripeClient('sk_test_BQokikJOvBiI2HlWgH4olfQ2');
+$stripe_secret_key = get_option('usabdlp_payment_client_secret', '');
+$stripe = new \Stripe\StripeClient($stripe_secret_key);
 $customer = $stripe->customers->create([
     'description' => 'example customer',
     'email' => 'email@example.com',
