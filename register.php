@@ -1,22 +1,33 @@
 <?php
+
 /**
  * The main template file
  *
- * This is the most generic template file in a WordPress theme
- * and one of the two required files for a theme (the other being style.css).
- * It is used to display a page when nothing more specific matches a query.
- * E.g., it puts together the home page when no home.php file exists.
- *
- * @package YourThemeName
- * 
  * Template Name: Register
  */
 
 ob_start(); // Start output buffering
 get_header();
 
+global $wpdb;
+
+$selected_plan_id = isset($_GET['plan']) ? intval($_GET['plan']) : 0;
+$selected_plan = null;
+
+if ($selected_plan_id) {
+    $selected_plan = $wpdb->get_row(
+        $wpdb->prepare("SELECT * FROM {$wpdb->prefix}membership_plans WHERE id = %d", $selected_plan_id)
+    );
+
+    if (!$selected_plan) {
+        // Redirect or display error if plan ID is invalid
+        wp_redirect(home_url('/register')); // Or display an error message
+        exit;
+    }
+}
+
 // Handle form submission
-if ($_SERVER['REQUEST_METHOD'] === 'POST' && isset($_POST['register'])) {
+if ($_SERVER['REQUEST_METHOD'] === 'POST' && isset($_POST['pay_register'])) {
     // Sanitize and validate input
     $username = isset($_POST['username']) ? sanitize_user($_POST['username']) : '';
     $email = isset($_POST['email']) ? sanitize_email($_POST['email']) : '';
@@ -54,66 +65,171 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST' && isset($_POST['register'])) {
     if ($password !== $confirm_password) {
         $error_message = 'Passwords do not match.';
     } else {
-        // Create new user
-        $user_id = wp_create_user($username, $password, $email);
+        // Capture the selected plan ID from the form submission
+        $selected_plan_id = isset($_POST['selected_plan_id']) ? intval($_POST['selected_plan_id']) : 0;
 
-        if (is_wp_error($user_id)) {
-            $error_message = $user_id->get_error_message();
-        } else {
-            // Save additional user meta data
-            update_user_meta($user_id, 'first_name', $fname);
-            update_user_meta($user_id, 'last_name', $lname);
-            update_user_meta($user_id, 'profile_created_by', $profileby);
-            update_user_meta($user_id, 'looking_for', $lookingfor);
-            update_user_meta($user_id, 'religion', $religion);
-            update_user_meta($user_id, 'dob', $dob);
-            update_user_meta($user_id, 'marital_status', $maritalstatus);
-            update_user_meta($user_id, 'user_gender', $user_gender);
-            update_user_meta($user_id, 'education', $education);
-            update_user_meta($user_id, 'profession', $user_profession);
-            update_user_meta($user_id, 'country', $country);
-            update_user_meta($user_id, 'division', $division);
-            update_user_meta($user_id, 'district', $district);
-            update_user_meta($user_id, 'upazila', $upazila);
-            update_user_meta($user_id, 'village', $village);
-            update_user_meta($user_id, 'landmark', $landmark);
-            update_user_meta($user_id, 'user_phone', $user_phone);
-            update_user_meta($user_id, 'user_g_phone', $user_g_phone);
-            update_user_meta($user_id, 'guardian_country_code', $guardian_country_code);
-            update_user_meta($user_id, 'candidate_country_code', $candidate_country_code);
+        // Check if the Free Plan is selected (assuming '0' is the ID for Free plan)
+        if ($selected_plan_id == 0) {
+            // Create new user without payment (Free plan)
+            $user_id = wp_create_user($username, $password, $email);
 
-            // Save USA Fields
-            if ($country === 'USA') {
-                update_user_meta($user_id, 'state', $state);
-                update_user_meta($user_id, 'city', $city);
-                update_user_meta($user_id, 'usaLandmark', $usaLandmark);
+            if (is_wp_error($user_id)) {
+                $error_message = $user_id->get_error_message();
+            } else {
+                // Save user meta data
+                update_user_meta($user_id, 'first_name', $fname);
+                update_user_meta($user_id, 'last_name', $lname);
+                update_user_meta($user_id, 'profile_created_by', $profileby);
+                update_user_meta($user_id, 'looking_for', $lookingfor);
+                update_user_meta($user_id, 'religion', $religion);
+                update_user_meta($user_id, 'dob', $dob);
+                update_user_meta($user_id, 'marital_status', $maritalstatus);
+                update_user_meta($user_id, 'user_gender', $user_gender);
+                update_user_meta($user_id, 'education', $education);
+                update_user_meta($user_id, 'profession', $user_profession);
+                update_user_meta($user_id, 'country', $country);
+                update_user_meta($user_id, 'division', $division);
+                update_user_meta($user_id, 'district', $district);
+                update_user_meta($user_id, 'upazila', $upazila);
+                update_user_meta($user_id, 'village', $village);
+                update_user_meta($user_id, 'landmark', $landmark);
+                update_user_meta($user_id, 'user_phone', $user_phone);
+                update_user_meta($user_id, 'user_g_phone', $user_g_phone);
+                update_user_meta($user_id, 'guardian_country_code', $guardian_country_code);
+                update_user_meta($user_id, 'candidate_country_code', $candidate_country_code);
+
+                // Save USA Fields
+                if ($country === 'USA') {
+                    update_user_meta($user_id, 'state', $state);
+                    update_user_meta($user_id, 'city', $city);
+                    update_user_meta($user_id, 'usaLandmark', $usaLandmark);
+                }
+
+                // Save Free plan to wp_memberships table
+                $wpdb->insert(
+                    "{$wpdb->prefix}memberships",
+                    [
+                        'user_id' => $user_id,
+                        'membership_type' => 'Free', // Store Free plan info
+                        'start_date' => current_time('mysql'),
+                        'end_date' => null, // No end date for Free plan
+                        'status' => 'active',
+                        'created_at' => current_time('mysql')
+                    ]
+                );
+
+                // Generate verification token
+                $token = bin2hex(random_bytes(16));
+                update_user_meta($user_id, 'email_verification_token', $token);
+                update_user_meta($user_id, 'email_verified', 0);
+
+                // Build verification URL
+                $verification_url = home_url("/verify-email/?token={$token}&user_id={$user_id}");
+
+                // Send email
+                $subject = 'Verify Your Email Address';
+                $message = "<p>Thanks for registering. Please <a href='{$verification_url}'>click here to verify your email</a>.</p>";
+                $headers = ['Content-Type: text/html; charset=UTF-8'];
+
+                wp_mail($email, $subject, $message, $headers);
+
+                wp_redirect(home_url('/my-account'));
+                exit;
             }
+        }
+        // If Premium Plan is selected, proceed with the payment
+        else {
+            $plan = $wpdb->get_row(
+                $wpdb->prepare("SELECT * FROM {$wpdb->prefix}membership_plans WHERE id = %d", $selected_plan_id)
+            );
 
-            // Generate verification token
-            $token = bin2hex(random_bytes(16));
-            update_user_meta($user_id, 'email_verification_token', $token);
-            update_user_meta($user_id, 'email_verified', 0);
+            if (!$plan) {
+                $error_message = 'Invalid Plan ID.';
+            } else {
+                // Here we mock the payment gateway (replace this part with actual payment logic)
+                $payment_successful = true;  // Assume payment is successful, replace with actual gateway logic
 
-            // Build verification URL
-            $verification_url = home_url("/verify-email/?token={$token}&user_id={$user_id}");
+                if ($payment_successful) {
+                    // Create the user after payment success
+                    $user_id = wp_create_user($username, $password, $email);
 
-            // Send email
-            $subject = 'Verify Your Email Address';
-            $message = "<p>Thanks for registering. Please <a href='{$verification_url}'>click here to verify your email</a>.</p>";
-            $headers = ['Content-Type: text/html; charset=UTF-8'];
+                    if (is_wp_error($user_id)) {
+                        $error_message = $user_id->get_error_message();
+                    } else {
+                        // Save user meta data
+                        update_user_meta($user_id, 'first_name', $fname);
+                        update_user_meta($user_id, 'last_name', $lname);
+                        update_user_meta($user_id, 'profile_created_by', $profileby);
+                        update_user_meta($user_id, 'looking_for', $lookingfor);
+                        update_user_meta($user_id, 'religion', $religion);
+                        update_user_meta($user_id, 'dob', $dob);
+                        update_user_meta($user_id, 'marital_status', $maritalstatus);
+                        update_user_meta($user_id, 'user_gender', $user_gender);
+                        update_user_meta($user_id, 'education', $education);
+                        update_user_meta($user_id, 'profession', $user_profession);
+                        update_user_meta($user_id, 'country', $country);
+                        update_user_meta($user_id, 'division', $division);
+                        update_user_meta($user_id, 'district', $district);
+                        update_user_meta($user_id, 'upazila', $upazila);
+                        update_user_meta($user_id, 'village', $village);
+                        update_user_meta($user_id, 'landmark', $landmark);
+                        update_user_meta($user_id, 'user_phone', $user_phone);
+                        update_user_meta($user_id, 'user_g_phone', $user_g_phone);
+                        update_user_meta($user_id, 'guardian_country_code', $guardian_country_code);
+                        update_user_meta($user_id, 'candidate_country_code', $candidate_country_code);
 
-            wp_mail($email, $subject, $message, $headers);
+                        // Save USA Fields
+                        if ($country === 'USA') {
+                            update_user_meta($user_id, 'state', $state);
+                            update_user_meta($user_id, 'city', $city);
+                            update_user_meta($user_id, 'usaLandmark', $usaLandmark);
+                        }
 
-            // Optional: Log the user out right away if needed
-//  wp_logout();
+                        // Save premium plan to wp_memberships table
+                        $wpdb->insert(
+                            "{$wpdb->prefix}memberships",
+                            [
+                                'user_id' => $user_id,
+                                'membership_type' => $plan->id, // Save Plan ID (not the name)
+                                'start_date' => current_time('mysql'),
+                                'end_date' => date('Y-m-d H:i:s', strtotime("+{$plan->duration_days} days")),
+                                'status' => 'active',
+                                'created_at' => current_time('mysql')
+                            ]
+                        );
 
-            wp_redirect(home_url('/my-account'));
-            exit;
+                        // Generate verification token
+                        $token = bin2hex(random_bytes(16));
+                        update_user_meta($user_id, 'email_verification_token', $token);
+                        update_user_meta($user_id, 'email_verified', 0);
+
+                        // Build verification URL
+                        $verification_url = home_url("/verify-email/?token={$token}&user_id={$user_id}");
+
+                        // Send email
+                        $subject = 'Verify Your Email Address';
+                        $message = "<p>Thanks for registering. Please <a href='{$verification_url}'>click here to verify your email</a>.</p>";
+                        $headers = ['Content-Type: text/html; charset=UTF-8'];
+
+                        wp_mail($email, $subject, $message, $headers);
+
+                        wp_redirect(home_url('/my-account'));
+                        exit;
+                    }
+                } else {
+                    // Payment failed, show error message
+                    $error_message = 'Payment failed. Please try again.';
+                    echo "<p style='color: red;'>$error_message</p>";
+                }
+            }
         }
     }
 }
+$enable_payment = intval(get_option('enable_payment', 1));
 ?>
 
+<?php if(!is_user_logged_in()){
+    ?>
 <section id="center" class="search_form pt-5 pb-5">
     <div class="container-xl">
         <h1 class="theme-text-color text-center mb-4">REGISTRATION</h1>
@@ -124,14 +240,14 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST' && isset($_POST['register'])) {
             <div class="col-md-12">
                 <span class="text-center d-block mb-3">Your partner search begins with a<br>
                     FREE REGISTRATION!</span>
-                <form method="post">
+                <form method="post" class="needs-validation" novalidate action="<?php if($enable_payment){ echo get_template_directory_uri().'/payment_processing.php';} ?>">
                     <div class="personalinfo">
                         <div class="row">
                             <h3 class="reg_form_head pb-2 pt-2 theme-text-color">Personal Information</h3>
                             <div class="col-md-6 pt-1 pb-2">
                                 <label for="profileby">Profile created by:</label>
                                 <select id="profileby" name="profileby" class="form-select form-select-sm" required>
-                                    <option selected disabled>Select One</option>
+                                    <option value="" selected disabled>Select One</option>
                                     <option value="Self">Self</option>
                                     <option value="Friend">Friend</option>
                                     <option value="Guardian">Guardian</option>
@@ -139,39 +255,45 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST' && isset($_POST['register'])) {
                                     <option value="Relative">Relative</option>
                                     <option value="Others">Others</option>
                                 </select>
+                                <div class="invalid-feedback">Please choose a Option.</div>
                             </div>
                             <div class="col-md-6 pt-1 pb-2">
                                 <label for="lookingfor">Looking For:</label>
                                 <select id="lookingfor" name="lookingfor" class="form-select form-select-sm" required>
-                                    <option selected disabled>Select One</option>
+                                    <option value="" selected disabled>Select One</option>
                                     <option value="Bride">Bride</option>
                                     <option value="Groom">Groom</option>
                                 </select>
+                                <div class="invalid-feedback">This field is required.</div>
                             </div>
                             <div class="col-md-6 pt-1 pb-2">
                                 <label for="fname" class="form-label">First Name:</label>
                                 <input type="text" class="form-control" id="fname" name="fname"
                                     placeholder="Enter your first name" required>
+                                <div class="invalid-feedback">Please choose a username.</div>
                             </div>
                             <div class="col-md-6 pt-1 pb-2">
                                 <label for="lname" class="form-label">Last Name:</label>
                                 <input type="text" class="form-control" id="lname" name="lname"
                                     placeholder="Enter your last name" required>
+                                <div class="invalid-feedback">Please enter your last name.</div>
                             </div>
                             <div class="col-md-6 pt-1 pb-2">
                                 <label for="religion" class="form-label">Religion:</label>
                                 <select id="religion" name="religion" class="form-select form-select-sm" required>
-                                    <option selected disabled>Religion</option>
+                                    <option value="" selected disabled>Religion</option>
                                     <option value="Hindu">Hindu</option>
                                     <option value="Muslim">Muslim</option>
                                     <option value="Sikh">Sikh</option>
                                     <option value="Christian">Christian</option>
                                     <option value="Jain">Jain</option>
                                 </select>
+                                <div class="invalid-feedback">This field is required.</div>
                             </div>
                             <div class="col-md-6 pt-1 pb-2">
                                 <label for="dob" class="form-label">Date of Birth:</label>
                                 <input type="date" class="form-control" id="dob" name="dob" required>
+                                <div class="invalid-feedback">This field is required.</div>
                             </div>
                             <div class="col-md-6 pt-1 pb-2">
                                 <label for="maritalstatus" class="form-label">Marital Status:</label>
@@ -184,11 +306,12 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST' && isset($_POST['register'])) {
                                     <option value="Annulled">Annulled</option>
                                     <option value="Divorced">Divorced</option>
                                 </select>
+                                <div class="invalid-feedback">This field is required.</div>
                             </div>
                             <div class="col-md-6 pt-1 pb-2">
                                 <label for="education" class="form-label">Education</label>
                                 <select id="education" name="education" class="form-select form-select-sm" required>
-                                    <option selected disabled>Select Education</option>
+                                    <option value="" selected disabled>Select Education</option>
                                     <option value="A Level">A Level</option>
                                     <option value="Alim">Alim</option>
                                     <option value="Associates Degree">Associates Degree</option>
@@ -224,6 +347,7 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST' && isset($_POST['register'])) {
                                     <option value="Trade school">Trade school</option>
                                     <option value="Undergraduate">Undergraduate</option>
                                 </select>
+                                <div class="invalid-feedback">This field is required.</div>
                             </div>
                             <div class="col-md-6 pt-1 pb-2">
                                 <label for="user_profession" class="form-label">Profession</label>
@@ -345,6 +469,7 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST' && isset($_POST['register'])) {
                                     <option value="Writer">Writer</option>
                                     <option value="Zoologist">Zoologist</option>
                                 </select>
+                                <div class="invalid-feedback">This field is required.</div>
                             </div>
                             <div class="col-md-6 pt-1 pb-2">
                                 <label for="user_gender" class="form-label">Gender</label>
@@ -363,7 +488,7 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST' && isset($_POST['register'])) {
                                     <option value="other">Other</option>
                                     <option value="prefer_not_say">Prefer not to say</option>
                                 </select>
-
+                                <div class="invalid-feedback">This field is required.</div>
                             </div>
                         </div>
                     </div>
@@ -373,48 +498,53 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST' && isset($_POST['register'])) {
                         <div class="row">
                             <div class="col-md-12">
                                 <label for="country" class="form-label">Country Of Present Location *</label>
-                                <select id="country" name="country" class="form-select">
-                                    <option selected disabled>Select country</option>
+                                <select id="country" name="country" class="form-select" required>
+                                    <option value="" selected disabled>Select country</option>
                                     <option value="Bangladesh">Bangladesh</option>
                                     <option value="USA">USA</option>
                                 </select>
+                                <div class="invalid-feedback">This field is required.</div>
                             </div>
 
                         </div>
 
                         <div id="bangladeshFields">
                             <div class="row">
-                            <div class="col-md-6 mt-3" id="user_divison">
-                                <label for="division" class="form-label">Present Division *</label>
-                                <select id="division" name="division" class="form-select" required>
-                                    <option value="">Select Division</option>
-                                </select>
-                            </div>
+                                <div class="col-md-6 mt-3" id="user_divison">
+                                    <label for="division" class="form-label">Present Division *</label>
+                                    <select id="division" name="division" class="form-select" required>
+                                        <option value="">Select Division</option>
+                                    </select>
+                                    <div class="invalid-feedback">This field is required.</div>
+                                </div>
                                 <div class="col-md-6 mt-3">
                                     <label for="district" class="form-label">Present District *</label>
                                     <select id="district" name="district" class="form-select" required>
                                         <option value="">Select District</option>
                                     </select>
+                                    <div class="invalid-feedback">This field is required.</div>
                                 </div>
                                 <div class="col-md-6 mt-3">
                                     <label for="upazila" class="form-label">Present Upazila / City *</label>
                                     <select id="upazila" name="upazila" class="form-select" required>
                                         <option value="">Select Upazila/City</option>
                                     </select>
+                                    <div class="invalid-feedback">This field is required.</div>
                                 </div>
 
 
                                 <div class="col-md-6 mt-3">
-                                    <label for="village" class="form-label" required>Village / Area *</label>
+                                    <label for="village" class="form-label">Village / Area *</label>
                                     <input type="text" id="village" name="village" class="form-control"
-                                        placeholder="Enter Village Name">
+                                        placeholder="Enter Village Name" required>
+                                        <div class="invalid-feedback">This field is required.</div>
                                 </div>
                                 <div class="col-md-6 mt-3">
                                     <label for="landmark" class="form-label">Location / Landmark / Area *</label>
                                     <input type="text" id="landmark" name="landmark" class="form-control"
-                                        placeholder="Enter landmark" required>
+                                        placeholder="Enter landmark">
                                 </div>
-                                </div>
+                            </div>
                         </div>
 
                         <div id="usaFields" style="display: none;">
@@ -424,12 +554,14 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST' && isset($_POST['register'])) {
                                     <select id="state" name="state" class="form-select" required>
                                         <option value="">Select State</option>
                                     </select>
+                                    <div class="invalid-feedback">This field is required.</div>
                                 </div>
                                 <div class="col-md-6">
                                     <label for="city" class="form-label">City Of Present State *</label>
                                     <select id="city" name="city" class="form-select" required>
                                         <option value="">Select City</option>
                                     </select>
+                                    <div class="invalid-feedback">This field is required.</div>
                                 </div>
                             </div>
                             <div class="row mt-3">
@@ -445,15 +577,17 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST' && isset($_POST['register'])) {
 
                     <h3 class="reg_form_head pb-2 pt-2 theme-text-color">Account Information</h3>
                     <div class="row">
-                        <div class="col-md-12 pt-1 pb-2">
+                        <div class="col-md-6 pt-1 pb-2">
                             <label for="username" class="form-label">Username</label>
                             <input type="text" id="username" name="username" class="form-control"
                                 placeholder="Enter Username" required>
+                            <div class="invalid-feedback">Username already exists.</div>
                         </div>
-                        <div class="col-md-12 pt-1 pb-2">
+                        <div class="col-md-6 pt-1 pb-2">
                             <label for="email" class="form-label">Email</label>
-                            <input type="email" id="email" name="email" class="form-control" placeholder="Enter Email"
+                            <input type="text" id="email" name="email" class="form-control" placeholder="Enter Email"
                                 required>
+                            <div class="invalid-feedback">Email already exists.</div>
                         </div>
                         <div class="col-md-6 pt-1 pb-2">
                             <label for="user_phone" class="form-label">Candidate Phone Number*</label>
@@ -461,11 +595,12 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST' && isset($_POST['register'])) {
                                 <select class="form-select" id="candidate_country_code" name="candidate_country_code"
                                     style="max-width: 100px;" required>
                                     <option value="+1">+1 (USA)</option>
-                                    <option value="+880">+880 (Bangladesh)</option>
+                                    <option value="+880" selected>+880 (Bangladesh)</option>
                                     <!-- Add more country codes as needed -->
                                 </select>
                                 <input type="text" id="user_phone" name="user_phone" class="form-control"
                                     placeholder="Enter Candidate Phone Number" required>
+                                <div class="invalid-feedback">Phone is already used.</div>
                             </div>
                         </div>
                         <div class="col-md-6 pt-1 pb-2">
@@ -474,23 +609,142 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST' && isset($_POST['register'])) {
                                 <select class="form-select" id="guardian_country_code" name="guardian_country_code"
                                     style="max-width: 100px;" required>
                                     <option value="+1">+1 (USA)</option>
-                                    <option value="+880">+880 (Bangladesh)</option>
+                                    <option value="+880" selected>+880 (Bangladesh)</option>
                                     <!-- Add more country codes as needed -->
                                 </select>
                                 <input type="text" id="user_g_phone" name="user_g_phone" class="form-control"
                                     placeholder="Enter Guardian Phone Number" required>
+                                <div class="invalid-feedback">Phone is already used.</div>
                             </div>
                         </div>
-                        <div class="col-md-6 pt-1 pb-2">
+                        <!-- Password Field -->
+                        <div class="col-md-6 pt-1 pb-2 position-relative">
                             <label for="password" class="form-label">Password*</label>
-                            <input type="password" id="password" name="password" class="form-control"
-                                placeholder="Enter Password" required>
+                            <div class="position-relative">
+                                <input type="password" id="password" name="password" class="form-control pe-5" placeholder="Enter Password" required>
+                                <span class="dashicons dashicons-visibility toggle-password"
+                                    data-target="password"
+                                    style="position: absolute; right: 15px; top: 50%; transform: translateY(-50%); cursor: pointer; font-size: 18px;"></span>
+                            </div>
+                            <div class="valid-feedback">Strong password!</div>
+                            <div class="invalid-feedback">Password must meet complexity requirements.</div>
                         </div>
-                        <div class="col-md-6 pt-1 pb-2">
+
+
+                        <!-- Confirm Password Field -->
+                        <div class="col-md-6 pt-1 pb-2 position-relative">
                             <label for="repassword" class="form-label">Confirm Password*</label>
-                            <input type="password" id="repassword" name="repassword" class="form-control"
-                                placeholder="Re-type Password" required>
+                            <div class="position-relative">
+                                <input type="password" id="repassword" name="repassword" class="form-control pe-5" placeholder="Re-type Password" required>
+                                <span class="dashicons dashicons-visibility toggle-password"
+                                    data-target="repassword"
+                                    style="position: absolute; right: 15px; top: 50%; transform: translateY(-50%); cursor: pointer; font-size: 18px;"></span>
+                            </div>
+                            <div class="valid-feedback">Passwords match!</div>
+                            <div class="invalid-feedback">Passwords do not match.</div>
                         </div>
+
+
+                        <?php
+                         ?>
+                         <?php if($enable_payment){ ?>
+                        <h3 class="reg_form_head pb-2 pt-2 theme-text-color">Payment Information</h3>
+
+                        <?php
+                        $all_plans = $wpdb->get_results("SELECT * FROM {$wpdb->prefix}membership_plans ORDER BY price ASC");
+                        ?>
+                        <!-- User comes with a selected plan -->
+                        <input type="hidden" name="hidden_selected_plan_id" id='hidden_selected_plan_id' value="<?php echo esc_attr($selected_plan->id); ?>">
+                        <input type="hidden" name="selected_plan_price" id="selected_plan_price" value="<?php echo esc_attr($selected_plan->price); ?>">
+                        <input type="hidden" name="select_plan_duration" id="select_plan_duration" value="1"> <!-- Plan Duration -->
+
+                        <div class="row">
+                            <?php if ($selected_plan): ?>
+
+
+                                <div class="col-md-4 pt-1 pb-2"><label class="form-label">Plan Duration:</label></div>
+                                <div class="col-md-8 pt-1 pb-2">
+                                    <select id="plan_duration" class="form-select">
+                                        <option value="1">1 Month</option>
+                                        <option value="2">2 Months</option>
+                                        <option value="3">3 Months</option>
+                                        <option value="4">4 Months</option>
+                                        <option value="5">5 Months</option>
+                                        <option value="6">6 Months</option>
+                                        <option value="7">7 Months</option>
+                                        <option value="8">8 Months</option>
+                                        <option value="9">9 Months</option>
+                                        <option value="10">10 Months</option>
+                                        <option value="11">11 Months</option>
+                                        <option value="12">12 Months</option>
+                                    </select>
+                                </div>
+
+                                <div class="col-4 pt-1 pb-2"><label class="form-label">Selected Plan:</label></div>
+                                <div class="col-8 pt-1 pb-2">
+                                    <span id="selected_plan_text"><?php echo esc_html($selected_plan->name); ?></span>
+                                </div>
+
+                            <?php else: ?>
+                                <!-- User comes without a selected plan -->
+                                <div class="col-4 pt-1 pb-2"><label for="selected_plan_id" class="form-label">Select a Plan:</label></div>
+                                <div class="col-8 pt-1 pb-2">
+                                    <select id="selected_plan_id" name="selected_plan_id" class="form-select" required>
+                                        <option value="">-- Choose Plan --</option>
+                                        <?php foreach ($all_plans as $plan): ?>
+                                            <option
+                                                value="<?php echo esc_attr($plan->id); ?>"
+                                                data-price="<?php echo esc_attr($plan->price); ?>"
+                                                data-name="<?php echo esc_attr($plan->name); ?>">
+                                                <?php echo esc_html($plan->name); ?>
+                                            </option>
+                                        <?php endforeach; ?>
+                                    </select>
+                                    <div class="invalid-feedback">This field is required.</div>
+                                </div>
+
+                                <div class="col-4 pt-1 pb-2"><label class="form-label">Plan Duration:</label></div>
+                                <div class="col-8 pt-1 pb-2">
+                                    <select id="plan_duration" class="form-select">
+                                        <option value="1" selected>1 Month</option>
+                                        <option value="2">2 Months</option>
+                                        <option value="3">3 Months</option>
+                                        <option value="4">4 Months</option>
+                                        <option value="5">5 Months</option>
+                                        <option value="6">6 Months</option>
+                                        <option value="7">7 Months</option>
+                                        <option value="8">8 Months</option>
+                                        <option value="9">9 Months</option>
+                                        <option value="10">10 Months</option>
+                                        <option value="11">11 Months</option>
+                                        <option value="12">12 Months</option>
+                                    </select>
+                                </div>
+
+                                <div class="col-4 pt-1 pb-2"><label class="form-label">Selected Plan:</label></div>
+                                <div class="col-8 pt-1 pb-2">
+                                    <span id="selected_plan_text">Free/Gold/Platinum</span>
+                                </div>
+                            <?php endif; ?>
+
+                            <!-- Common billing rows -->
+                            <div class="col-4 pt-1 pb-2"><label class="form-label">Sub Total:</label></div>
+                            <div class="col-8 pt-1 pb-2"><span id="sub_total">$0.00</span></div>
+
+                            <div class="col-4 pt-1 pb-2"><label class="form-label">Tax:</label></div>
+                            <div class="col-8 pt-1 pb-2"><span id="tax_amount">$0.00</span></div>
+
+                            <div class="col-4 pt-1 pb-2"><label class="form-label fw-bold">Total:</label></div>
+                            <div class="col-8 pt-1 pb-2"><span id="total_amount" class="fw-bold">$0.00</span></div>
+                        </div>
+                        <?php } ?>
+
+
+
+
+
+
+
                         <div class="d-flex mt-4">
                             <input class="form-check-input me-2" type="checkbox" value="" id="invalidCheck" required>
                             <label class="form-check-label" for="invalidCheck">
@@ -499,8 +753,10 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST' && isset($_POST['register'])) {
                             </label>
                         </div>
                         <div class="d-block mt-4 text-center">
-                            <button type="submit" name="register" class="d-block button w-50 mx-auto"><strong>Register
-                                    For Free</strong></button>
+                            <button type="submit" name="pay_register" class="d-block button w-50 mx-auto">
+                                <strong id="register_btn_label">Register For Free</strong>
+                            </button>
+
                         </div>
                     </div>
                 </form>
@@ -538,4 +794,9 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST' && isset($_POST['register'])) {
     </div>
 </section>
 
-<?php get_footer(); ?>
+<?php
+}else{
+    wp_redirect( home_url('/my-account') ); 
+    exit;
+}
+ get_footer(); ?>

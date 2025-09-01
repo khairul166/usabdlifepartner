@@ -1,4 +1,5 @@
 <?php
+
 /**
  * Template Name: User Profile
  */
@@ -90,14 +91,13 @@ if ($user_id) {
         $partner_religion = get_user_meta($user_id, 'partner_religion', true);
         $partner_country = get_user_meta($user_id, 'partner_country', true);
         $lookingfor = get_user_meta($user_id, 'looking_for', true);
-
-
     } else {
         echo '<p>No user found with this ID.</p>';
     }
 } else {
     echo '<p>Invalid user ID.</p>';
 }
+
 
 ?>
 
@@ -107,12 +107,32 @@ if ($user_id) {
             <div class="col-lg-9 col-md-8">
                 <div class="list_dt">
                     <div class="list_dt1 shadow p-3">
-                        <div class="list_1_right2_inner row mx-0">
+                        <div class="list_1_right2_inner row mx-0 animate__animated list_1_right2_inner row mx-0">
                             <div class="col-md-3 ps-0 col-sm-4">
-                                <div class="list_1_right2_inner_left">
+                                <div class="list_1_right2_inner_left" style="position: relative;">
                                     <img src="<?php echo esc_url($profile_pic); ?>" class="img-fluid"
                                         alt="Profile Picture">
-                                    <?php $user_id = isset($_GET['user_id']) ? $_GET['user_id'] : 0;
+                                    <?php
+                                    global $wpdb;
+                                    // Get membership info for the current user in the loop
+                                    $saved_default_package = intval(get_option('usabdlp_default_package', 0));
+                                    $membership_info = $wpdb->get_row(
+                                        $wpdb->prepare("SELECT * FROM {$wpdb->prefix}memberships WHERE user_id = %d AND status = 'active'", $user_id)
+                                    );
+
+                                    if ($membership_info) {
+                                        $plan = $wpdb->get_row(
+                                            $wpdb->prepare("SELECT * FROM {$wpdb->prefix}membership_plans WHERE id = %d", $membership_info->membership_type)
+                                        );
+
+                                        if ($plan->id > $saved_default_package) {
+                                            echo '<span class="membership-badge">' . esc_html($plan->name) . '</span>';
+                                        }
+                                    }
+                                    // else {
+                                    //     echo '<span class="membership-badge">Free</span>';
+                                    // }
+                                    $user_id = isset($_GET['user_id']) ? $_GET['user_id'] : 0;
 
                                     $last_login = get_user_meta($user_id, 'last_login', true);
                                     $last_activity = get_user_meta($user_id, 'last_activity', true);
@@ -135,6 +155,7 @@ if ($user_id) {
                                     ?>
                                 </div>
                             </div>
+                            
                             <div class="col-md-9 col-sm-8">
                                 <div class="row row-cols-1 row-cols-lg-2 row-cols-md-1 list_1_right2_inner_right_inner">
                                     <div class="col">
@@ -163,6 +184,7 @@ if ($user_id) {
                                                 <li class="d-flex mt-2"><b class="me-2">Annual Income:</b>
                                                     <span><?php echo esc_html($annual_income); ?></span>
                                                 </li>
+
                                             </ul>
                                         </div>
                                     </div>
@@ -223,7 +245,7 @@ if ($user_id) {
                                                     ));
 
                                                     if ($interest && $interest->status === 'accepted'):
-                                                        ?>
+                                                ?>
                                                         <span class="badge bg-success mt-2 px-3 py-2 fs-6 fw-semibold">✅ Interest
                                                             Accepted</span>
 
@@ -249,19 +271,20 @@ if ($user_id) {
                                                             </button>
                                                         </div>
                                                         <?php
-                                                            global $wpdb;
-                                                            
-                                                            $is_shortlisted = $wpdb->get_var(
+                                                        global $wpdb;
+
+                                                        $is_shortlisted = $wpdb->get_var(
                                                             $wpdb->prepare(
                                                                 "SELECT COUNT(*) FROM {$wpdb->prefix}user_shortlists WHERE user_id = %d AND shortlisted_user_id = %d",
-                                                                $current_user, $profile_id
+                                                                $current_user,
+                                                                $profile_id
                                                             )
-                                                            );
-                                                            ?>
+                                                        );
+                                                        ?>
                                                         <div class="shortlist mt-2">
-                                                        <button class="shortlist-btn px-5 py-2 theme-btn" data-userid="<?php echo $user_id; ?>"><?php echo $is_shortlisted ? 'Remove Shortlist' : 'Shortlist'; ?> </button>
+                                                            <button class="shortlist-btn px-5 py-2 theme-btn" data-userid="<?php echo $user_id; ?>"><?php echo $is_shortlisted ? 'Remove Shortlist' : 'Shortlist'; ?> </button>
                                                         </div>
-                                                        
+
 
 
                                                     <?php endif; ?>
@@ -275,339 +298,339 @@ if ($user_id) {
                         </div>
                     </div>
 
-<?php 
-global $access_granted, $access_debug;
-?>
+                    <?php
+                    global $access_granted, $access_debug;
+                    ?>
                     <!-- Personal Information Section -->
                     <?php if ($access_granted): ?>
-                    <div class="list_dt2 mt-4 p-3 shadow">
-                        <h3>Personal Information</h3>
-                        <hr class="line mb-4">
-                        <h5 class="mb-3"><i class="bi bi-gender-female text-danger me-1 align-middle"></i> About</h5>
-                        <p class="px_28 mb-0"><?php echo esc_html($about_yourself); ?></p>
+                        <div class="list_dt2 mt-4 p-3 shadow animate__animated animate__fadeInUp" style="animation-delay: 0.2s;">
+                            <h3>Personal Information</h3>
+                            <hr class="line mb-4">
+                            <h5 class="mb-3"><i class="bi bi-gender-female text-danger me-1 align-middle"></i> About</h5>
+                            <p class="px_28 mb-0"><?php echo esc_html($about_yourself); ?></p>
 
-                        <h5 class="mb-3 mt-4"><i class="bi bi-person text-danger me-1 align-middle"></i> Basic Details
-                        </h5>
-                        <ul class="px_28 font_14 justify-content-between d-flex mb-0 flex-wrap">
-                            <li>
-                                <b class="d-block">Name:</b>
-                                <b class="d-block mt-2">Age:</b>
-                                <b class="d-block mt-2">Height:</b>
-                                <b class="d-block mt-2">Weight:</b>
-                                <b class="d-block mt-2">Mother Tongue:</b>
-                                <b class="d-block mt-2">Marital Status:</b>
-                            </li>
-                            <li>
-                                <span class="d-block"><?php echo esc_html($name); ?></span>
-                                <span class="d-block mt-2"><?php echo esc_html($age); ?> Yrs</span>
-                                <span class="d-block mt-2"><?php echo esc_html($height); ?> Inch</span>
-                                <span class="d-block mt-2"><?php echo esc_html($weight); ?> Kg</span>
-                                <span class="d-block mt-2"><?php echo esc_html($mother_tongue); ?></span>
-                                <span class="d-block mt-2"><?php echo esc_html($marital_status); ?></span>
-                            </li>
-                            <li>
-                                <b class="d-block">Body Type:</b>
-                                <b class="d-block mt-2">Complexion:</b>
-                                <b class="d-block mt-2">Physical Status:</b>
-                                <b class="d-block mt-2">Eating Habits:</b>
-                                <b class="d-block mt-2">Drinking Habits:</b>
-                                <b class="d-block mt-2">Smoking Habits:</b>
-                            </li>
-                            <li>
-                                <span class="d-block"><?php echo esc_html($body_type); ?></span>
-                                <span class="d-block mt-2"><?php echo esc_html($complexion); ?></span>
-                                <span class="d-block mt-2"><?php echo esc_html($physical_status); ?></span>
-                                <span class="d-block mt-2"><?php echo esc_html($eating_habits); ?></span>
-                                <span class="d-block mt-2"><?php echo esc_html($drinking_habits); ?></span>
-                                <span class="d-block mt-2"><?php echo esc_html($smoking_habits); ?></span>
-                            </li>
-                        </ul>
-                        <div class="row row-cols-1 row-cols-md-2 list_dt2_inner">
-                            <div class="col">
-                                <div class="list_dt2_inner_left">
-                                    <h5 class="mb-3 mt-4">
-                                        <i class="bi bi-phone theme-text-color me-1 align-middle"></i>
-                                        Contact Details
-                                    </h5>
-                                    <ul class="px_28 font_14 mb-0">
-                                        <li class="d-flex">
-                                            <b class="me-2">Your Contact Number:</b>
-                                            <span><?php echo esc_html($candidate_country_code . ' ' . $candidate_phone); ?></span>
-                                        </li>
-                                        <li class="d-flex mt-2">
-                                            <b class="me-2">Parent Contact Number:</b>
-                                            <span><?php echo esc_html($parent_country_code . ' ' . $parent_phone); ?></span>
-                                        </li>
-                                        <li class="d-flex mt-2">
-                                            <b class="me-2">Email:</b>
-                                            <span><?php
-                                                            if ($email_verified == true) {
-                                                                echo esc_html($email) . ' <i class="fas fa-check-circle text-primary"></i>';
-                                                            } else {
-                                                                echo esc_html($email);
-                                                            }
-                                                            ?></span>
-                                        </li>
-                                    </ul>
-                                </div>
-                            </div>
-                            <div class="col">
-                                <div class="list_dt2_inner_left">
-                                    <h5 class="mb-3 mt-4">
-                                        <i class="bi bi-book theme-text-color me-1 align-middle"></i>
-                                        Religion Information
-                                    </h5>
-                                    <ul class="px_28 font_14 mb-0">
-                                        <li class="d-flex">
-                                            <b class="me-2">Religion:</b>
-                                            <span><?php echo esc_html($religion); ?></span>
-                                        </li>
-                                    </ul>
-                                </div>
-                            </div>
-                        </div>
-                        <h5 class="mb-3 mt-4"><i class="bi bi-map theme-text-color me-1 align-middle"></i>
-                            Location</h5>
-                        <?php
-                        if ($country == "Bangladesh") {
-                            ?>
-                            <ul class="px_28 font_14 mb-0">
-                                <li class="d-flex"><b class="me-2"> Country:</b>
-                                    <span><?php echo $country; ?></span>
+                            <h5 class="mb-3 mt-4"><i class="bi bi-person text-danger me-1 align-middle"></i> Basic Details
+                            </h5>
+                            <ul class="px_28 font_14 justify-content-between d-flex mb-0 flex-wrap">
+                                <li>
+                                    <b class="d-block">Name:</b>
+                                    <b class="d-block mt-2">Age:</b>
+                                    <b class="d-block mt-2">Height:</b>
+                                    <b class="d-block mt-2">Weight:</b>
+                                    <b class="d-block mt-2">Mother Tongue:</b>
+                                    <b class="d-block mt-2">Marital Status:</b>
                                 </li>
-                                <li class="d-flex mt-2"><b class="me-2"> Division:</b>
-                                    <span><?php echo $division; ?></span>
+                                <li>
+                                    <span class="d-block"><?php echo esc_html($name); ?></span>
+                                    <span class="d-block mt-2"><?php echo esc_html($age); ?> Yrs</span>
+                                    <span class="d-block mt-2"><?php echo esc_html($height); ?> Inch</span>
+                                    <span class="d-block mt-2"><?php echo esc_html($weight); ?> Kg</span>
+                                    <span class="d-block mt-2"><?php echo esc_html($mother_tongue); ?></span>
+                                    <span class="d-block mt-2"><?php echo esc_html($marital_status); ?></span>
                                 </li>
-                                <li class="d-flex mt-2"><b class="me-2"> District:</b>
-                                    <span><?php echo $district; ?></span>
+                                <li>
+                                    <b class="d-block">Body Type:</b>
+                                    <b class="d-block mt-2">Complexion:</b>
+                                    <b class="d-block mt-2">Physical Status:</b>
+                                    <b class="d-block mt-2">Eating Habits:</b>
+                                    <b class="d-block mt-2">Drinking Habits:</b>
+                                    <b class="d-block mt-2">Smoking Habits:</b>
                                 </li>
-                                <li class="d-flex mt-2"><b class="me-2"> Thana:</b>
-                                    <span><?php echo $upazila; ?></span>
-                                </li>
-                                <li class="d-flex mt-2"><b class="me-2"> Village:</b>
-                                    <span><?php echo $village; ?></span>
-                                </li>
-                                <li class="d-flex mt-2"><b class="me-2"> Landmark:</b>
-                                    <span><?php echo $landmark; ?></span>
+                                <li>
+                                    <span class="d-block"><?php echo esc_html($body_type); ?></span>
+                                    <span class="d-block mt-2"><?php echo esc_html($complexion); ?></span>
+                                    <span class="d-block mt-2"><?php echo esc_html($physical_status); ?></span>
+                                    <span class="d-block mt-2"><?php echo esc_html($eating_habits); ?></span>
+                                    <span class="d-block mt-2"><?php echo esc_html($drinking_habits); ?></span>
+                                    <span class="d-block mt-2"><?php echo esc_html($smoking_habits); ?></span>
                                 </li>
                             </ul>
-                            <?php
-                        } else {
-                            ?>
-                            <ul class="px_28 font_14 mb-0">
-                                <li class="d-flex"><b class="me-2"> Country:</b>
-                                    <span><?php echo $country; ?></span>
-                                </li>
-                                <li class="d-flex mt-2"><b class="me-2"> State:</b> <span>
-                                        <?php echo esc_html($state); ?></span></li>
-                                <li class="d-flex mt-2"><b class="me-2"> Citizenship:</b>
-                                    <span><?php echo esc_html($city); ?></span>
-                                </li>
-                                <li class="d-flex mt-2"><b class="me-2"> City:</b>
-                                    <span><?php echo esc_html($usaLandmark); ?></span>
-                                </li>
-                            </ul>
-                            <?php
-                        }
-                        ?>
-
-                        <div class="row row-cols-1 row-cols-md-2 list_dt2_inner">
-                            <div class="col">
-                                <div class="list_dt2_inner_left">
-                                    <h5 class="mb-3 mt-4">
-                                        <i class="bi bi-person theme-text-color me-1 align-middle"></i>
-                                        Professional Information
-                                    </h5>
-                                    <ul class="px_28 font_14 mb-0">
-                                        <li class="d-flex">
-                                            <b class="me-2">Education:</b>
-                                            <span><?php echo esc_html($education); ?></span>
-                                        </li>
-                                        <li class="d-flex mt-2">
-                                            <b class="me-2">Education in Detail:</b>
-                                            <span><?php echo esc_html($education_detail); ?></span>
-                                        </li>
-                                        <li class="d-flex mt-2">
-                                            <b class="me-2">Employed in:</b>
-                                            <span><?php echo esc_html($employed_in); ?></span>
-                                        </li>
-                                        <li class="d-flex mt-2">
-                                            <b class="me-2">profession:</b>
-                                            <span><?php echo esc_html($profession); ?></span>
-                                        </li>
-                                        <li class="d-flex mt-2">
-                                            <b class="me-2">profession in Detail:</b>
-                                            <span><?php echo esc_html($profession_detail); ?></span>
-                                        </li>
-                                        <li class="d-flex mt-2">
-                                            <b class="me-2">Annual Income:</b>
-                                            <span><?php echo esc_html($annual_income); ?></span>
-                                        </li>
-                                    </ul>
-                                </div>
-                            </div>
-                            <div class="col">
-                                <div class="list_dt2_inner_left">
-                                    <h5 class="mb-3 mt-4">
-                                        <i class="bi bi-life-preserver theme-text-color me-1 align-middle"></i>
-                                        Astro Details
-                                    </h5>
-                                    <ul class="px_28 font_14 mb-0">
-                                        <li class="d-flex">
-                                            <b class="me-2">Date of Birth:</b>
-                                            <span><?php echo esc_html($dob); ?></span>
-                                        </li>
-                                        <li class="d-flex mt-2">
-                                            <b class="me-2">Place of Birth:</b>
-                                            <span><?php echo esc_html($place_of_birth); ?></span>
-                                        </li>
-                                    </ul>
-                                </div>
-                            </div>
-                        </div>
-                    </div>
-                    <div class="list_dt2 mt-4 p-3 shadow">
-                        <h3>Partner Preferences</h3>
-                        <hr class="line mb-4">
-                        <h5 class="mb-3">
-                            <i class="bi bi-gender-male theme-text-color me-1 align-middle"></i>
-                            About Partner
-                        </h5>
-                        <p class="px_28 mb-0"><?php echo esc_html($about_partner); ?></p>
-                        <h5 class="mb-3 mt-4"><i class="bi bi-person theme-text-color me-1 align-middle"></i>
-                            Basic
-                            Preferences
-                        </h5>
-                        <ul class="px_28 font_14 justify-content-between d-flex mb-0 flex-wrap">
-                            <li>
-                                <b class="d-block">Looking For:</b>
-                                <b class="d-block mt-2">Groom's Age:</b>
-                                <b class="d-block mt-2">Height:</b>
-                                <b class="d-block mt-2">Marital Status:</b>
-                                <b class="d-block mt-2">Mother Tongue:</b>
-                                <b class="d-block mt-2">Physical Status:</b>
-                                <b class="d-block mt-2">Eating Habits:</b>
-                            </li>
-                            <li>
-                                <span class="d-block"><?php echo esc_html($lookingfor); ?></span>
-                                <span class="d-block mt-2"><?php echo esc_html($partner_min_age); ?> -
-                                    <?php echo esc_html($partner_max_age); ?> Yrs</span>
-                                <span class="d-block mt-2"><?php echo esc_html($partner_min_height); ?> -
-                                    <?php echo esc_html($partner_max_height); ?></span>
-                                <span class="d-block mt-2"><?php echo esc_html($partner_marital_status); ?></span>
-                                <span class="d-block mt-2"><?php echo esc_html($partner_mother_tongue); ?></span>
-                                <span class="d-block mt-2"><?php echo esc_html($partner_physical_status); ?></span>
-                                <span class="d-block mt-2"><?php echo esc_html($partner_eating_habits); ?></span>
-                            </li>
-                            <li>
-                                <b class="d-block">Smoking Habits:</b>
-                                <b class="d-block mt-2">Drinking Habits:</b>
-                            </li>
-                            <li>
-                                <span class="d-block"><?php echo esc_html($partner_smoking_habits); ?></span>
-                                <span class="d-block mt-2"><?php echo esc_html($partner_drinking_habits); ?></span>
-                            </li>
-                        </ul>
-                        <div class="row row-cols-1 row-cols-md-2 list_dt2_inner">
-                            <div class="col">
-                                <div class="list_dt2_inner_left">
-                                    <h5 class="mb-3 mt-4">
-                                        <i class="bi bi-person theme-text-color me-1 align-middle"></i>
-                                        Professional Preferences
-                                    </h5>
-                                    <ul class="px_28 font_14 mb-0">
-                                        <li class="d-flex">
-                                            <b class="me-2">Education:</b>
-                                            <span><?php echo esc_html($partner_education); ?></span>
-                                        </li>
-                                        <li class="d-flex mt-2">
-                                            <b class="me-2">profession:</b>
-                                            <span><?php echo esc_html($partner_profession); ?></span>
-                                        </li>
-                                        <li class="d-flex mt-2">
-                                            <b class="me-2">Annual Income:</b>
-                                            <span><?php echo esc_html($partner_annual_income); ?></span>
-                                        </li>
-                                    </ul>
-                                </div>
-                            </div>
-                            <div class="col">
-                                <div class="list_dt2_inner_left">
-                                    <h5 class="mb-3 mt-4">
-                                        <i class="bi bi-book theme-text-color me-1 align-middle"></i>
-                                        Religious Preferences
-                                    </h5>
-                                    <ul class="px_28 font_14 mb-0">
-                                        <li class="d-flex">
-                                            <b class="me-2">Religion:</b>
-                                            <span><?php echo esc_html($partner_religion); ?></span>
-                                        </li>
-                                    </ul>
-                                </div>
-                            </div>
-                        </div>
-                        <h5 class="mb-3 mt-4"><i class="bi bi-map theme-text-color me-1 align-middle"></i>
-                            Location
-                            Preferences</h5>
-                        <ul class="px_28 font_14 mb-0">
-                            <li class="d-flex">
-                                <b class="me-2">Country:</b>
-                                <span><?php echo esc_html($partner_country); ?></span>
-                            </li>
-                        </ul>
-
-                    </div>
-                    <div class="list_dt2 mt-4 p-3 shadow">
-                        <h3>Photo Gallery</h3>
-                        <hr class="line mb-4">
-                        <!-- Photo Gallery Grid -->
-                        <div class="row">
-                            <?php
-                            // Fetch user photos from user meta (assuming photos are stored as an array of attachment IDs)
-                            $user_photos = get_user_meta($user_id, 'user_photos', true);
-
-                            // If no photos are set, initialize an empty array
-                            if (empty($user_photos)) {
-                                $user_photos = [];
-                            }
-
-                            // Check if there are any user photos
-                            if (!empty($user_photos)) {
-                                // Loop through the photos and display them
-                                foreach ($user_photos as $photo_id) {
-                                    $photo_url = wp_get_attachment_url($photo_id);
-                                    ?>
-                                    <div class="col-md-4 mb-4">
-                                        <div class="gallery-item">
-                                            <!-- Link to open the image in lightbox -->
-                                            <a href="<?php echo esc_url($photo_url); ?>" data-lightbox="user-gallery"
-                                                data-title="User Photo">
-                                                <img src="<?php echo esc_url($photo_url); ?>" alt="Gallery Image"
-                                                    class="img-fluid rounded">
-                                            </a>
-                                        </div>
+                            <div class="row row-cols-1 row-cols-md-2 list_dt2_inner">
+                                <div class="col">
+                                    <div class="list_dt2_inner_left">
+                                        <h5 class="mb-3 mt-4">
+                                            <i class="bi bi-phone theme-text-color me-1 align-middle"></i>
+                                            Contact Details
+                                        </h5>
+                                        <ul class="px_28 font_14 mb-0">
+                                            <li class="d-flex">
+                                                <b class="me-2">Your Contact Number:</b>
+                                                <span><?php echo esc_html($candidate_country_code . ' ' . $candidate_phone); ?></span>
+                                            </li>
+                                            <li class="d-flex mt-2">
+                                                <b class="me-2">Parent Contact Number:</b>
+                                                <span><?php echo esc_html($parent_country_code . ' ' . $parent_phone); ?></span>
+                                            </li>
+                                            <li class="d-flex mt-2">
+                                                <b class="me-2">Email:</b>
+                                                <span><?php
+                                                        if ($email_verified == true) {
+                                                            echo esc_html($email) . ' <i class="fas fa-check-circle text-primary"></i>';
+                                                        } else {
+                                                            echo esc_html($email);
+                                                        }
+                                                        ?></span>
+                                            </li>
+                                        </ul>
                                     </div>
-                                    <?php
-                                }
+                                </div>
+                                <div class="col">
+                                    <div class="list_dt2_inner_left">
+                                        <h5 class="mb-3 mt-4">
+                                            <i class="bi bi-book theme-text-color me-1 align-middle"></i>
+                                            Religion Information
+                                        </h5>
+                                        <ul class="px_28 font_14 mb-0">
+                                            <li class="d-flex">
+                                                <b class="me-2">Religion:</b>
+                                                <span><?php echo esc_html($religion); ?></span>
+                                            </li>
+                                        </ul>
+                                    </div>
+                                </div>
+                            </div>
+                            <h5 class="mb-3 mt-4"><i class="bi bi-map theme-text-color me-1 align-middle"></i>
+                                Location</h5>
+                            <?php
+                            if ($country == "Bangladesh") {
+                            ?>
+                                <ul class="px_28 font_14 mb-0">
+                                    <li class="d-flex"><b class="me-2"> Country:</b>
+                                        <span><?php echo $country; ?></span>
+                                    </li>
+                                    <li class="d-flex mt-2"><b class="me-2"> Division:</b>
+                                        <span><?php echo $division; ?></span>
+                                    </li>
+                                    <li class="d-flex mt-2"><b class="me-2"> District:</b>
+                                        <span><?php echo $district; ?></span>
+                                    </li>
+                                    <li class="d-flex mt-2"><b class="me-2"> Thana:</b>
+                                        <span><?php echo $upazila; ?></span>
+                                    </li>
+                                    <li class="d-flex mt-2"><b class="me-2"> Village:</b>
+                                        <span><?php echo $village; ?></span>
+                                    </li>
+                                    <li class="d-flex mt-2"><b class="me-2"> Landmark:</b>
+                                        <span><?php echo $landmark; ?></span>
+                                    </li>
+                                </ul>
+                            <?php
                             } else {
-                                // If there are no photos, display a message
-                                echo '<p>No photos available.</p>';
+                            ?>
+                                <ul class="px_28 font_14 mb-0">
+                                    <li class="d-flex"><b class="me-2"> Country:</b>
+                                        <span><?php echo $country; ?></span>
+                                    </li>
+                                    <li class="d-flex mt-2"><b class="me-2"> State:</b> <span>
+                                            <?php echo esc_html($state); ?></span></li>
+                                    <li class="d-flex mt-2"><b class="me-2"> Citizenship:</b>
+                                        <span><?php echo esc_html($city); ?></span>
+                                    </li>
+                                    <li class="d-flex mt-2"><b class="me-2"> City:</b>
+                                        <span><?php echo esc_html($usaLandmark); ?></span>
+                                    </li>
+                                </ul>
+                            <?php
                             }
                             ?>
+
+                            <div class="row row-cols-1 row-cols-md-2 list_dt2_inner">
+                                <div class="col">
+                                    <div class="list_dt2_inner_left">
+                                        <h5 class="mb-3 mt-4">
+                                            <i class="bi bi-person theme-text-color me-1 align-middle"></i>
+                                            Professional Information
+                                        </h5>
+                                        <ul class="px_28 font_14 mb-0">
+                                            <li class="d-flex">
+                                                <b class="me-2">Education:</b>
+                                                <span><?php echo esc_html($education); ?></span>
+                                            </li>
+                                            <li class="d-flex mt-2">
+                                                <b class="me-2">Education in Detail:</b>
+                                                <span><?php echo esc_html($education_detail); ?></span>
+                                            </li>
+                                            <li class="d-flex mt-2">
+                                                <b class="me-2">Employed in:</b>
+                                                <span><?php echo esc_html($employed_in); ?></span>
+                                            </li>
+                                            <li class="d-flex mt-2">
+                                                <b class="me-2">profession:</b>
+                                                <span><?php echo esc_html($profession); ?></span>
+                                            </li>
+                                            <li class="d-flex mt-2">
+                                                <b class="me-2">profession in Detail:</b>
+                                                <span><?php echo esc_html($profession_detail); ?></span>
+                                            </li>
+                                            <li class="d-flex mt-2">
+                                                <b class="me-2">Annual Income:</b>
+                                                <span><?php echo esc_html($annual_income); ?></span>
+                                            </li>
+                                        </ul>
+                                    </div>
+                                </div>
+                                <div class="col">
+                                    <div class="list_dt2_inner_left">
+                                        <h5 class="mb-3 mt-4">
+                                            <i class="bi bi-life-preserver theme-text-color me-1 align-middle"></i>
+                                            Astro Details
+                                        </h5>
+                                        <ul class="px_28 font_14 mb-0">
+                                            <li class="d-flex">
+                                                <b class="me-2">Date of Birth:</b>
+                                                <span><?php echo esc_html($dob); ?></span>
+                                            </li>
+                                            <li class="d-flex mt-2">
+                                                <b class="me-2">Place of Birth:</b>
+                                                <span><?php echo esc_html($place_of_birth); ?></span>
+                                            </li>
+                                        </ul>
+                                    </div>
+                                </div>
+                            </div>
                         </div>
-                    </div>
+                        <div class="list_dt2 mt-4 p-3 shadow animate__animated animate__fadeInUp" style="animation-delay: 0.4s;">
+                            <h3>Partner Preferences</h3>
+                            <hr class="line mb-4">
+                            <h5 class="mb-3">
+                                <i class="bi bi-gender-male theme-text-color me-1 align-middle"></i>
+                                About Partner
+                            </h5>
+                            <p class="px_28 mb-0"><?php echo esc_html($about_partner); ?></p>
+                            <h5 class="mb-3 mt-4"><i class="bi bi-person theme-text-color me-1 align-middle"></i>
+                                Basic
+                                Preferences
+                            </h5>
+                            <ul class="px_28 font_14 justify-content-between d-flex mb-0 flex-wrap">
+                                <li>
+                                    <b class="d-block">Looking For:</b>
+                                    <b class="d-block mt-2">Groom's Age:</b>
+                                    <b class="d-block mt-2">Height:</b>
+                                    <b class="d-block mt-2">Marital Status:</b>
+                                    <b class="d-block mt-2">Mother Tongue:</b>
+                                    <b class="d-block mt-2">Physical Status:</b>
+                                    <b class="d-block mt-2">Eating Habits:</b>
+                                </li>
+                                <li>
+                                    <span class="d-block"><?php echo esc_html($lookingfor); ?></span>
+                                    <span class="d-block mt-2"><?php echo esc_html($partner_min_age); ?> -
+                                        <?php echo esc_html($partner_max_age); ?> Yrs</span>
+                                    <span class="d-block mt-2"><?php echo esc_html($partner_min_height); ?> -
+                                        <?php echo esc_html($partner_max_height); ?></span>
+                                    <span class="d-block mt-2"><?php echo esc_html($partner_marital_status); ?></span>
+                                    <span class="d-block mt-2"><?php echo esc_html($partner_mother_tongue); ?></span>
+                                    <span class="d-block mt-2"><?php echo esc_html($partner_physical_status); ?></span>
+                                    <span class="d-block mt-2"><?php echo esc_html($partner_eating_habits); ?></span>
+                                </li>
+                                <li>
+                                    <b class="d-block">Smoking Habits:</b>
+                                    <b class="d-block mt-2">Drinking Habits:</b>
+                                </li>
+                                <li>
+                                    <span class="d-block"><?php echo esc_html($partner_smoking_habits); ?></span>
+                                    <span class="d-block mt-2"><?php echo esc_html($partner_drinking_habits); ?></span>
+                                </li>
+                            </ul>
+                            <div class="row row-cols-1 row-cols-md-2 list_dt2_inner">
+                                <div class="col">
+                                    <div class="list_dt2_inner_left">
+                                        <h5 class="mb-3 mt-4">
+                                            <i class="bi bi-person theme-text-color me-1 align-middle"></i>
+                                            Professional Preferences
+                                        </h5>
+                                        <ul class="px_28 font_14 mb-0">
+                                            <li class="d-flex">
+                                                <b class="me-2">Education:</b>
+                                                <span><?php echo esc_html($partner_education); ?></span>
+                                            </li>
+                                            <li class="d-flex mt-2">
+                                                <b class="me-2">profession:</b>
+                                                <span><?php echo esc_html($partner_profession); ?></span>
+                                            </li>
+                                            <li class="d-flex mt-2">
+                                                <b class="me-2">Annual Income:</b>
+                                                <span><?php echo esc_html($partner_annual_income); ?></span>
+                                            </li>
+                                        </ul>
+                                    </div>
+                                </div>
+                                <div class="col">
+                                    <div class="list_dt2_inner_left">
+                                        <h5 class="mb-3 mt-4">
+                                            <i class="bi bi-book theme-text-color me-1 align-middle"></i>
+                                            Religious Preferences
+                                        </h5>
+                                        <ul class="px_28 font_14 mb-0">
+                                            <li class="d-flex">
+                                                <b class="me-2">Religion:</b>
+                                                <span><?php echo esc_html($partner_religion); ?></span>
+                                            </li>
+                                        </ul>
+                                    </div>
+                                </div>
+                            </div>
+                            <h5 class="mb-3 mt-4"><i class="bi bi-map theme-text-color me-1 align-middle"></i>
+                                Location
+                                Preferences</h5>
+                            <ul class="px_28 font_14 mb-0">
+                                <li class="d-flex">
+                                    <b class="me-2">Country:</b>
+                                    <span><?php echo esc_html($partner_country); ?></span>
+                                </li>
+                            </ul>
+
+                        </div>
+                        <div class="list_dt2 mt-4 p-3 shadow animate__animated animate__fadeInUp" style="animation-delay: 0.6s;">
+                            <h3>Photo Gallery</h3>
+                            <hr class="line mb-4">
+                            <!-- Photo Gallery Grid -->
+                            <div class="row">
+                                <?php
+                                // Fetch user photos from user meta (assuming photos are stored as an array of attachment IDs)
+                                $user_photos = get_user_meta($user_id, 'user_photos', true);
+
+                                // If no photos are set, initialize an empty array
+                                if (empty($user_photos)) {
+                                    $user_photos = [];
+                                }
+
+                                // Check if there are any user photos
+                                if (!empty($user_photos)) {
+                                    // Loop through the photos and display them
+                                    foreach ($user_photos as $photo_id) {
+                                        $photo_url = wp_get_attachment_url($photo_id);
+                                ?>
+                                        <div class="col-md-4 mb-4">
+                                            <div class="gallery-item">
+                                                <!-- Link to open the image in lightbox -->
+                                                <a href="<?php echo esc_url($photo_url); ?>" data-lightbox="user-gallery"
+                                                    data-title="User Photo">
+                                                    <img src="<?php echo esc_url($photo_url); ?>" alt="Gallery Image"
+                                                        class="img-fluid rounded">
+                                                </a>
+                                            </div>
+                                        </div>
+                                <?php
+                                    }
+                                } else {
+                                    // If there are no photos, display a message
+                                    echo '<p>No photos available.</p>';
+                                }
+                                ?>
+                            </div>
+                        </div>
                     <?php else: ?>
-                        <div class="list_dt2 mt-4 p-3 shadow">
-                                <div class="alert alert-warning">
-                                     This user's personal details are locked. Interest must be accepted to view them.
-    </div>
+                        <div class="list_dt2 mt-4 p-3 shadow animate__animated animate__fadeInUp" style="animation-delay: 0.8s;">
+                            <div class="alert alert-warning">
+                                This user's personal details are locked. Interest must be accepted to view them.
+                            </div>
                         </div>
 
-<?php endif; ?>
+                    <?php endif; ?>
                 </div>
 
             </div>
-            <div class="col-lg-3 col-md-4 mt-4">
+            <div class="col-lg-3 col-md-4">
                 <div class="list_1_left">
                     <div class="list_1_left1">
                         <?php

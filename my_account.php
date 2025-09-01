@@ -26,21 +26,6 @@ $user_id = get_current_user_id();
 $email_verified = get_user_meta($user_id, 'email_verified', true);
 $approval_status = get_user_meta($user_id, 'approval_status', true);
 
-// if (!$email_verified && !is_admin()) {
-//     echo "<p style='color:red;'>⚠️ Your email is not verified. Please check your inbox.</p>";
-//     return;
-// }
-
-// if ($approval_status !== 'approvedd') {
-//     echo "<p style='color:red;'>⛔ Your account is awaiting admin approval.</p>";
-//     return;
-// }
-
-// $ban_status = get_user_meta($user_id, 'approval_status', true);
-// if ($ban_status === 'banned') {
-//     echo "<p style='color:red;'>🚫 Your account has been banned by the admin due to unusual activity.</p>";
-//     return;
-// }
 
 // Fetch the profile picture URL (assuming it's stored in user_meta)
 $profile_picture = get_user_meta($user_id, 'user_avatar', true);
@@ -109,6 +94,8 @@ if (isset($_POST['update_about'])) {
 // Fetch basic details from user meta
 $first_name = get_user_meta($user_id, 'first_name', true);
 $last_name = get_user_meta($user_id, 'last_name', true);
+$profile_by = get_user_meta($user_id, 'profileby', true);
+$lookingfor = get_user_meta($user_id, 'lookingfor', true);
 $age = get_user_meta($user_id, 'age', true);
 $height = get_user_meta($user_id, 'height', true);
 $weight = get_user_meta($user_id, 'weight', true);
@@ -182,10 +169,10 @@ if (isset($_POST['update_contact_details'])) {
     $user_id = intval($_POST['user_id']);
 
     // Sanitize and save each field
-    update_user_meta($user_id, 'candidate_phone', sanitize_text_field($_POST['candidate_phone']));
+    update_user_meta($user_id, 'user_phone', sanitize_text_field($_POST['user_phone']));
     update_user_meta($user_id, 'candidate_country_code', sanitize_text_field($_POST['candidate_country_code']));
-    update_user_meta($user_id, 'parent_phone', sanitize_text_field($_POST['parent_phone']));
-    update_user_meta($user_id, 'parent_country_code', sanitize_text_field($_POST['parent_country_code']));
+    update_user_meta($user_id, 'user_g_phone', sanitize_text_field($_POST['user_g_phone']));
+    update_user_meta($user_id, 'guardian_country_code', sanitize_text_field($_POST['guardian_country_code']));
 
     // Redirect to refresh the page
     echo '<script>window.location.href = window.location.href;</script>';
@@ -195,11 +182,11 @@ if (isset($_POST['update_contact_details'])) {
 // Fetch religion from user meta
 $religion = get_user_meta($user_id, 'religion', true);
 
+
 // If no religion is set, use a default placeholder
 if (empty($religion)) {
     $religion = 'Not set';
 }
-
 if (isset($_POST['update_religion_details'])) {
     $user_id = intval($_POST['user_id']);
     $religion = sanitize_text_field($_POST['religion']);
@@ -511,6 +498,7 @@ $state = get_user_meta($user_id, 'state', true);
 $city = get_user_meta($user_id, 'city', true);
 $usaLandmark = get_user_meta($user_id, 'usaLandmark', true);
 $user_status = get_user_meta($user_id, 'approval_status', true);
+$enable_payment = intval(get_option('enable_payment', 1));
 
 get_header();
 ?>
@@ -518,10 +506,9 @@ get_header();
 <section id="center" class="list  pt-5 pb-5">
     <div class="container-xl">
         <div class="row list_1">
-
             <div class="col-lg-12 col-md-12">
                 <div class="list_dt">
-                    <div class="list_dt1 shadow p-3">
+                    <div class="list_dt1 shadow p-3 animate__animated animate__fadeInUp" style="animation-delay: 0.1s;">
                         <div class="list_1_right2_inner row mx-0">
                             <div class="col-md-3 ps-0 col-sm-4">
                                 <div class="list_1_right2_inner_left">
@@ -531,7 +518,27 @@ get_header();
                                         <?php if (!empty($profile_picture)) { ?>
                                             <img src="<?php echo esc_url($profile_picture); ?>"
                                                 class="img-fluid profile-picture" width="100%" alt="Profile Picture">
-                                        <?php } else {
+                                            <?php
+                                            global $wpdb;
+                                            // Get membership info for the current user in the loop
+                                            $saved_default_package = intval(get_option('usabdlp_default_package', 0));
+                                            $membership_info = $wpdb->get_row(
+                                                $wpdb->prepare("SELECT * FROM {$wpdb->prefix}memberships WHERE user_id = %d AND status = 'active'", $user_id)
+                                            );
+
+                                            if ($membership_info) {
+                                                $plan = $wpdb->get_row(
+                                                    $wpdb->prepare("SELECT * FROM {$wpdb->prefix}membership_plans WHERE id = %d", $membership_info->membership_type)
+                                                );
+
+                                                if ($plan->id > $saved_default_package) {
+                                                    echo '<span class="membership-badge">' . esc_html($plan->name) . '</span>';
+                                                }
+                                            }
+                                            // else {
+                                            //     echo '<span class="membership-badge">Free</span>';
+                                            // }
+                                        } else {
                                             echo get_avatar($current_user->ID, 200, '', '', ['class' => 'img-fluid profile-picture']); ?>
 
                                         <?php } ?>
@@ -637,14 +644,14 @@ get_header();
                         </div>
                     </div>
                     <?php if ($email_verified == false): ?>
-                        <div class="list_dt1 shadow p-3 mt-4">
+                        <div class="list_dt1 shadow p-3 mt-4 animate__animated animate__fadeInUp" style="animation-delay: 0.2s;">
                             <div class="list_1_right2_inner row mx-0">
                                 <p class="text-danger">Your email has not been verified yet. Please check your inbox and
                                     verify it to edit your profile.</p>
                             </div>
                         </div>
                     <?php elseif ($email_verified == true && $user_status != 'approved'): ?>
-                        <div class="list_dt1 shadow p-3 mt-4">
+                        <div class="list_dt1 shadow p-3 mt-4 animate__animated animate__fadeInUp" style="animation-delay: 0.2s;">
                             <div class="list_1_right2_inner row mx-0">
                                 <p class="text-info">✅ Your email has been verified. Please wait for admin approval to edit
                                     your profile.</p>
@@ -657,14 +664,15 @@ get_header();
                     <div class="mt-4">
                         <div class="row">
                             <!-- Sidebar Tabs -->
-                            <div class="col-md-3 border-end pe-0">
+                            <div class="col-md-3 border-end pe-0 animate__animated animate__fadeInUp" style="animation-delay: 0.1s;">
                                 <div class="list-group list-group-flush" id="account-tabs" role="tablist">
                                     <a class="list-group-item list-group-item-action active" id="basic-tab" data-bs-toggle="pill" href="#basic" role="tab">📝 Basic Info</a>
                                     <a class="list-group-item list-group-item-action" id="settings-tab" data-bs-toggle="pill" href="#settings" role="tab">⚙️ Settings</a>
                                     <a class="list-group-item list-group-item-action" id="interests-tab" data-bs-toggle="pill" href="#interests" role="tab">💌 Interests</a>
-                                    <a class="list-group-item list-group-item-action" id="membership-tab" data-bs-toggle="pill" href="#membership" role="tab">💳 Membership</a>
-                                    <a class="list-group-item list-group-item-action" id="membership-tab" data-bs-toggle="pill" href="#sortlist" role="tab">💳 Shortlist</a>
-                                    
+                                    <?php if($enable_payment){ ?><a class="list-group-item list-group-item-action" id="membership-tab" data-bs-toggle="pill" href="#membership" role="tab">💳 Membership</a><?php } ?>
+                                    <a class="list-group-item list-group-item-action" id="sortlist-tab" data-bs-toggle="pill" href="#sortlist" role="tab">💳 Shortlist</a>
+                                    <?php if($enable_payment){ ?><a class="list-group-item list-group-item-action" id="limits-tab" data-bs-toggle="pill" href="#limits" role="tab">💳 Limits</a> <?php } ?>
+
                                 </div>
                             </div>
 
@@ -673,7 +681,7 @@ get_header();
                                 <div class="tab-content" id="account-tabs-content">
                                     <!-- Basic Info -->
                                     <div class="tab-pane fade show active" id="basic" role="tabpanel">
-                                        <div class="list_dt2 mt-4 p-3 shadow">
+                                        <div class="list_dt2 p-3 shadow animate__animated animate__fadeInUp" style="animation-delay: 0.1s;">
 
                                             <h3>Personal Information</h3>
                                             <hr class="line mb-4">
@@ -711,6 +719,7 @@ get_header();
                                             <ul class="px_28 font_14 justify-content-between d-flex mb-0 flex-wrap">
                                                 <li>
                                                     <b class="d-block">Name:</b>
+                                                    <b class="d-block mt-2">Profile by:</b>
                                                     <b class="d-block mt-2">Age:</b>
                                                     <b class="d-block mt-2">Height:</b>
                                                     <b class="d-block mt-2">Weight:</b>
@@ -721,6 +730,7 @@ get_header();
                                                 <li>
                                                     <span
                                                         class="d-block"><?php echo esc_html($first_name . ' ' . $last_name); ?></span>
+                                                    <span class="d-block mt-2"><?php echo esc_html($profile_by); ?></span>
                                                     <span class="d-block mt-2"><?php echo esc_html($age); ?> Yrs</span>
                                                     <span class="d-block mt-2"><?php echo esc_html($height); ?> Inch</span>
                                                     <span class="d-block mt-2"><?php echo esc_html($weight); ?> Kg</span>
@@ -759,7 +769,7 @@ get_header();
                                                                                 } ?>">
                                                                 <i class="bi bi-pencil-square"></i>
                                                             </button>
-                                                           
+
                                                         </h5>
                                                         <ul class="px_28 font_14 mb-0">
                                                             <li class="d-flex">
@@ -799,7 +809,7 @@ get_header();
                                                                                 } ?>">
                                                                 <i class="bi bi-pencil-square"></i>
                                                             </button>
-                                                          
+
                                                         </h5>
                                                         <ul class="px_28 font_14 mb-0">
                                                             <li class="d-flex">
@@ -869,7 +879,7 @@ get_header();
                                                                                 } ?>">
                                                                 <i class="bi bi-pencil-square"></i>
                                                             </button>
-                                                            
+
                                                         </h5>
                                                         <ul class="px_28 font_14 mb-0">
                                                             <li class="d-flex">
@@ -941,7 +951,7 @@ get_header();
                                                                                 } ?>">
                                                                 <i class="bi bi-pencil-square"></i>
                                                             </button>
-                                                           
+
                                                         </h5>
                                                         <ul class="px_28 font_14 mb-0">
                                                             <li class="d-flex">
@@ -999,6 +1009,7 @@ get_header();
                                             <ul class="px_28 font_14 justify-content-between d-flex mb-0 flex-wrap">
                                                 <li>
                                                     <b class="d-block">Groom's Age:</b>
+                                                    <b class="d-block mt-2">Looking For:</b>
                                                     <b class="d-block mt-2">Height:</b>
                                                     <b class="d-block mt-2">Marital Status:</b>
                                                     <b class="d-block mt-2">Mother Tongue:</b>
@@ -1008,6 +1019,7 @@ get_header();
                                                 <li>
                                                     <span class="d-block"><?php echo esc_html($partner_min_age); ?> -
                                                         <?php echo esc_html($partner_max_age); ?> Yrs</span>
+                                                    <span class="d-block mt-2"><?php echo esc_html($lookingfor); ?></span>
                                                     <span class="d-block mt-2"><?php echo esc_html($partner_min_height); ?> -
                                                         <?php echo esc_html($partner_max_height); ?></span>
                                                     <span
@@ -1143,7 +1155,7 @@ get_header();
 
                                     <!-- Settings -->
                                     <div class="tab-pane fade" id="settings" role="tabpanel">
-                                        <div class="list_dt2 mt-4 p-3 shadow">
+                                        <div class="list_dt2 p-3 shadow animate__animated animate__fadeInUp">
                                             <h3>Account Settings</h3>
                                             <hr class="line mb-4">
                                             <?php if (!empty($password_change_message)): ?>
@@ -1178,11 +1190,12 @@ get_header();
 
                                     <!-- Interests -->
                                     <div class="tab-pane fade" id="interests" role="tabpanel">
-                                        <h4 class="mb-4">💌 Interests Received</h4>
-                                        <?php
-                                        global $wpdb;
-                                        $user_id = get_current_user_id();
-                                        $interests = $wpdb->get_results("
+                                        <div class="list_dt2 p-3 shadow animate__animated animate__fadeInUp">
+                                            <h4 class="mb-4">💌 Interests Received</h4>
+                                            <?php
+                                            global $wpdb;
+                                            $user_id = get_current_user_id();
+                                            $interests = $wpdb->get_results("
                                             SELECT i.*, u.display_name, um.meta_value AS profile_picture
                                             FROM {$wpdb->prefix}interests i
                                             JOIN {$wpdb->users} u ON i.from_user_id = u.ID
@@ -1191,62 +1204,62 @@ get_header();
                                             ORDER BY i.sent_at DESC
                                         ");
 
-                                        if ($interests):
-                                            foreach ($interests as $row):
-                                                $profile_picture = get_user_meta($row->from_user_id, 'user_avatar', true);
-                                                $avatar = $profile_picture ?: get_template_directory_uri() . '/assets/img/default-avatar.png';
-                                                $u_first_name = get_user_meta($row->from_user_id, 'first_name', true);
-                                                $u_last_name = get_user_meta($row->from_user_id, 'last_name', true);
-                                                $full_name = trim("$u_first_name $u_last_name");
-                                        ?>
+                                            if ($interests):
+                                                foreach ($interests as $row):
+                                                    $profile_picture = get_user_meta($row->from_user_id, 'user_avatar', true);
+                                                    $avatar = $profile_picture ?: get_template_directory_uri() . '/assets/image/avater.webp';
+                                                    $u_first_name = get_user_meta($row->from_user_id, 'first_name', true);
+                                                    $u_last_name = get_user_meta($row->from_user_id, 'last_name', true);
+                                                    $full_name = trim("$u_first_name $u_last_name");
+                                            ?>
 
-                                                <div class="d-flex align-items-center gap-4 mb-4 p-3 border rounded shadow-sm"
-                                                    style="background-color: #fff;">
-                                                    <img src="<?= esc_url($avatar); ?>" alt="Avatar" width="70" height="70"
-                                                        class="rounded-circle" style="object-fit: cover;">
+                                                    <div class="d-flex align-items-center gap-4 mb-4 p-3 border rounded shadow-sm"
+                                                        style="background-color: #fff;">
+                                                        <img src="<?= esc_url($avatar); ?>" alt="Avatar" width="70" height="70"
+                                                            class="rounded-circle" style="object-fit: cover;">
 
 
-                                                    <div style="flex: 1;">
-                                                        <p class="mb-2 fs-5"
-                                                            style="font-family: 'Poppins', sans-serif; font-weight: 500;">
-                                                            <a href="<?= esc_url(home_url('/user-details/?user_id=' . $row->from_user_id)); ?>"
-                                                                class="fw-bold text-dark text-decoration-none">
-                                                                <?= esc_html($full_name); ?>
-                                                            </a>
-                                                            <span class="text-muted">sent you an interest.</span>
+                                                        <div style="flex: 1;">
+                                                            <p class="mb-2 fs-5"
+                                                                style="font-family: 'Poppins', sans-serif; font-weight: 500;">
+                                                                <a href="<?= esc_url(home_url('/user-details/?user_id=' . $row->from_user_id)); ?>"
+                                                                    class="fw-bold text-dark text-decoration-none">
+                                                                    <?= esc_html($full_name); ?>
+                                                                </a>
+                                                                <span class="text-muted">sent you an interest.</span>
 
-                                                        </p>
+                                                            </p>
 
-                                                        <?php if ($row->status === 'pending'): ?>
-                                                            <div class="d-flex gap-2">
-                                                                <button class="btn btn-sm respond-interest"
-                                                                    style="background-color: #5e2ced; color: white; padding: 8px 24px; font-weight: bold;"
-                                                                    data-id="<?= esc_attr($row->id); ?>" data-action="accepted">
-                                                                    Accept
-                                                                </button>
-                                                                <button class="btn btn-sm respond-interest"
-                                                                    style="background-color: #f44336; color: white; padding: 8px 24px; font-weight: bold;"
-                                                                    data-id="<?= esc_attr($row->id); ?>" data-action="rejected">
-                                                                    Reject
-                                                                </button>
-                                                            </div>
-                                                        <?php else: ?>
+                                                            <?php if ($row->status === 'pending'): ?>
+                                                                <div class="d-flex gap-2">
+                                                                    <button class="btn btn-sm respond-interest"
+                                                                        style="background-color: #5e2ced; color: white; padding: 8px 24px; font-weight: bold;"
+                                                                        data-id="<?= esc_attr($row->id); ?>" data-action="accepted">
+                                                                        Accept
+                                                                    </button>
+                                                                    <button class="btn btn-sm respond-interest"
+                                                                        style="background-color: #f44336; color: white; padding: 8px 24px; font-weight: bold;"
+                                                                        data-id="<?= esc_attr($row->id); ?>" data-action="rejected">
+                                                                        Reject
+                                                                    </button>
+                                                                </div>
+                                                            <?php else: ?>
 
-                                                            <span class="badge bg-success"><?= ucfirst($row->status); ?></span>
-                                                        <?php endif; ?>
+                                                                <span class="badge bg-success"><?= ucfirst($row->status); ?></span>
+                                                            <?php endif; ?>
+                                                        </div>
                                                     </div>
-                                                </div>
-                                        <?php
-                                            endforeach;
-                                        else:
-                                            echo '<p>No interests received yet.</p>';
-                                        endif;
-                                        ?>
+                                            <?php
+                                                endforeach;
+                                            else:
+                                                echo '<p>No interests received yet.</p>';
+                                            endif;
+                                            ?>
 
-                                        <h4 class="mb-3 mt-4">📤 Interests Sent</h4>
-                                        <?php
-                                        $current_user = get_current_user_id();
-                                        $sent_interests = $wpdb->get_results("
+                                            <h4 class="mb-3 mt-4">📤 Interests Sent</h4>
+                                            <?php
+                                            $current_user = get_current_user_id();
+                                            $sent_interests = $wpdb->get_results("
                                             SELECT i.*, u.display_name, u.ID 
                                             FROM {$wpdb->prefix}interests i
                                             JOIN {$wpdb->users} u ON i.to_user_id = u.ID
@@ -1254,87 +1267,228 @@ get_header();
                                             ORDER BY i.sent_at DESC
                                         ");
 
-                                        if ($sent_interests):
-                                            foreach ($sent_interests as $row):
-                                                $profile_picture = get_user_meta($row->to_user_id, 'user_avatar', true);
-                                                if (empty($profile_pic)) {
-                                                    $profile_pic = get_template_directory_uri() . '/image/avater.webp'; // Path to your default avatar
-                                                }
-                                                
-                                        ?>
-                                                <div class="d-flex align-items-center p-3 mb-3 border rounded">
-                                                    <img src="<?= esc_url($profile_pic); ?>" alt="Avatar" width="50" height="50"
-                                                        class="rounded-circle me-3" style="object-fit: cover;">
-                                                    <div>
-                                                        <a href="<?= esc_url(home_url('/user-details/?user_id=' . $row->to_user_id)); ?>"
-                                                            class="fw-bold text-dark text-decoration-none">
-                                                            <?= esc_html($row->display_name); ?>
-                                                        </a>
-                                                        <span class="text-muted">– you sent an interest.</span>
-                                                        <p class="mb-0"><small>Status:
-                                                                <strong><?= ucfirst($row->status); ?></strong></small></p>
-                                                    </div>
-                                                </div>
-                                        <?php
-                                            endforeach;
-                                        else:
-                                            echo '<p class="text-muted">You haven\'t sent any interests yet.</p>';
-                                        endif;
-                                        ?>
+                                            if ($sent_interests):
+                                                foreach ($sent_interests as $row):
+                                                    $profile_picture = get_user_meta($row->to_user_id, 'user_avatar', true);
+                                                    if (empty($profile_pic)) {
+                                                        $profile_pic = get_template_directory_uri() . '/image/avater.webp'; // Path to your default avatar
+                                                    }
 
+                                            ?>
+                                                    <div class="d-flex align-items-center p-3 mb-3 border rounded">
+                                                        <img src="<?= esc_url($profile_pic); ?>" alt="Avatar" width="50" height="50"
+                                                            class="rounded-circle me-3" style="object-fit: cover;">
+                                                        <div>
+                                                            <a href="<?= esc_url(home_url('/user-details/?user_id=' . $row->to_user_id)); ?>"
+                                                                class="fw-bold text-dark text-decoration-none">
+                                                                <?= esc_html($row->display_name); ?>
+                                                            </a>
+                                                            <span class="text-muted">– you sent an interest.</span>
+                                                            <p class="mb-0"><small>Status:
+                                                                    <strong><?= ucfirst($row->status); ?></strong></small></p>
+                                                        </div>
+                                                    </div>
+                                            <?php
+                                                endforeach;
+                                            else:
+                                                echo '<p class="text-muted">You haven\'t sent any interests yet.</p>';
+                                            endif;
+                                            ?>
+                                        </div>
                                     </div>
 
                                     <!-- Membership -->
-                                    <div class="tab-pane fade" id="membership" role="tabpanel">
-                                        <?php include 'account-sections/membership.php'; ?>
-                                    </div>
-                                    <div class="tab-pane fade" id="sortlist" role="tabpanel">
                                     <?php
-global $wpdb;
-$table_name = $wpdb->prefix . 'user_shortlists';
-// $current_user_id= get_current_user_id();
-$shortlisted = $wpdb->get_results(
-    $wpdb->prepare("SELECT shortlisted_user_id FROM $table_name WHERE user_id = %d", $current_user)
-);
+                                    if($enable_payment){
+                                      ?>
+                                    <div class="tab-pane fade" id="membership" role="tabpanel">
+                                        <div class="list_dt2 p-3 shadow animate__animated animate__fadeInUp">
+                                            <?php include 'account-sections/membership.php'; ?>
+                                            <?php
+                                            // Get the user's membership details from the database
+                                            global $wpdb;
 
-if (!empty($shortlisted)) {
-    echo '<div class="row">';
+                                            // Retrieve membership info
+                                            $membership_info = $wpdb->get_row(
+                                                $wpdb->prepare("SELECT * FROM {$wpdb->prefix}memberships WHERE user_id = %d AND status = 'active'", $current_user)
+                                            );
 
-    foreach ($shortlisted as $entry) {
-        $profile_id = $entry->shortlisted_user_id;
-        $profile_user = get_userdata($profile_id);
+                                            // Check if membership info exists
+                                            if ($membership_info) {
+                                                // Retrieve plan details
+                                                $plan = $wpdb->get_row(
+                                                    $wpdb->prepare("SELECT * FROM {$wpdb->prefix}membership_plans WHERE id = %d", $membership_info->membership_type)
+                                                );
 
-        if ($profile_user) {
-            $profile_pic = get_user_meta($profile_user->ID, 'user_avatar', true);
-            $user_first_name = get_user_meta($profile_user->ID, 'first_name', true);
-            $user_last_name = get_user_meta($profile_user->ID, 'last_name', true);
-            $user_full_name = trim("$user_first_name $user_last_name");
-            ?>
+                                                if ($plan) {
+                                                    // Plan information
+                                                    $plan_name = esc_html($plan->name);
+                                                    $plan_price = esc_html($plan->price);
+                                                    $plan_start_date = date('F j, Y', strtotime($membership_info->start_date));
+                                                    $plan_end_date = date('F j, Y', strtotime($membership_info->end_date));
+                                                    $plan_status = $membership_info->status;
+                                                    // Get the highest priced plan
+                                                    $highest_plan = $wpdb->get_row(
+                                                        "SELECT * FROM {$wpdb->prefix}membership_plans ORDER BY price DESC LIMIT 1"
+                                                    );
 
-                               <div class="d-flex align-items-center p-3 mb-3 border rounded">
-                            <img src="<?= esc_url($profile_pic); ?>" alt="Avatar" width="100" height="100"
-                                class="rounded-circle me-3" style="object-fit: cover;">
-                            <div>
-                                <a href="<?= esc_url(home_url('/user-details/?user_id=' . $profile_user->ID)); ?>"
-                                    class="fw-bold text-dark text-decoration-none">
-                                    <?= esc_html($user_full_name); ?>
-                                </a>
-                                <p class="mb-0">
-                                <a href="<?= esc_url(home_url('/user-details/?user_id=' . $profile_user->ID)); ?>" class="btn theme-btn">View Profile</a>
-                                </p>
-                            </div>
-                        </div>
+                                                    // Check if the user is already on the highest plan
+                                                    $is_highest_plan = ($plan->price == $highest_plan->price);
+                                            ?>
+                                                    <section id="membership-section" class="pt-5 pb-5">
+                                                        <div class="container">
+                                                            <div class="row">
+                                                                <div class="col-lg-6 mx-auto">
 
-        <?php }
-    }
+                                                                    <!-- Membership Card -->
+                                                                    <div class="card shadow-lg border-light rounded">
+                                                                        <div class="card-header theme-bg text-white text-center">
+                                                                            <h4 class="card-title mb-0">Your Membership Plan</h4>
+                                                                        </div>
+                                                                        <div class="card-body">
+                                                                            <div class="membership-details">
+                                                                                <!-- Plan Information -->
+                                                                                <p><strong>Plan Name:</strong> <span class="theme-text-color"><?php echo $plan_name; ?></span></p>
+                                                                                <p><strong>Start Date:</strong> <span><?php echo $plan_start_date; ?></span></p>
+                                                                                <p><strong>End Date:</strong> <span><?php echo $plan_end_date; ?></span></p>
+                                                                                <p><strong>Status:</strong> <span class="badge bg-success"><?php echo ucfirst($plan_status); ?></span></p>
+                                                                                <p><strong>Price:</strong> <span>$<?php echo $plan_price; ?></span></p>
+                                                                            </div>
+                                                                    
+                                                                                                                                                    <div class="text-center mt-4">
+                                                                                <!-- Upgrade Plan Button, Disabled if highest plan is active -->
+                                                                                <?php if ($is_highest_plan) : ?>
+                                                                                    <button class="btn theme-btn text-white" disabled>Upgrade Plan</button>
+                                                                                <?php else : ?>
+                                                                                    <a href="<?php echo home_url('/upgrade-membership'); ?>" class="btn theme-btn text-white">Upgrade Plan</a>
+                                                                                <?php endif; ?>
+                                                                            </div>
+                                                                    
 
-    echo '</div>';
-} else {
-    echo '<p>No shortlisted profiles found.</p>';
-}
-?>
+                                                                        </div>
+                                                                    </div>
+                                                                    <!-- End Membership Card -->
+                                                                </div>
+                                                            </div>
+                                                        </div>
+                                                    </section>
+                                            <?php
+                                                } else {
+                                                    // Plan not found
+                                                    echo '<p>No membership plan found.</p>';
+                                                }
+                                            } else {
+                                                // No active membership
+                                                echo '<p>You do not have an active membership plan.</p>';
+                                            }
+                                            ?>
+                                        </div>
 
                                     </div>
+                                    <?php } ?>
+                                    <div class="tab-pane fade" id="sortlist" role="tabpanel">
+                                        <div class="list_dt2 p-3 shadow animate__animated animate__fadeInUp">
+                                            <?php
+                                            global $wpdb;
+                                            $table_name = $wpdb->prefix . 'user_shortlists';
+                                            // $current_user_id= get_current_user_id();
+                                            $shortlisted = $wpdb->get_results(
+                                                $wpdb->prepare("SELECT shortlisted_user_id, created_at FROM $table_name WHERE user_id = %d", $current_user)
+                                            );
+
+
+                                            if (!empty($shortlisted)) {
+                                                echo '<div class="row">';
+
+                                                foreach ($shortlisted as $entry) {
+                                                    $profile_id = $entry->shortlisted_user_id;
+                                                    $profile_user = get_userdata($profile_id);
+                                                    if ($profile_user) {
+                                                        $profile_pic = get_user_meta($profile_user->ID, 'user_avatar', true);
+                                                        $user_first_name = get_user_meta($profile_user->ID, 'first_name', true);
+                                                        $user_last_name = get_user_meta($profile_user->ID, 'last_name', true);
+                                                        $user_full_name = trim("$user_first_name $user_last_name");
+                                                        $user_bio = get_user_meta($profile_user->ID, 'about_yourself', true);
+                                            ?>
+                                                        <div class="d-flex align-items-center p-3 mb-3 border rounded">
+                                                            <img src="<?= esc_url($profile_pic); ?>" alt="Avatar" width="100" height="100"
+                                                                class="rounded-circle me-3" style="object-fit: cover;">
+                                                            <div>
+                                                                <a href="<?= esc_url(home_url('/user-details/?user_id=' . $profile_user->ID)); ?>"
+                                                                    class="fw-bold text-dark text-decoration-none">
+                                                                    <?= esc_html($user_full_name); ?>
+                                                                </a>
+                                                                <p class="mb-0"><?= esc_html($user_bio); ?></p>
+
+                                                                <p class="mb-0">
+                                                                    <a class="btn theme-btn btn-sm delete-shortlist"
+                                                                        href="<?= esc_url(home_url('/user-details/?user_id=' . $profile_user->ID)); ?>">
+                                                                        View Profile </a>
+                                                                </p>
+                                                            </div>
+                                                        </div>
+
+
+                                            <?php }
+                                                }
+
+                                                echo '</div>';
+                                            } else {
+                                                echo '<p>No shortlisted profiles found.</p>';
+                                            }
+                                            ?>
+                                        </div>
+                                    </div>
+                                    <?php if($enable_payment){ ?>
+                                    <div class="tab-pane fade" id="limits" role="tabpanel">
+                                        <div class="list_dt2 p-3 shadow animate__animated animate__fadeInUp">
+
+                                            <?php
+
+                                            $can_view_contact = (isset($plan->can_view_contact) && $plan->can_view_contact > 0) ? 'Yes' : 'No';
+
+                                            $can_send_interest = (isset($plan->can_send_interest) && $plan->can_send_interest > 0) ? 'Yes' : 'No';
+
+                                            $can_start_chat = (isset($plan->can_start_chat) && $plan->can_start_chat > 0) ? 'Yes' : 'No';
+
+                                            $can_view_profiles = (isset($plan->can_view_profiles) && $plan->can_view_profiles > 0) ? 'Yes' : 'No';
+
+                                            $can_shortlist = (isset($plan->can_shortlist) && $plan->can_shortlist > 0) ? 'Yes' : 'No';
+                                            //$views = get_user_meta($user_id, 'usabdlp_views_2025-06', true);
+                                            
+                                            $current_month = date('Y-m');  // Get the current month in YYYY-MM format
+                                            $premium_views = get_user_meta($user_id, "usabdlp_premium_views_{$current_month}", true);
+                                            $premium_views = $premium_views ? intval($premium_views) : 0;
+                                            
+
+                                            ?>
+                                            <h3>Monthly Limits</h3>
+                                            <hr class="line mb-4">
+                                            <div class="row">
+                                            <div class="col-md-6">
+                                                    <p><strong>Premium Profile Views: </strong><?php echo get_user_profile_views($user_id); ?> /<?php echo esc_html($plan->premium_views); ?></p>
+                                                </div>
+                                                <div class="col-md-6">
+                                                    <p><strong>View Contact:</strong> <?php echo esc_html($can_view_contact); ?></p>
+                                                </div>
+                                            </div>
+                                            <div class="row">
+                                                <div class="col-md-6">
+                                                    <p><strong>Send Interest:</strong> <?php echo esc_html($can_send_interest); ?></p>
+                                                </div>
+                                                <div class="col-md-6">
+                                                    <p><strong>Start Chat:</strong> <?php echo esc_html($can_start_chat); ?></p>
+                                                </div>
+                                                <div class="col-md-6">
+                                                    <p><strong>View Others Profile:</strong> <?php echo esc_html($can_view_profiles); ?></p>
+                                                </div>
+                                                <div class="col-md-6">
+                                                    <p><strong>Shortlist:</strong> <?php echo esc_html($can_shortlist); ?></p>
+                                                </div>
+                                            </div>
+                                        </div>
+                                    </div>
+                                    <?php } ?>
                                 </div>
                             </div>
                         </div>
@@ -1584,7 +1738,7 @@ if (!empty($shortlisted)) {
                                     <option value="+880" <?php selected($candidate_country_code, '+880'); ?>>+880
                                         (Bangladesh)</option>
                                 </select>
-                                <input type="text" name="candidate_phone" class="form-control"
+                                <input type="text" name="user_phone" class="form-control"
                                     placeholder="Enter Candidate Phone Number"
                                     value="<?php echo esc_attr($candidate_phone); ?>">
                             </div>
@@ -1592,12 +1746,12 @@ if (!empty($shortlisted)) {
                         <div class="justify-content-between d-flex mt-3">
                             <span class="d-inline-block mt-2 w-25">Parent Contact Number</span>
                             <div class="input-group">
-                                <select class="form-select" name="parent_country_code" style="max-width: 100px;">
+                                <select class="form-select" name="guardian_country_code" style="max-width: 100px;">
                                     <option value="+1" <?php selected($parent_country_code, '+1'); ?>>+1 (USA)</option>
                                     <option value="+880" <?php selected($parent_country_code, '+880'); ?>>+880
                                         (Bangladesh)</option>
                                 </select>
-                                <input type="text" name="parent_phone" class="form-control"
+                                <input type="text" name="user_g_phone" class="form-control"
                                     placeholder="Enter Parent Phone Number"
                                     value="<?php echo esc_attr($parent_phone); ?>">
                             </div>

@@ -28,10 +28,12 @@ get_header(); ?>
                     $success_query = new WP_Query($args);
 
                     if ($success_query->have_posts()):
+                        $index = 1; // Initialize the index for animation delay
                         while ($success_query->have_posts()):
                             $success_query->the_post();
+                            $delay = $index * 0.1; // Set animation delay based on the index
                             ?>
-                            <div class="blog_pg1_left1 mt-4 position-relative">
+                            <div class="blog_pg1_left1 mt-4 position-relative animate__animated animate__fadeInUp"style="animation-delay: <?php echo esc_attr($delay); ?>s;">
                                 <div class="blog_pg1_left1_inner">
                                     <a href="<?php the_permalink(); ?>">
                                         <?php if (has_post_thumbnail()): ?>
@@ -57,7 +59,9 @@ get_header(); ?>
 
                                 </div>
                             </div>
-                        <?php endwhile; ?>
+                        <?php 
+                    $index++; // Increment the index for the next post
+                    endwhile; ?>
 
                         <!-- Pagination -->
                         <div class="paging">

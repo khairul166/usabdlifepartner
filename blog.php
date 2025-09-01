@@ -36,7 +36,8 @@ get_header(); ?>
                         while ($blog_query->have_posts()):
                             $blog_query->the_post();
                             ?>
-                            <div class="blog_pg1_left1 mt-4 position-relative">
+                            <div class="blog_pg1_left1 mt-4 position-relative animate__animated animate__fadeInUp"
+                                style="animation-delay: <?php echo (0.1 * $blog_query->current_post) ?>s;">
                                 <div class="blog_pg1_left1_inner">
                                     <a href="<?php the_permalink(); ?>">
                                         <?php if (has_post_thumbnail()): ?>

@@ -6,6 +6,9 @@ function updateAddressFields() {
     const divisionSelect = document.getElementById("division");
     const stateSelect = document.getElementById("state");
     const citySelect = document.getElementById("city");
+    const districtSelect = document.getElementById("district");
+    const upazilaSelect = document.getElementById("upazila");
+    const bdlandmark = document.getElementById("landmark");
 
     if (country === "Bangladesh") {
         bangladeshFields.style.display = "block";
@@ -35,12 +38,16 @@ function updateAddressFields() {
         citySelect.disabled = false;
         stateSelect.setAttribute("required", "required");
         citySelect.setAttribute("required", "required");
+        divisionSelect.removeAttribute("required");
+        districtSelect.removeAttribute("required");
+        upazilaSelect.removeAttribute("required");
+        bdlandmark.removeAttribute("required");
 
         // Populate states
         stateSelect.innerHTML = `<option value="">Select State</option>`;
-        Object.keys(usaData.states).forEach(state => {
+        Object.keys(usaData.state).forEach(state => {
             stateSelect.innerHTML += `<option value="${state}">${state}</option>`;
-        });
+        });        
         stateSelect.disabled = false;
     }
 }
@@ -83,10 +90,10 @@ function updateCities() {
     const citySelect = document.getElementById("city");
 
     citySelect.innerHTML = `<option value="">Select City</option>`;
-    if (state && usaData.states[state]) {
-        usaData.states[state].forEach(city => {
+    if (state && usaData.state[state]) {
+        usaData.state[state].forEach(city => {
             citySelect.innerHTML += `<option value="${city}">${city}</option>`;
-        });
+        });    
         citySelect.disabled = false;
     } else {
         citySelect.disabled = true;

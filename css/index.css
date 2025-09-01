@@ -8,11 +8,7 @@ Licence: <a href="https://www.templateonweb.com/license">Website Template Licenc
 
 
 /*********************center****************/
-.center_home {
-    background-image: url(../image/1.jpg);
-    background-position: center center;
-    background-size: cover;
-}
+
 .center_m{
    padding-top:30px;
    padding-bottom:90px;

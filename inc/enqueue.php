@@ -27,6 +27,8 @@ function matrimonials_enqueue_styles() {
     wp_enqueue_style('lightbox2', 'https://cdnjs.cloudflare.com/ajax/libs/lightbox2/2.11.3/css/lightbox.min.css', array(), '2.11.3');
     wp_enqueue_style('font-awesome', 'https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.0.0-beta3/css/all.min.css', array(), '6.0.0-beta3');
     wp_enqueue_style('cropper-css', 'https://cdnjs.cloudflare.com/ajax/libs/cropperjs/1.5.13/cropper.min.css', array(), '6.0.0-beta3');
+    wp_enqueue_style('font-awesome', 'https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css');
+    wp_enqueue_style('animate-style', 'https://cdnjs.cloudflare.com/ajax/libs/animate.css/4.1.1/animate.min.css');
 }
 add_action('wp_enqueue_scripts', 'matrimonials_enqueue_styles');
 
@@ -243,3 +245,158 @@ function enqueue_shortlist_script() {
     ]);
 }
 add_action('wp_enqueue_scripts', 'enqueue_shortlist_script');
+
+function enqueue_custom_validation_scripts() {
+    if(is_page('signup')){
+        wp_enqueue_script(
+            'plan-selection',
+            get_template_directory_uri() . '/js/plan-selection.js',
+            array('jquery'),
+            '1.0',
+            true
+        );
+    
+        // Localize ajaxurl
+        wp_localize_script('plan-selection', 'ajax_object', array(
+            'ajax_url' => admin_url('admin-ajax.php')
+        ));
+    }
+
+}
+add_action('wp_enqueue_scripts', 'enqueue_custom_validation_scripts');
+
+
+
+function usabdlp_enqueue_form_validation_js() {
+    // Only load on register or login pages
+    if (is_page('signup')) {
+        wp_enqueue_script(
+            'form-validation',
+            get_template_directory_uri() . '/js/form-validation.js',
+            array(),  // Dependencies (none required)
+            '1.0',
+            true // Load in footer
+        );
+        wp_enqueue_script(
+            'signup-form-validation',
+            get_template_directory_uri() . '/js/signup-form-validation.js',
+            array(),  // Dependencies (none required)
+            '1.0',
+            true // Load in footer
+        );
+    }
+}
+add_action('wp_enqueue_scripts', 'usabdlp_enqueue_form_validation_js');
+
+function usabdlp_enqueue_showhidepass_js() {
+    // Only load on register or login pages
+    if (is_page('signup') || is_page('login')) {
+        wp_enqueue_script(
+            'showhidepass',
+            get_template_directory_uri() . '/js/showhidepass.js',
+            array(),  // Dependencies (none required)
+            '1.0',
+            true // Load in footer
+        );
+    }
+}
+add_action('wp_enqueue_scripts', 'usabdlp_enqueue_showhidepass_js');
+
+function usabdlp_load_dashicons_frontend() {
+    wp_enqueue_style('dashicons');
+}
+add_action('wp_enqueue_scripts', 'usabdlp_load_dashicons_frontend');
+
+function enqueue_payment_info_script() {
+    // Enqueue the script only on the registration or checkout page
+    if (is_page('signup') || is_page('checkout')) { // Change these conditions as needed
+        wp_enqueue_script(
+            'payment-info', // Handle for the script
+            get_template_directory_uri() . '/js/payment-info.js', // Path to the JS file
+            array('jquery'), // Dependencies (jQuery in this case, you can add more if needed)
+            null, // Version (optional, use null to let WordPress handle it automatically)
+            true // Load script in the footer (recommended for performance)
+        );
+    }
+}
+add_action('wp_enqueue_scripts', 'enqueue_payment_info_script');
+
+
+function usabdlp_enqueue_admin_scripts($hook) {
+    // Only load on your dashboard page
+    if ($hook != 'toplevel_page_usabdlp-dashboard') {
+        return;
+    }
+
+    // Enqueue WordPress's built-in jQuery
+    wp_enqueue_script('jquery');
+
+    // Enqueue Moment.js (required for daterangepicker)
+    wp_enqueue_script('moment', 'https://cdn.jsdelivr.net/npm/moment@2.29.1/moment.min.js', [], null, true);
+
+
+    // Enqueue Date Range Picker
+    wp_enqueue_script('daterangepicker', 'https://cdn.jsdelivr.net/npm/daterangepicker@3.1.0/daterangepicker.min.js', ['jquery', 'moment'], null, true);
+    wp_enqueue_style('daterangepicker', 'https://cdn.jsdelivr.net/npm/daterangepicker@3.1.0/daterangepicker.css');
+
+    // Enqueue Chart.js
+    wp_enqueue_script('chart-js', 'https://cdn.jsdelivr.net/npm/chart.js@3.7.1/dist/chart.min.js', [], null, true);
+
+    // Enqueue your custom admin script
+    wp_enqueue_script(
+        'usabdlp-admin-script',
+        get_template_directory_uri() . '/js/usabdlp-admin.js',
+        ['jquery', 'moment', 'daterangepicker', 'chart-js'],
+        filemtime(get_template_directory() . '/js/usabdlp-admin.js'),
+        true
+    );
+
+    // Enqueue your admin styles
+    wp_enqueue_style(
+        'usabdlp-admin-style',
+        get_template_directory_uri() . '/css/usabdlp-dashboard.css',
+        [],
+        filemtime(get_template_directory() . '/css/usabdlp-dashboard.css')
+    );
+}
+add_action('admin_enqueue_scripts', 'usabdlp_enqueue_admin_scripts');
+
+// In functions.php
+function font_awesome_select_preview() {
+    ?>
+    <style>
+    /* Show icons in dropdown */
+    .font-awesome-select .select2-results__option:before {
+        font-family: 'Font Awesome 6 Free';
+        font-weight: 900;
+        content: attr(data-icon);
+        margin-right: 10px;
+    }
+    
+    /* Show selected icon */
+    .font-awesome-select .select2-selection__rendered:before {
+        font-family: 'Font Awesome 6 Free';
+        font-weight: 900;
+        content: attr(data-icon);
+        margin-right: 10px;
+    }
+    </style>
+    
+    <script>
+    jQuery(document).ready(function($) {
+        // Add data-icon attribute for preview
+        $('.font-awesome-select option').each(function() {
+            $(this).attr('data-icon', '\\' + $(this).val().split('-').pop());
+        });
+    });
+    </script>
+    <?php
+}
+add_action('admin_footer', 'font_awesome_select_preview');
+
+function load_font_awesome_admin() {
+    if (is_admin()) {
+        wp_enqueue_style('font-awesome', 'https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css');
+    }
+}
+add_action('admin_enqueue_scripts', 'load_font_awesome_admin');

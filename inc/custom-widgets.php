@@ -1,14 +1,17 @@
 <?php
 // Register the custom widget
-function register_dynamic_blog_categories_widget() {
+function register_dynamic_blog_categories_widget()
+{
     register_widget('Dynamic_Blog_Categories_Widget');
 }
 add_action('widgets_init', 'register_dynamic_blog_categories_widget');
 
 // Define the Dynamic Blog Categories Widget class
-class Dynamic_Blog_Categories_Widget extends WP_Widget {
+class Dynamic_Blog_Categories_Widget extends WP_Widget
+{
 
-    function __construct() {
+    function __construct()
+    {
         parent::__construct(
             'dynamic_blog_categories_widget', // Widget ID
             __('Dynamic Blog Categories', 'text_domain'), // Widget Name
@@ -16,13 +19,14 @@ class Dynamic_Blog_Categories_Widget extends WP_Widget {
         );
     }
 
-    public function widget($args, $instance) {
+    public function widget($args, $instance)
+    {
         echo $args['before_widget'];
-        
+
         // Get all blog categories
         $categories = get_categories();
         if (!empty($categories)) {
-            ?>
+?>
             <div class="blog_pg1_right2 mt-4">
                 <h3>Category</h3>
                 <hr class="line mb-4">
@@ -31,7 +35,7 @@ class Dynamic_Blog_Categories_Widget extends WP_Widget {
                     $count = 1;
                     foreach ($categories as $category) {
                         $category_link = get_category_link($category->term_id);
-                        ?>
+                    ?>
                         <li class="mt-2">
                             <a class="d-block bg_light py-2 px-3" href="<?php echo esc_url($category_link); ?>">
                                 <span class="d-inline-block bg-danger rounded-circle text-white text-center num me-2"><?php echo $count; ?></span>
@@ -39,13 +43,13 @@ class Dynamic_Blog_Categories_Widget extends WP_Widget {
                                 <span class="float-end mt-1"><i class="bi bi-arrow-right"></i></span>
                             </a>
                         </li>
-                        <?php
+                    <?php
                         $count++;
                     }
                     ?>
                 </ul>
             </div>
-            <?php
+        <?php
         } else {
             echo "<p>No categories found.</p>";
         }
@@ -59,15 +63,18 @@ class Dynamic_Blog_Categories_Widget extends WP_Widget {
 
 
 // Register the Trending Posts widget
-function register_trending_posts_widget() {
+function register_trending_posts_widget()
+{
     register_widget('Trending_Posts_Widget');
 }
 add_action('widgets_init', 'register_trending_posts_widget');
 
 // Define the Trending Posts Widget class
-class Trending_Posts_Widget extends WP_Widget {
+class Trending_Posts_Widget extends WP_Widget
+{
 
-    function __construct() {
+    function __construct()
+    {
         parent::__construct(
             'trending_posts_widget', // Widget ID
             __('Recent News', 'text_domain'), // Widget Name
@@ -75,7 +82,8 @@ class Trending_Posts_Widget extends WP_Widget {
         );
     }
 
-    public function widget($args, $instance) {
+    public function widget($args, $instance)
+    {
         echo $args['before_widget'];
 
         // Set default post count
@@ -91,7 +99,7 @@ class Trending_Posts_Widget extends WP_Widget {
         $recent_posts = new WP_Query($query_args);
 
         if ($recent_posts->have_posts()) :
-            ?>
+        ?>
             <div class="blog_pg1_right2 mt-4">
                 <h3>Recent News</h3>
                 <hr class="line mb-4">
@@ -117,7 +125,7 @@ class Trending_Posts_Widget extends WP_Widget {
                     <?php endwhile; ?>
                 </ul>
             </div>
-            <?php
+        <?php
             wp_reset_postdata();
         else :
             echo "<p>No trending posts found.</p>";
@@ -126,7 +134,8 @@ class Trending_Posts_Widget extends WP_Widget {
         echo $args['after_widget'];
     }
 
-    public function form($instance) {
+    public function form($instance)
+    {
         $post_count = !empty($instance['post_count']) ? absint($instance['post_count']) : 4;
         ?>
         <p>
@@ -134,13 +143,14 @@ class Trending_Posts_Widget extends WP_Widget {
                 <?php _e('Number of Posts:', 'text_domain'); ?>
             </label>
             <input class="widefat" id="<?php echo esc_attr($this->get_field_id('post_count')); ?>"
-                   name="<?php echo esc_attr($this->get_field_name('post_count')); ?>"
-                   type="number" value="<?php echo esc_attr($post_count); ?>" min="1">
+                name="<?php echo esc_attr($this->get_field_name('post_count')); ?>"
+                type="number" value="<?php echo esc_attr($post_count); ?>" min="1">
         </p>
-        <?php
+    <?php
     }
 
-    public function update($new_instance, $old_instance) {
+    public function update($new_instance, $old_instance)
+    {
         $instance = array();
         $instance['post_count'] = (!empty($new_instance['post_count'])) ? absint($new_instance['post_count']) : 4;
         return $instance;
@@ -151,46 +161,79 @@ class Trending_Posts_Widget extends WP_Widget {
 
 
 // Register the Recent Profiles Widget
-class Recent_Profiles_Widget extends WP_Widget {
+class Recent_Profiles_Widget extends WP_Widget
+{
 
     // Constructor
-    function __construct() {
+    function __construct()
+    {
         parent::__construct(
             'recent_profiles_widget', // Base ID
             __('Recent Profiles', 'text_domain'), // Name
-            array( 'description' => __( 'Displays recent profiles', 'text_domain' ), ) // Args
+            array('description' => __('Displays recent profiles', 'text_domain'),) // Args
         );
     }
 
     // Widget Output
-    public function widget( $args, $instance ) {
-        $title = apply_filters( 'widget_title', $instance['title'] );
-        $number_of_profiles = isset( $instance['number_of_profiles'] ) ? $instance['number_of_profiles'] : 4;
+    public function widget($args, $instance)
+    {
+        $title = apply_filters('widget_title', $instance['title']);
+        $number_of_profiles = isset($instance['number_of_profiles']) ? $instance['number_of_profiles'] : 4;
 
         // Fetch recent profiles (replace with your actual query)
         $recent_profiles = $this->get_recent_profiles($number_of_profiles);
 
         echo $args['before_widget'];
 
-        if ( ! empty( $title ) ) {
-            echo $args['before_title'] . $title . $args['after_title'];
-        }
+
 
         // Display profiles
-        echo '<div class="recent-profiles">';
+        echo '<div class="recent-profiles shadow">';
+        if (! empty($title)) {
+            echo $args['before_title'] . '<div class="p-3">' . $title . '</div>' . $args['after_title'];
+        }
 
         if ($recent_profiles) {
-            foreach ($recent_profiles as $profile) {
+            foreach ($recent_profiles as $index => $profile) {
+                $profile_pic = get_user_meta($profile->ID, 'user_avatar', true);
+                //If no profile picture is set, use a default placeholder
+                if (empty($profile_pic)) {
+                    $profile_pic = get_template_directory_uri() . '/image/avater.webp'; // Path to your default avatar
+                }
+                $country = get_user_meta($profile->ID, 'country', true);
+                $division = get_user_meta($profile->ID, 'division', true);
+                $district = get_user_meta($profile->ID, 'district', true);
+                $upazila = get_user_meta($profile->ID, 'upazila', true);
+                $village = get_user_meta($profile->ID, 'village', true);
+                $landmark = get_user_meta($profile->ID, 'landmark', true);
+
+                $state = get_user_meta($profile->ID, 'state', true);
+                $city = get_user_meta($profile->ID, 'city', true);
+                $usaLandmark = get_user_meta($profile->ID, 'usaLandmark', true);
+                if ($country == "Bangladesh") {
+                    $location = $district;
+                } else {
+                    $location = $city;
+                }
                 // You can fetch user data such as name, image, etc.
                 // Inside the widget function
-echo '<div class="col-9">';
-echo '<b class="d-block mb-0 fs-5"><a href="' . esc_url(home_url('/user-details/')) . '?user_id=' . esc_attr($profile->ID) . '">' . esc_html($profile->first_name . ' ' . $profile->last_name) . '</a></b>';
-echo '<ul class="font_15 mb-0">';
-echo '<li class="d-flex"><b class="me-2">Age:</b><span>' . esc_html(get_user_meta($profile->ID, 'age', true)) . ' Yrs</span></li>';
-echo '<li class="d-flex"><b class="me-2">Location:</b><span>' . esc_html(get_user_meta($profile->ID, 'location', true)) . '</span></li>';
-echo '</ul>';
-echo '</div>';
+                if ($index > 0) {
+                    echo '<hr class="my-2">';
+                }
+                $delay = $index * 0.1; // Animation delay based on index
+                echo '<div class="row px-3 py-2 align-items-center animate__animated animate__fadeInUp" style="animation-delay:'. $delay.'s;">';
+                echo '<div class="col-3">';
+                // Display user profile picture
 
+                echo '<a href="' . esc_url(home_url('/user-details/')) . '?user_id=' . esc_attr($profile->ID) . '"><img src="' . esc_url($profile_pic) . '" alt="' . esc_attr($profile->display_name) . '" class="img-fluid rounded-circle"></a>';
+                echo '</div>';
+                echo '<div class="col-9">';
+                echo '<div class="d-block mb-0 fs-5"><b><a href="' . esc_url(home_url('/user-details/')) . '?user_id=' . esc_attr($profile->ID) . '">' . esc_html($profile->first_name . ' ' . $profile->last_name) . '</a></b></div>';
+                echo '<ul class="font_14 mb-0">';
+                echo '<li class="">Age: <span> ' . esc_html(get_user_meta($profile->ID, 'age', true)) . ' Yrs</span></li>';
+                echo '<li class="">Location: </b><span> ' . esc_html($location) . ' </span></li>';
+                echo '</ul>';
+                echo '</div> </div>';
             }
         }
 
@@ -199,31 +242,34 @@ echo '</div>';
     }
 
     // Form for widget settings
-    public function form( $instance ) {
-        $title = isset( $instance['title'] ) ? $instance['title'] : '';
-        $number_of_profiles = isset( $instance['number_of_profiles'] ) ? $instance['number_of_profiles'] : 4;
-        ?>
+    public function form($instance)
+    {
+        $title = isset($instance['title']) ? $instance['title'] : '';
+        $number_of_profiles = isset($instance['number_of_profiles']) ? $instance['number_of_profiles'] : 4;
+    ?>
         <p>
-            <label for="<?php echo $this->get_field_id( 'title' ); ?>"><?php _e( 'Title:' ); ?></label>
-            <input class="widefat" id="<?php echo $this->get_field_id( 'title' ); ?>" name="<?php echo $this->get_field_name( 'title' ); ?>" type="text" value="<?php echo esc_attr( $title ); ?>" />
+            <label for="<?php echo $this->get_field_id('title'); ?>"><?php _e('Title:'); ?></label>
+            <input class="widefat" id="<?php echo $this->get_field_id('title'); ?>" name="<?php echo $this->get_field_name('title'); ?>" type="text" value="<?php echo esc_attr($title); ?>" />
         </p>
         <p>
-            <label for="<?php echo $this->get_field_id( 'number_of_profiles' ); ?>"><?php _e( 'Number of Profiles to Display:' ); ?></label>
-            <input class="widefat" id="<?php echo $this->get_field_id( 'number_of_profiles' ); ?>" name="<?php echo $this->get_field_name( 'number_of_profiles' ); ?>" type="number" value="<?php echo esc_attr( $number_of_profiles ); ?>" min="1" />
+            <label for="<?php echo $this->get_field_id('number_of_profiles'); ?>"><?php _e('Number of Profiles to Display:'); ?></label>
+            <input class="widefat" id="<?php echo $this->get_field_id('number_of_profiles'); ?>" name="<?php echo $this->get_field_name('number_of_profiles'); ?>" type="number" value="<?php echo esc_attr($number_of_profiles); ?>" min="1" />
         </p>
-        <?php
+<?php
     }
 
     // Update widget settings
-    public function update( $new_instance, $old_instance ) {
+    public function update($new_instance, $old_instance)
+    {
         $instance = $old_instance;
-        $instance['title'] = strip_tags( $new_instance['title'] );
+        $instance['title'] = strip_tags($new_instance['title']);
         $instance['number_of_profiles'] = (int) $new_instance['number_of_profiles'];
         return $instance;
     }
 
     // Fetch recent profiles
-    private function get_recent_profiles($number_of_profiles = 4) {
+    private function get_recent_profiles($number_of_profiles = 4)
+    {
         // Example query to get recent users. Customize this according to your needs.
         $args = array(
             'role' => 'subscriber', // Adjust to match your user role
@@ -231,21 +277,17 @@ echo '</div>';
             'orderby' => 'registered',
             'order' => 'DESC'
         );
-        $user_query = new WP_User_Query( $args );
+        $user_query = new WP_User_Query($args);
 
         return $user_query->get_results();
     }
 }
 
 // Register the widget
-function register_recent_profiles_widget() {
-    register_widget( 'Recent_Profiles_Widget' );
+function register_recent_profiles_widget()
+{
+    register_widget('Recent_Profiles_Widget');
 }
-add_action( 'widgets_init', 'register_recent_profiles_widget' );
+add_action('widgets_init', 'register_recent_profiles_widget');
 
 ?>
-
-
-
-
-

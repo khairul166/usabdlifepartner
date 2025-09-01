@@ -9,16 +9,18 @@ get_header();
         <h1 class="theme-text-color text-center mb-4">LOGIN</h1>
         <div class="row search_form1 shadow p-4 w-50 mx-auto">
             <?php
+            // Check if the user is already logged in
             if (is_user_logged_in()) {
-                echo '<p class="text-center">You are already logged in. <a href="' . esc_url(home_url()) . '">Go to Homepage</a></p>';
+                wp_redirect(home_url('/my-account')); // Redirect logged-in users to my-account or dashboard
+                exit;
             } else {
                 if ($_SERVER["REQUEST_METHOD"] == "POST" && isset($_POST["wp-submit"])) {
                     $creds = array();
                     $creds['user_login'] = sanitize_text_field($_POST['log']);
                     $creds['user_password'] = sanitize_text_field($_POST['pwd']);
                     $creds['remember'] = isset($_POST['rememberme']) ? true : false;
-
-                    $user = wp_signon($creds, false);
+                    $secure_cookie = is_ssl(); // Only true if running over HTTPS
+                    $user = wp_signon($creds, $secure_cookie);
 
                     if (is_wp_error($user)) {
                         echo '<div class="alert alert-danger">' .$user->get_error_message() . '</div>';
@@ -33,7 +35,7 @@ get_header();
                             wp_logout();
                             echo '<div class="alert alert-danger">🚫 Your account has been banned by the admin. Please contact support.</div>';
                         } else {
-                            wp_redirect(home_url()); // Successful login and approved
+                            wp_redirect(home_url('/my-account')); // Successful login and approved
                             exit;
                         }
                     }
@@ -58,10 +60,16 @@ get_header();
                         </div>
 
                         <!-- Password Field -->
-                        <div class="mb-3">
-                            <label for="password" class="form-label">Password</label>
-                            <input type="password" class="form-control" name="pwd" id="password" placeholder="Type your password" required>
-                        </div>
+                        <div class="mb-3 position-relative">
+    <label for="password" class="form-label">Password</label>
+    <div class="position-relative">
+        <input type="password" class="form-control pe-5" name="pwd" id="password" placeholder="Type your password" required>
+        <span class="dashicons dashicons-visibility toggle-password"
+              data-target="password"
+              style="position: absolute; right: 15px; top: 50%; transform: translateY(-50%); cursor: pointer; font-size: 18px;"></span>
+    </div>
+</div>
+
 
                         <!-- Remember Me and Forgot Password Row -->
                         <div class="d-flex justify-content-between align-items-center mb-3">
@@ -74,7 +82,7 @@ get_header();
                             </div>
                         </div>
 
-                        <input type="hidden" name="redirect_to" value="<?php echo esc_url(home_url()); ?>">
+                        <input type="hidden" name="redirect_to" value="<?php echo esc_url(home_url('/my-account')); ?>">
                         <button type="submit" name="wp-submit" class="btn theme-btn text-white btn-md pl-5 signin d-flex justify-content-between">SIGN IN</button>
                     </div>
                 </form>

@@ -7,7 +7,7 @@
     <meta name="viewport" content="width=device-width, initial-scale=1">
 
     <!-- Dynamic Title -->
-    <title><?php wp_title('|', true, 'right'); ?></title>
+    <title><?php wp_title('|', true, 'right'); bloginfo('name'); ?></title>
 
     <!-- Add Favicon Dynamically -->
     <?php if (get_site_icon_url()): ?>

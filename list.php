@@ -235,12 +235,12 @@ get_header(); ?>
                             // Get the filtered users
                             $users = $user_query->get_results();
                             $total_users = $user_query->get_total(); // Get the total number of users for pagination
-                            
+
                             // Output the profiles in the required format
                             if ($users) {
-                                foreach ($users as $user) {
+                                foreach ($users as $index => $user) {
                                     // Get user meta data
-// Get user meta data
+                                    // Get user meta data
                                     $about_yourself = get_user_meta($user->ID, 'about_yourself', true);
                                     $profile_pic = get_user_meta($user->ID, 'user_avatar', true);
                                     //If no profile picture is set, use a default placeholder
@@ -277,14 +277,45 @@ get_header(); ?>
                                     $instagram = get_user_meta($user->ID, 'instagram', true);
                                     $linkedin = get_user_meta($user->ID, 'linkedin', true);
                                     $x = get_user_meta($user->ID, 'x', true);
-                                    ?>
-                                    <div class="list_1_right2_inner row border-top mt-4 pt-4 mx-0">
+                                    $delay = ($index * 0.1) . 's'; // Increase delay by 0.1s for each item
+                            ?>
+                                    <div class="list_1_right2_inner row <?php if ($index > 0) {
+                                                                            echo 'border-top';
+                                                                        } ?> mt-4 pt-4 mx-0 animate__animated animate__fadeInUp" style="animation-delay: <?php echo esc_attr($delay); ?>">
                                         <div class="col-md-4 ps-0 col-sm-4">
-                                            <div class="list_1_right2_inner_left">
-                                                <a
-                                                    href="<?php echo get_permalink(get_page_by_path('user-details')); ?>?user_id=<?php echo $user->ID; ?>"><img
-                                                        src="<?php echo esc_url($profile_pic); ?>" class="img-fluid"
-                                                        alt="abc"></a>
+                                            <div class="list_1_right2_inner_left" style="position: relative;">
+                                                <?php if (is_user_logged_in()) : ?>
+                                                    <a href="<?php echo get_permalink(get_page_by_path('user-details')); ?>?user_id=<?php echo $user->ID; ?>">
+                                <img src="<?php echo esc_url($profile_pic); ?>" class="img-fluid" alt="abc">
+                                <!-- Membership Badge -->
+                <?php
+                global $wpdb;
+                // Get membership info for the current user in the loop
+                $saved_default_package = intval(get_option('usabdlp_default_package', 0));
+                $membership_info = $wpdb->get_row(
+                    $wpdb->prepare("SELECT * FROM {$wpdb->prefix}memberships WHERE user_id = %d AND status = 'active'", $user->ID)
+                );
+                
+                if ($membership_info) {
+                    $plan = $wpdb->get_row(
+                        $wpdb->prepare("SELECT * FROM {$wpdb->prefix}membership_plans WHERE id = %d", $membership_info->membership_type)
+                    );
+                    
+                    if ($plan->id > $saved_default_package) {
+                        echo '<span class="membership-badge">' . esc_html($plan->name) . '</span>';
+                    }
+                } 
+                // else {
+                //     echo '<span class="membership-badge">Free</span>';
+                // }
+                ?>
+                            </a>
+                                                <?php else : ?>
+                                                    <a href="<?php echo wp_login_url(); ?>"> <!-- WordPress login URL -->
+                                                        <img src="<?php echo esc_url($profile_pic); ?>" class="img-fluid" alt="abc">
+                                                    </a>
+                                                <?php endif; ?>
+
                                             </div>
                                         </div>
                                         <div class="col-md-8 col-sm-8">
@@ -292,9 +323,16 @@ get_header(); ?>
                                                 class="row row-cols-1 row-cols-lg-2 row-cols-md-1 list_1_right2_inner_right_inner">
                                                 <div class="col">
                                                     <div class="list_1_right2_inner_right">
-                                                        <b class="d-block mb-3 fs-5"><a
-                                                                href="<?php echo get_permalink(get_page_by_path('user-details')); ?>?user_id=<?php echo $user->ID; ?>"><?php echo esc_html($name); ?>
-                                                            </a></b>
+                                                        <b class="d-block mb-3 fs-5"><?php if (is_user_logged_in()) : ?>
+                                                                <a href="<?php echo get_permalink(get_page_by_path('user-details')); ?>?user_id=<?php echo $user->ID; ?>">
+                                                                    <?php echo esc_html($name); ?>
+                                                                </a>
+                                                            <?php else : ?>
+                                                                <a href="<?php echo wp_login_url(); ?>"> <!-- WordPress login URL -->
+                                                                    <?php echo esc_html($name); ?>
+                                                                </a>
+                                                            <?php endif; ?>
+                                                        </b>
                                                         <ul class="font_15 mb-0">
                                                             <li class="d-flex"><b class="me-2"> Age:</b>
                                                                 <span><?php echo esc_html($age); ?> Yrs</span>
@@ -309,15 +347,13 @@ get_header(); ?>
                                                                     <?php echo esc_html($education); ?></span></li>
                                                             <li class="d-flex mt-2"><b class="me-2"> Profession:</b><span>
                                                                     <?php echo esc_html($profession); ?></span></li>
-                                                            <li class="d-flex mt-2"><b class="me-2"> Annual Income:</b><span>
-                                                                    <?php echo esc_html($annual_income); ?></span></li>
                                                         </ul>
                                                         <span class="d-block mt-3">
                                                             <a class="button"
-                                                                href="<?php echo get_permalink(get_page_by_path('user-details')); ?>?user_id=<?php echo $user->ID; ?>">
-                                                                <i class="bi bi-person-fill me-1 align-middle"></i> View Full
-                                                                Profile
+                                                                href="<?php echo is_user_logged_in() ? get_permalink(get_page_by_path('user-details')) . '?user_id=' . $user->ID : wp_login_url(); ?>">
+                                                                <i class="bi bi-person-fill me-1 align-middle"></i> View Full Profile
                                                             </a>
+
                                                         </span>
                                                     </div>
                                                 </div>
@@ -325,44 +361,44 @@ get_header(); ?>
                                                     <div class="list_1_right2_inner_right">
                                                         <p class="mt-1"><?php echo $about_yourself; ?></p>
                                                         <ul class="mb-0 d-flex social_brands">
-                                                            <?php if($facebook){?>
+                                                            <?php if ($facebook) { ?>
                                                                 <li>
-                                                                <a class="bg-primary d-inline-block text-white text-center"
-                                                                    href="https://www.facebook.com/<?php echo esc_attr($facebook); ?>"
-                                                                    target="_blank">
-                                                                    <i class="bi bi-facebook"></i>
-                                                                </a>
-                                                            </li>
+                                                                    <a class="bg-primary d-inline-block text-white text-center"
+                                                                        href="https://www.facebook.com/<?php echo esc_attr($facebook); ?>"
+                                                                        target="_blank">
+                                                                        <i class="bi bi-facebook"></i>
+                                                                    </a>
+                                                                </li>
                                                             <?php } ?>
-                                                            <?php if($instagram){?>
-                                                            <!-- Instagram -->
-                                                            <li class="ms-2">
-                                                                <a class="bg-success d-inline-block text-white text-center"
-                                                                    href="https://www.instagram.com/<?php echo esc_attr($instagram); ?>"
-                                                                    target="_blank">
-                                                                    <i class="bi bi-instagram"></i>
-                                                                </a>
-                                                            </li>
+                                                            <?php if ($instagram) { ?>
+                                                                <!-- Instagram -->
+                                                                <li class="ms-2">
+                                                                    <a class="bg-success d-inline-block text-white text-center"
+                                                                        href="https://www.instagram.com/<?php echo esc_attr($instagram); ?>"
+                                                                        target="_blank">
+                                                                        <i class="bi bi-instagram"></i>
+                                                                    </a>
+                                                                </li>
                                                             <?php } ?>
-                                                            <?php if($linkedin){?>
-                                                            <!-- LinkedIn -->
-                                                            <li class="ms-2">
-                                                                <a class="bg-warning d-inline-block text-white text-center"
-                                                                    href="https://www.linkedin.com/in/<?php echo esc_attr($linkedin); ?>"
-                                                                    target="_blank">
-                                                                    <i class="bi bi-linkedin"></i>
-                                                                </a>
-                                                            </li>
+                                                            <?php if ($linkedin) { ?>
+                                                                <!-- LinkedIn -->
+                                                                <li class="ms-2">
+                                                                    <a class="bg-warning d-inline-block text-white text-center"
+                                                                        href="https://www.linkedin.com/in/<?php echo esc_attr($linkedin); ?>"
+                                                                        target="_blank">
+                                                                        <i class="bi bi-linkedin"></i>
+                                                                    </a>
+                                                                </li>
                                                             <?php } ?>
-                                                            <?php if($x){?>
-                                                            <!-- X (Twitter) -->
-                                                            <li class="ms-2">
-                                                                <a class="bg-dark d-inline-block text-white text-center"
-                                                                    href="https://twitter.com/<?php echo esc_attr($x); ?>"
-                                                                    target="_blank">
-                                                                    <i class="bi bi-twitter-x"></i>
-                                                                </a>
-                                                            </li>
+                                                            <?php if ($x) { ?>
+                                                                <!-- X (Twitter) -->
+                                                                <li class="ms-2">
+                                                                    <a class="bg-dark d-inline-block text-white text-center"
+                                                                        href="https://twitter.com/<?php echo esc_attr($x); ?>"
+                                                                        target="_blank">
+                                                                        <i class="bi bi-twitter-x"></i>
+                                                                    </a>
+                                                                </li>
                                                             <?php } ?>
                                                         </ul>
 
@@ -371,7 +407,7 @@ get_header(); ?>
                                             </div>
                                         </div>
                                     </div>
-                                    <?php
+                            <?php
                                 }
                             } else {
                                 echo '<p class="col-12 text-center">No profiles found based on your search criteria.</p>';
@@ -399,7 +435,7 @@ get_header(); ?>
                                             // Add custom classes to the pagination links
                                             $page_link = str_replace('page-numbers', 'border d-block', $page_link);
                                             $page_link = str_replace('current', 'border d-block active', $page_link);
-                                            ?>
+                                    ?>
                                             <li class="d-inline-block mt-1 mb-1"><?php echo $page_link; ?></li>
                                         <?php endforeach; ?>
                                     <?php endif; ?>
@@ -416,18 +452,16 @@ get_header(); ?>
     </div>
 </section>
 <script>
-    document.addEventListener("DOMContentLoaded", function () {
+    document.addEventListener("DOMContentLoaded", function() {
         const filterBtn = document.querySelector(".mobile_filter");
         const filterSection = document.querySelector(".list_1_left");
 
         if (filterBtn && filterSection) {
-            filterBtn.addEventListener("click", function () {
+            filterBtn.addEventListener("click", function() {
                 filterSection.classList.toggle("active"); // Toggle visibility
             });
         }
     });
-
-
 </script>
 
 

@@ -36,9 +36,10 @@ $notifications = $wpdb->get_results($wpdb->prepare(
     <h3 class="mb-4">🔔 Your Notifications</h3>
     <ul class="list-group">
         <?php if ($notifications): ?>
-            <?php foreach ($notifications as $notif):
+            <?php foreach ($notifications as $index => $notif):
+                $delay = $index* 0.1; // Delay for staggered animation
                 $human_time = human_time_diff(strtotime($notif->created_at), current_time('timestamp')) . ' ago'; ?>
-                <li class="list-group-item d-flex justify-content-between align-items-center">
+                <li class="list-group-item border-bottom d-flex justify-content-between align-items-center animate__animated animate__fadeInUp" style="animation-delay: <?= esc_attr($delay); ?>s;">
                     <span><?= wp_kses_post($notif->message); ?></span>
                     <small class="text-muted"><?= esc_html($human_time); ?></small>
                 </li>

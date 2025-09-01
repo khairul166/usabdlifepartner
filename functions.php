@@ -4,12 +4,18 @@
 require_once get_template_directory() . '/inc/enqueue.php';
 require_once get_template_directory() . '/inc/wp-bootstrap-navwalker/class-wp-bootstrap-navwalker.php';
 require_once get_template_directory() . '/inc/custom-post.php';
+require_once get_template_directory() . '/inc/user_features.php';
 require_once get_template_directory() . '/inc/custom_metabox.php';
 require_once get_template_directory() . '/inc/widget.php';
-require_once get_template_directory() . '/inc/theme_settings.php';
+// require_once get_template_directory() . '/inc/theme_settings.php';
 require_once get_template_directory() . '/inc/admin-controls.php';
-require_once get_template_directory() . '/inc/kirki-master/kirki.php';
-require_once get_template_directory() . '/inc/codestar-framework/cs-framework.php';
+// require_once get_template_directory() . '/inc/kirki-master/kirki.php';
+// require_once get_template_directory() . '/inc/codestar-framework/cs-framework.php';
+require_once get_template_directory() . '/inc/theme-settings.php';
+// // Include Composer's autoloader
+require_once get_template_directory() . '/inc/stripe/vendor/autoload.php';
+
+
 
 
 // Include Custom Widgets
@@ -131,35 +137,22 @@ add_action('after_setup_theme', 'enable_theme_features');
 
 
 
-// Redirect users trying to access wp-login.php to the custom login page
-function redirect_wp_login_page()
-{
-    $custom_login_url = home_url('/login/'); // Change '/login/' to your actual login page slug
 
-    if (strpos($_SERVER['REQUEST_URI'], 'wp-login.php') !== false && !is_admin()) {
-        wp_redirect($custom_login_url);
-        exit;
+function redirect_to_custom_login_page()
+{
+    wp_redirect(home_url());
+    exit;
+}
+add_action('wp_logout', 'redirect_to_custom_login_page');
+
+function fn_redirect_wp_admin()
+{
+    global $pagenow;
+    if ($pagenow == 'wp-login.php' && $_GET['action'] != 'logout') {
+        wp_redirect(home_url() . '/login');
     }
 }
-add_action('init', 'redirect_wp_login_page');
-
-
-function redirect_non_admin_users()
-{
-    if (is_admin() && !current_user_can('administrator') && !(defined('DOING_AJAX') && DOING_AJAX)) {
-        wp_redirect(home_url('/login/')); // Redirect non-admins to login page
-        exit;
-    }
-}
-add_action('admin_init', 'redirect_non_admin_users');
-
-function force_logout_wp_login()
-{
-    if (strpos($_SERVER['REQUEST_URI'], 'wp-login.php') !== false) {
-        wp_logout();
-    }
-}
-add_action('init', 'force_logout_wp_login');
+add_action('init', 'fn_redirect_wp_admin');
 
 
 
@@ -244,24 +237,7 @@ function create_registration_page_on_theme_activation()
 add_action('after_switch_theme', 'create_registration_page_on_theme_activation');
 
 
-// add_action('wp_logout', 'custom_redirect_after_logout');
-// function custom_redirect_after_logout()
-// {
-//     wp_redirect(home_url('/')); // Redirect to homepage after logout
-//     exit();
-// }
 
-// add_action('wp_logout', 'force_clear_user_session');
-// function force_clear_user_session()
-// {
-//     // Destroy the user session
-//     wp_destroy_current_session();
-//     wp_clear_auth_cookie();
-
-//     // Redirect to homepage
-//     wp_redirect(home_url('/'));
-//     exit();
-// }
 
 // Change the lost password URL to your custom page
 add_filter('lostpassword_url', 'custom_lostpassword_url', 10, 2);
@@ -374,7 +350,7 @@ function handle_matrimonial_filter()
     // Output the profiles
     if ($users) {
         ob_start(); // Start output buffering
-        foreach ($users as $user) {
+        foreach ($users as $index => $user) {
             // Get user meta data
             $about_yourself = get_user_meta($user->ID, 'about_yourself', true);
             $profile_pic = get_user_meta($user->ID, 'user_avatar', true);
@@ -412,40 +388,84 @@ function handle_matrimonial_filter()
             $instagram = get_user_meta($user->ID, 'instagram', true);
             $linkedin = get_user_meta($user->ID, 'linkedin', true);
             $x = get_user_meta($user->ID, 'x', true);
-            ?>
-            <div class="list_1_right2_inner row border-top mt-4 pt-4 mx-0">
+            $delay = ($index * 0.1) . 's'; // Increase delay by 0.1s for each item
+?>
+            <div class="list_1_right2_inner row <?php if ($index > 0) {
+                                                    echo 'border-top';
+                                                } ?> mt-4 pt-4 mx-0 animate__animated animate__fadeInUp" style="animation-delay: <?php echo esc_attr($delay); ?>">
                 <div class="col-md-4 ps-0 col-sm-4">
-                    <div class="list_1_right2_inner_left">
-                        <a href="<?php echo get_permalink(get_page_by_path('user-details')); ?>?user_id=<?php echo $user->ID; ?>">
-                            <img src="<?php echo esc_url($profile_pic); ?>" class="img-fluid" alt="Profile Picture">
-                        </a>
+                    <div class="list_1_right2_inner_left" style="position: relative;">
+                        <?php if (is_user_logged_in()) : ?>
+                            <a href="<?php echo get_permalink(get_page_by_path('user-details')); ?>?user_id=<?php echo $user->ID; ?>">
+                                <img src="<?php echo esc_url($profile_pic); ?>" class="img-fluid" alt="abc">
+                                <!-- Membership Badge -->
+                                <?php
+                global $wpdb;
+                // Get membership info for the current user in the loop
+                $saved_default_package = intval(get_option('usabdlp_default_package', 0));
+                $membership_info = $wpdb->get_row(
+                    $wpdb->prepare("SELECT * FROM {$wpdb->prefix}memberships WHERE user_id = %d AND status = 'active'", $user->ID)
+                );
+                
+                if ($membership_info) {
+                    $plan = $wpdb->get_row(
+                        $wpdb->prepare("SELECT * FROM {$wpdb->prefix}membership_plans WHERE id = %d", $membership_info->membership_type)
+                    );
+                    
+                    if ($plan->id > $saved_default_package) {
+                        echo '<span class="membership-badge">' . esc_html($plan->name) . '</span>';
+                    }
+                } 
+                // else {
+                //     echo '<span class="membership-badge">Free</span>';
+                // }
+                ?>
+                            </a>
+                        <?php else : ?>
+                            <a href="<?php echo wp_login_url(); ?>">
+                                <img src="<?php echo esc_url($profile_pic); ?>" class="img-fluid" alt="abc">
+                            </a>
+                        <?php endif; ?>
                     </div>
                 </div>
                 <div class="col-md-8 col-sm-8">
-                    <div class="row row-cols-1 row-cols-lg-2 row-cols-md-1 list_1_right2_inner_right_inner">
+                    <div
+                        class="row row-cols-1 row-cols-lg-2 row-cols-md-1 list_1_right2_inner_right_inner">
                         <div class="col">
                             <div class="list_1_right2_inner_right">
-                                <b class="d-block mb-3 fs-5">
-                                    <a
-                                        href="<?php echo get_permalink(get_page_by_path('user-details')); ?>?user_id=<?php echo $user->ID; ?>">
-                                        <?php echo esc_html($name); ?>
-                                    </a>
+                                <b class="d-block mb-3 fs-5"><?php if (is_user_logged_in()) : ?>
+                                        <a href="<?php echo get_permalink(get_page_by_path('user-details')); ?>?user_id=<?php echo $user->ID; ?>">
+                                            <?php echo esc_html($name); ?>
+                                        </a>
+                                    <?php else : ?>
+                                        <a href="<?php echo wp_login_url(); ?>"> <!-- WordPress login URL -->
+                                            <?php echo esc_html($name); ?>
+                                        </a>
+                                    <?php endif; ?>
                                 </b>
                                 <ul class="font_15 mb-0">
-                                    <li class="d-flex"><b class="me-2"> Age:</b><span><?php echo esc_html($age); ?> Yrs</span></li>
-                                    <li class="d-flex mt-2"><b class="me-2">
-                                            Religion:</b><span><?php echo esc_html($religion); ?></span></li>
-                                    <li class="d-flex mt-2"><b class="me-2">
-                                            Height:</b><span><?php echo esc_html($height); ?></span></li>
-                                    <li class="d-flex mt-2"><b class="me-2">
-                                            Location:</b><span><?php echo esc_html($location); ?></span></li>
-                                    <li class="d-flex mt-2"><b class="me-2">
-                                            Education:</b><span><?php echo esc_html($education); ?></span></li>
-                                    <li class="d-flex mt-2"><b class="me-2">
-                                            Profession:</b><span><?php echo esc_html($profession); ?></span></li>
-                                    <li class="d-flex mt-2"><b class="me-2"> Annual
-                                            Income:</b><span><?php echo esc_html($annual_income); ?></span></li>
+                                    <li class="d-flex"><b class="me-2"> Age:</b>
+                                        <span><?php echo esc_html($age); ?> Yrs</span>
+                                    </li>
+                                    <li class="d-flex mt-2"><b class="me-2"> Religion:</b><span>
+                                            <?php echo esc_html($religion); ?></span></li>
+                                    <li class="d-flex mt-2"><b class="me-2"> Height:</b><span>
+                                            <?php echo esc_html($height); ?></span></li>
+                                    <li class="d-flex mt-2"><b class="me-2"> Location:</b><span>
+                                            <?php echo esc_html($location); ?></span></li>
+                                    <li class="d-flex mt-2"><b class="me-2"> Education:</b><span>
+                                            <?php echo esc_html($education); ?></span></li>
+                                    <li class="d-flex mt-2"><b class="me-2"> Profession:</b><span>
+                                            <?php echo esc_html($profession); ?></span></li>
+
                                 </ul>
+                                <span class="d-block mt-3">
+                                    <a class="button"
+                                        href="<?php echo is_user_logged_in() ? get_permalink(get_page_by_path('user-details')) . '?user_id=' . $user->ID : wp_login_url(); ?>">
+                                        <i class="bi bi-person-fill me-1 align-middle"></i> View Full Profile
+                                    </a>
+
+                                </span>
                             </div>
                         </div>
                         <div class="col">
@@ -455,7 +475,8 @@ function handle_matrimonial_filter()
                                     <?php if ($facebook) { ?>
                                         <li>
                                             <a class="bg-primary d-inline-block text-white text-center"
-                                                href="https://www.facebook.com/<?php echo esc_attr($facebook); ?>" target="_blank">
+                                                href="https://www.facebook.com/<?php echo esc_attr($facebook); ?>"
+                                                target="_blank">
                                                 <i class="bi bi-facebook"></i>
                                             </a>
                                         </li>
@@ -464,7 +485,8 @@ function handle_matrimonial_filter()
                                         <!-- Instagram -->
                                         <li class="ms-2">
                                             <a class="bg-success d-inline-block text-white text-center"
-                                                href="https://www.instagram.com/<?php echo esc_attr($instagram); ?>" target="_blank">
+                                                href="https://www.instagram.com/<?php echo esc_attr($instagram); ?>"
+                                                target="_blank">
                                                 <i class="bi bi-instagram"></i>
                                             </a>
                                         </li>
@@ -473,7 +495,8 @@ function handle_matrimonial_filter()
                                         <!-- LinkedIn -->
                                         <li class="ms-2">
                                             <a class="bg-warning d-inline-block text-white text-center"
-                                                href="https://www.linkedin.com/in/<?php echo esc_attr($linkedin); ?>" target="_blank">
+                                                href="https://www.linkedin.com/in/<?php echo esc_attr($linkedin); ?>"
+                                                target="_blank">
                                                 <i class="bi bi-linkedin"></i>
                                             </a>
                                         </li>
@@ -482,7 +505,8 @@ function handle_matrimonial_filter()
                                         <!-- X (Twitter) -->
                                         <li class="ms-2">
                                             <a class="bg-dark d-inline-block text-white text-center"
-                                                href="https://twitter.com/<?php echo esc_attr($x); ?>" target="_blank">
+                                                href="https://twitter.com/<?php echo esc_attr($x); ?>"
+                                                target="_blank">
                                                 <i class="bi bi-twitter-x"></i>
                                             </a>
                                         </li>
@@ -494,7 +518,7 @@ function handle_matrimonial_filter()
                     </div>
                 </div>
             </div>
-            <?php
+    <?php
         }
         $profiles = ob_get_clean(); // Get the buffered output of profiles
 
@@ -546,9 +570,6 @@ function handle_matrimonial_filter()
             'profiles' => $profiles,
             'pagination' => $pagination_html,
         ));
-
-
-
     } else {
         wp_send_json_error(array('message' => 'No profiles found.'));
     }
@@ -596,7 +617,8 @@ add_action('wp_logout', 'track_user_logout');
 
 
 
-function upload_cropped_profile_picture() {
+function upload_cropped_profile_picture()
+{
     if (!is_user_logged_in()) {
         wp_send_json_error(['message' => 'User not logged in']);
     }
@@ -630,17 +652,19 @@ function upload_cropped_profile_picture() {
 add_action('wp_ajax_upload_cropped_profile_picture', 'upload_cropped_profile_picture');
 add_action('wp_ajax_nopriv_upload_cropped_profile_picture', 'upload_cropped_profile_picture'); // Allow non-logged users (optional)
 
-function add_ajax_url() {
+function add_ajax_url()
+{
     ?>
     <script type="text/javascript">
         var ajaxurl = "<?php echo admin_url('admin-ajax.php'); ?>";
     </script>
-    <?php
+<?php
 }
 add_action('wp_head', 'add_ajax_url');
 
 
-function delete_user_photo() {
+function delete_user_photo()
+{
     // Verify user is logged in
     if (!is_user_logged_in()) {
         wp_send_json_error(['message' => 'User not logged in']);
@@ -678,16 +702,17 @@ add_action('wp_ajax_delete_user_photo', 'delete_user_photo');
 
 
 
-function custom_password_reset_email($message, $key, $user_login, $user) {
+function custom_password_reset_email($message, $key, $user_login, $user)
+{
     $reset_url = site_url('/reset-password/?login=' . rawurlencode($user_login) . '&key=' . rawurlencode($key));
-    
+
     $message = "Someone has requested a password reset for the following account:\n\n";
     $message .= "Site Name: " . get_bloginfo('name') . "\n\n";
     $message .= "Username: " . $user_login . "\n\n";
     $message .= "If this was a mistake, ignore this email and nothing will happen.\n\n";
     $message .= "To reset your password, visit the following address:\n\n";
     $message .= $reset_url . "\n\n";
-    
+
     return $message;
 }
 add_filter('retrieve_password_message', 'custom_password_reset_email', 10, 4);
@@ -699,11 +724,13 @@ add_filter('retrieve_password_message', 'custom_password_reset_email', 10, 4);
 
 
 // Dynamic Tab Pane Section for Profile Browsing
-function usabdlp_render_profile_tabs() {
+function usabdlp_render_profile_tabs()
+{
     global $wpdb;
 
     // Helper function to generate tab HTML
-    function generate_profile_tab($meta_key, $label) {
+    function generate_profile_tab($meta_key, $label)
+    {
         global $wpdb;
         $values = $wpdb->get_col(
             $wpdb->prepare(
@@ -733,9 +760,9 @@ function usabdlp_render_profile_tabs() {
     // Fetch unique values for combined city field (division or city)
     $city_values = $wpdb->get_col("SELECT DISTINCT meta_value FROM {$wpdb->usermeta} WHERE meta_key IN ('division', 'city') AND meta_value != ''");
 
-    ?>
+?>
 
-    <section id="profile" class="pt-5 pb-5">
+    <section id="profile" class="pt-5 pb-5 animate__animated animate__fadeInUp" style="animation-delay: 1.6s;">
         <div class="container-xl">
             <div class="row exep_1 mb-4 text-center">
                 <div class="col-md-12">
@@ -794,14 +821,15 @@ function usabdlp_render_profile_tabs() {
             </div>
         </div>
     </section>
-    <?php
+<?php
 }
 
 
 
 
 ////////////////
-function usabdlp_create_custom_tables() {
+function usabdlp_create_custom_tables()
+{
     global $wpdb;
     $charset_collate = $wpdb->get_charset_collate();
 
@@ -837,48 +865,9 @@ add_action('after_setup_theme', 'usabdlp_create_custom_tables');
 
 add_action('wp_ajax_toggle_interest', 'handle_toggle_interest');
 
-// function handle_toggle_interest() {
-//     check_ajax_referer('interest_nonce', 'security');
 
-//     global $wpdb;
-//     $current_user = get_current_user_id();
-//     $to_user_id = intval($_POST['to_user_id']);
-//     $action_type = sanitize_text_field($_POST['type']);
-
-//     $table = $wpdb->prefix . 'interests';
-//     $existing = $wpdb->get_var($wpdb->prepare(
-//         "SELECT COUNT(*) FROM $table WHERE from_user_id = %d AND to_user_id = %d",
-//         $current_user, $to_user_id
-//     ));
-
-//     if ($action_type === 'send') {
-//         if ($existing) {
-//             wp_send_json_error(['message' => 'Already sent.']);
-//         }
-
-//         $wpdb->insert($table, [
-//             'from_user_id' => $current_user,
-//             'to_user_id'   => $to_user_id,
-//             'status'       => 'pending',
-//             'sent_at'      => current_time('mysql')
-//         ]);
-
-//         wp_send_json_success(['action' => 'sent']);
-//     }
-
-//     if ($action_type === 'cancel') {
-//         $wpdb->delete($table, [
-//             'from_user_id' => $current_user,
-//             'to_user_id'   => $to_user_id
-//         ]);
-//         wp_send_json_success(['action' => 'cancelled']);
-//     }
-
-//     wp_send_json_error(['message' => 'Invalid action']);
-// }
-
-
-function handle_toggle_interest() {
+function handle_toggle_interest()
+{
     check_ajax_referer('interest_nonce', 'security');
 
     if (!is_user_logged_in()) {
@@ -908,7 +897,7 @@ function handle_toggle_interest() {
 
     // Message with clickable name
     $notification_message = "<a href='$profile_link' style='color:#563d7c;font-weight:600;'>$full_name</a> sent you an interest.";
-    $notification_cancel_massage= "<a href='$profile_link' style='color:#563d7c;font-weight:600;'>$full_name</a> has cancelled the interest.";
+    $notification_cancel_massage = "<a href='$profile_link' style='color:#563d7c;font-weight:600;'>$full_name</a> has cancelled the interest.";
 
     // Cancel interest
     if ($type === 'cancel') {
@@ -933,7 +922,8 @@ function handle_toggle_interest() {
         // Prevent duplicate interest
         $exists = $wpdb->get_var($wpdb->prepare(
             "SELECT id FROM $interest_table WHERE from_user_id = %d AND to_user_id = %d",
-            $current_user, $to_user_id
+            $current_user,
+            $to_user_id
         ));
 
         if ($exists) {
@@ -968,7 +958,8 @@ function handle_toggle_interest() {
 }
 
 
-function usabdlp_update_interest_table_schema() {
+function usabdlp_update_interest_table_schema()
+{
     global $wpdb;
     $table = $wpdb->prefix . 'interests';
 
@@ -985,7 +976,8 @@ add_action('wp_ajax_respond_to_interest', 'usabdlp_respond_to_interest');
 
 add_action('wp_ajax_respond_to_interest', 'usabdlp_respond_to_interest');
 
-function usabdlp_respond_to_interest() {
+function usabdlp_respond_to_interest()
+{
     check_ajax_referer('interest_nonce', 'security');
 
     $interest_id = intval($_POST['interest_id']);
@@ -1037,7 +1029,8 @@ function usabdlp_respond_to_interest() {
 
 
 add_action('wp', 'check_interest_access_status');
-function check_interest_access_status() {
+function check_interest_access_status()
+{
     global $wpdb;
 
     // Must use global to access in template
@@ -1065,12 +1058,14 @@ function check_interest_access_status() {
     // Check accepted interests in both directions
     $sent_accepted = $wpdb->get_var($wpdb->prepare(
         "SELECT COUNT(*) FROM $interest_table WHERE from_user_id = %d AND to_user_id = %d AND status = 'accepted'",
-        $current_user, $profile_user
+        $current_user,
+        $profile_user
     ));
 
     $received_accepted = $wpdb->get_var($wpdb->prepare(
         "SELECT COUNT(*) FROM $interest_table WHERE from_user_id = %d AND to_user_id = %d AND status = 'accepted'",
-        $profile_user, $current_user
+        $profile_user,
+        $current_user
     ));
 
     $access_granted = ($sent_accepted || $received_accepted);
@@ -1079,7 +1074,8 @@ function check_interest_access_status() {
 
 add_action('wp_ajax_toggle_shortlist', 'toggle_shortlist_user');
 
-function create_shortlist_table() {
+function create_shortlist_table()
+{
     global $wpdb;
     $table_name = $wpdb->prefix . 'user_shortlists';
 
@@ -1113,7 +1109,8 @@ function create_shortlist_table() {
 
 add_action('wp_ajax_toggle_shortlist', 'toggle_shortlist_user');
 
-function toggle_shortlist_user() {
+function toggle_shortlist_user()
+{
     if (!is_user_logged_in()) {
         wp_send_json_error('Unauthorized');
     }
@@ -1126,7 +1123,8 @@ function toggle_shortlist_user() {
     // Check if already shortlisted
     $exists = $wpdb->get_var($wpdb->prepare(
         "SELECT id FROM $table WHERE user_id = %d AND shortlisted_user_id = %d",
-        $current_user_id, $shortlisted_user_id
+        $current_user_id,
+        $shortlisted_user_id
     ));
 
     if ($exists) {
@@ -1145,12 +1143,13 @@ function toggle_shortlist_user() {
 }
 
 
-function usabdlp_render_shortlist_profiles() {
+function usabdlp_render_shortlist_profiles()
+{
     // if (!is_user_logged_in()) {
     //     return '<p>Please log in to see your shortlisted profiles.</p>';
     // }
     return '<p>Login status: ' . (is_user_logged_in() ? 'YES' : 'NO') . '</p>' .
-    '<p>Current user ID: ' . get_current_user_id() . '</p>';
+        '<p>Current user ID: ' . get_current_user_id() . '</p>';
 
     global $wpdb;
     $user_id = get_current_user_id();
@@ -1188,3 +1187,414 @@ function usabdlp_render_shortlist_profiles() {
     return ob_get_clean();
 }
 add_shortcode('usabdlp_shortlist', 'usabdlp_render_shortlist_profiles');
+
+
+function humanTimeAgo($datetime, $fallbackFormat = 'd M Y')
+{
+    $time = is_numeric($datetime) ? $datetime : strtotime($datetime);
+    $now = time();
+    $diff = $now - $time;
+
+    // Correct logic: future timestamps
+    if ($diff < 0) {
+        $diff = abs($diff);
+
+        if ($diff < 60) return 'in a few seconds';
+        if ($diff < 3600) return floor($diff / 60) . ' minutes from now';
+        if ($diff < 86400) return floor($diff / 3600) . ' hours from now';
+        if ($diff < 604800) return floor($diff / 86400) . ' days from now';
+        return date($fallbackFormat, $time); // fallback for far future
+    }
+
+    // Past time
+    if ($diff < 60) return 'just now';
+
+    $units = [
+        'year'   => 365 * 24 * 60 * 60,
+        'month'  => 30 * 24 * 60 * 60,
+        'week'   => 7 * 24 * 60 * 60,
+        'day'    => 24 * 60 * 60,
+        'hour'   => 60 * 60,
+        'minute' => 60,
+    ];
+
+    foreach ($units as $unit => $seconds) {
+        if ($diff >= $seconds) {
+            $value = floor($diff / $seconds);
+            return $value . ' ' . $unit . ($value > 1 ? 's' : '') . ' ago';
+        }
+    }
+
+    return date($fallbackFormat, $time);
+}
+
+//codes for wp Membership
+function create_membership_tables_if_not_exists()
+{
+    global $wpdb;
+
+    $prefix = $wpdb->prefix;
+    $membership_table = $prefix . 'memberships';
+    $plans_table = $prefix . 'membership_plans';
+
+    require_once ABSPATH . 'wp-admin/includes/upgrade.php';
+
+    // Create wp_memberships table if it doesn't exist
+    if ($wpdb->get_var("SHOW TABLES LIKE '$membership_table'") !== $membership_table) {
+        $sql1 = "CREATE TABLE $membership_table (
+            id INT AUTO_INCREMENT PRIMARY KEY,
+            user_id BIGINT(20) UNSIGNED NOT NULL,
+            membership_type VARCHAR(50) NOT NULL,
+            start_date DATE,
+            end_date DATE,
+            status ENUM('active','expired','pending') DEFAULT 'pending',
+            created_at TIMESTAMP DEFAULT CURRENT_TIMESTAMP,
+            INDEX (user_id)
+        ) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4;";
+        dbDelta($sql1);
+    }
+
+    // Create wp_membership_plans table if it doesn't exist
+    if ($wpdb->get_var("SHOW TABLES LIKE '$plans_table'") !== $plans_table) {
+        $sql2 = "CREATE TABLE $plans_table (
+            id INT AUTO_INCREMENT PRIMARY KEY,
+            name VARCHAR(100) NOT NULL,
+            price DECIMAL(10,2) NOT NULL,
+            duration_days INT NOT NULL,
+            description TEXT,
+            created_at TIMESTAMP DEFAULT CURRENT_TIMESTAMP
+        ) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4;";
+        dbDelta($sql2);
+    }
+}
+add_action('after_setup_theme', 'create_membership_tables_if_not_exists');
+function add_membership_feature_columns_if_not_exist()
+{
+    global $wpdb;
+    $table = $wpdb->prefix . 'membership_plans';
+
+    $columns = $wpdb->get_col("DESC $table", 0);
+
+    $alter_queries = [];
+
+    if (!in_array('premium_views', $columns)) {
+        $alter_queries[] = "ADD COLUMN premium_views INT DEFAULT 0";
+    }
+    if (!in_array('can_view_contact', $columns)) {
+        $alter_queries[] = "ADD COLUMN can_view_contact TINYINT(1) DEFAULT 0";
+    }
+    if (!in_array('can_send_interest', $columns)) {
+        $alter_queries[] = "ADD COLUMN can_send_interest TINYINT(1) DEFAULT 0";
+    }
+    if (!in_array('can_start_chat', $columns)) {
+        $alter_queries[] = "ADD COLUMN can_start_chat TINYINT(1) DEFAULT 0";
+    }
+    if (!in_array('can_view_profiles', $columns)) {
+        $alter_queries[] = "ADD COLUMN can_view_profiles TINYINT(1) DEFAULT 1";
+    }
+    if (!in_array('can_shortlist', $columns)) {
+        $alter_queries[] = "ADD COLUMN can_shortlist TINYINT(1) DEFAULT 0";
+    }
+
+    if (!empty($alter_queries)) {
+        $sql = "ALTER TABLE $table " . implode(', ', $alter_queries);
+        $wpdb->query($sql);
+    }
+}
+add_action('after_setup_theme', 'add_membership_feature_columns_if_not_exist');
+
+
+
+
+add_action('template_redirect', 'usabdlp_handle_plan_activation');
+function usabdlp_handle_plan_activation()
+{
+    if (!is_user_logged_in() || !isset($_GET['activate_plan'])) {
+        return;
+    }
+
+    $user_id = get_current_user_id();
+    $plan_id = intval($_GET['activate_plan']);
+    global $wpdb;
+
+    // Check plan exists
+    $plan = $wpdb->get_row($wpdb->prepare(
+        "SELECT * FROM {$wpdb->prefix}membership_plans WHERE id = %d",
+        $plan_id
+    ));
+
+    if (!$plan || $plan->price > 0) {
+        wp_redirect(home_url('/pricing?error=invalid'));
+        exit;
+    }
+
+    // Set start and end dates
+    $start_date = current_time('Y-m-d');
+    $end_date = date('Y-m-d', strtotime("+{$plan->duration_days} days"));
+
+    // Remove any existing active memberships
+    $wpdb->delete("{$wpdb->prefix}memberships", ['user_id' => $user_id]);
+
+    // Insert new membership
+    $wpdb->insert("{$wpdb->prefix}memberships", [
+        'user_id' => $user_id,
+        'membership_type' => $plan->id,
+        'start_date' => $start_date,
+        'end_date' => $end_date,
+        'status' => 'active',
+    ]);
+
+    wp_redirect(home_url('/my-account?success=plan_activated'));
+    exit;
+}
+
+
+add_action('wp_ajax_check_duplicate', 'usabdlp_check_duplicate');
+add_action('wp_ajax_nopriv_check_duplicate', 'usabdlp_check_duplicate');
+
+function usabdlp_check_duplicate()
+{
+    global $wpdb;
+
+    $field = sanitize_key($_GET['field'] ?? '');
+    $value = sanitize_text_field($_GET['value'] ?? '');
+
+    $allowed_fields = ['username', 'email', 'user_phone', 'user_g_phone'];
+    if (!in_array($field, $allowed_fields)) {
+        wp_send_json_error(['message' => 'Invalid field']);
+    }
+
+    $exists = false;
+
+    if ($field === 'username') {
+        $user = get_user_by('login', $value);
+        $exists = $user ? true : false;
+    } elseif ($field === 'email') {
+        $exists = email_exists($value);
+    } else {
+        $exists = $wpdb->get_var($wpdb->prepare(
+            "SELECT COUNT(*) FROM {$wpdb->usermeta} WHERE meta_key = %s AND meta_value = %s",
+            $field,
+            $value
+        ));
+    }
+
+    wp_send_json_success(['exists' => $exists ? true : false]);
+}
+
+
+// function create_stripe_session($selected_plan_id, $duration, $plan_price) {
+//     // Example: Create a Stripe session for the selected plan
+//     \Stripe\Stripe::setApiKey('sk_test_51RD9q2Qq0KZUzGNUcMChuivZRD2oXsKZxvN7ps6B6DkaOqXLvhY3BN9RROFxUKe1HFNZkjN0IZaSsc0yZf6d78ha00mpguVCol');
+
+//     $session = \Stripe\Checkout\Session::create([
+//         'payment_method_types' => ['card'],
+//         'line_items' => [
+//             [
+//                 'price_data' => [
+//                     'currency' => 'usd',
+//                     'product_data' => [
+//                         'name' => 'Membership Upgrade',
+//                     ],
+//                     'unit_amount' => $plan_price * 100, // Amount in cents
+//                 ],
+//                 'quantity' => 1,
+//             ],
+//         ],
+//         'mode' => 'payment',
+//         'success_url' => home_url('/payment-success/?session_id={CHECKOUT_SESSION_ID}'),
+//         'cancel_url' => home_url('/payment-failed/'),
+//     ]);
+
+//     return $session->id;
+// }
+
+
+function activate_default_package_after_premium_expiry()
+{
+    global $wpdb;
+
+    $current_date = current_time('mysql');
+    $default_package_id = intval(get_option('usabdlp_default_package', 0));
+    $default_duration_days = intval(get_option('usabdlp_default_duration_days', 365)); // fallback 1 year
+    $default_role = get_option('usabdlp_default_role', 'subscriber'); // get role from settings
+
+    if ($default_package_id <= 0) {
+        // No default package set, abort
+        return;
+    }
+
+    // Get expired premium memberships (exclude default package)
+    $expired_memberships = $wpdb->get_results(
+        $wpdb->prepare(
+            "SELECT * FROM {$wpdb->prefix}memberships 
+             WHERE status = 'active' 
+             AND end_date < %s 
+             AND membership_type != %d",
+            $current_date,
+            $default_package_id
+        )
+    );
+
+    foreach ($expired_memberships as $membership) {
+        // Check if user already has active default package
+        $has_default = $wpdb->get_var(
+            $wpdb->prepare(
+                "SELECT COUNT(*) FROM {$wpdb->prefix}memberships 
+                 WHERE user_id = %d 
+                 AND membership_type = %d
+                 AND status = 'active'",
+                $membership->user_id,
+                $default_package_id
+            )
+        );
+
+        if ($has_default) {
+            // Already has active default package, skip
+            continue;
+        }
+
+        // Calculate new end date for default package
+        $new_end_date = date('Y-m-d H:i:s', strtotime("+{$default_duration_days} days"));
+
+        // Insert new default membership record
+        $wpdb->insert(
+            "{$wpdb->prefix}memberships",
+            [
+                'user_id' => $membership->user_id,
+                'membership_type' => $default_package_id,
+                'start_date' => current_time('mysql'),
+                'end_date' => $new_end_date,
+                'status' => 'active',
+            ]
+        );
+
+        // Update old expired membership status to inactive
+        $wpdb->update(
+            "{$wpdb->prefix}memberships",
+            ['status' => 'expired'],
+            ['id' => $membership->id]
+        );
+
+        // Assign WordPress role to user
+        $user = new WP_User($membership->user_id);
+        $user->set_role($default_role);
+
+        // Send notification email to user
+        $user_info = get_userdata($membership->user_id);
+        if ($user_info && $user_info->user_email) {
+            wp_mail(
+                $user_info->user_email,
+                'Your Membership Has Expired and Downgraded',
+                'Your premium membership has expired. You have been downgraded to the default membership plan.'
+            );
+        }
+    }
+}
+
+// Schedule daily event if not scheduled
+if (!wp_next_scheduled('check_premium_plan_expiry')) {
+    wp_schedule_event(time(), 'daily', 'check_premium_plan_expiry');
+}
+
+// Hook the function to that event
+add_action('check_premium_plan_expiry', 'activate_default_package_after_premium_expiry');
+
+function usabdlp_send_template_email($to_email, $subject, $template_option_key, $placeholders = [])
+{
+    // Get email template text from settings (default fallback)
+    $template = get_option($template_option_key, 'Hello {user}, your membership status has changed.');
+
+    // Replace placeholders in template
+    foreach ($placeholders as $key => $value) {
+        $template = str_replace('{' . $key . '}', $value, $template);
+    }
+
+    // Send HTML email
+    wp_mail(
+        $to_email,
+        $subject,
+        $template,
+        ['Content-Type: text/html; charset=UTF-8']
+    );
+}
+
+
+
+
+// Schedule daily event if not scheduled yet
+if (!wp_next_scheduled('usabdlp_send_expiry_reminders')) {
+    wp_schedule_event(time(), 'daily', 'usabdlp_send_expiry_reminders');
+}
+
+add_action('usabdlp_send_expiry_reminders', function () {
+    global $wpdb;
+
+    $reminder_days = intval(get_option('usabdlp_expiry_reminder_days', 7));
+    $today = current_time('Y-m-d');
+    $reminder_date = date('Y-m-d', strtotime("+$reminder_days days", strtotime($today)));
+
+    // Get users with memberships expiring exactly $reminder_days days later
+    $users_expiring = $wpdb->get_results($wpdb->prepare(
+        "SELECT m.user_id, p.name AS plan_name, m.end_date, u.user_email, u.display_name
+         FROM {$wpdb->prefix}memberships m
+         JOIN {$wpdb->prefix}membership_plans p ON m.membership_type = p.id
+         JOIN {$wpdb->users} u ON m.user_id = u.ID
+         WHERE m.status = 'active' AND DATE(m.end_date) = %s",
+        $reminder_date
+    ));
+
+    foreach ($users_expiring as $user) {
+        // Check if reminder already sent today to avoid duplicate emails
+        $last_sent = get_user_meta($user->user_id, 'usabdlp_last_expiry_reminder_sent', true);
+        if ($last_sent === $today) {
+            continue; // Skip if already sent today
+        }
+
+        if (function_exists('usabdlp_send_template_email')) {
+            usabdlp_send_template_email(
+                $user->user_email,
+                'Membership Expiry Notice',
+                'usabdlp_email_template_expiry_notice',
+                [
+                    'user' => $user->display_name,
+                    'plan' => $user->plan_name,
+                    'expiry_date' => date('F j, Y', strtotime($user->end_date)),
+                ]
+            );
+
+            // Mark reminder as sent for today
+            update_user_meta($user->user_id, 'usabdlp_last_expiry_reminder_sent', $today);
+        }
+    }
+});
+
+function usabdlp_send_membership_email($template_option_name, $to_email, $subject, $placeholders = [])
+{
+    $template = get_option($template_option_name, '');
+    if (empty($template)) return false;
+
+    foreach ($placeholders as $key => $value) {
+        $template = str_replace("{" . $key . "}", esc_html($value), $template);
+    }
+
+    $headers = ['Content-Type: text/html; charset=UTF-8'];
+    return wp_mail($to_email, $subject, $template, $headers);
+}
+
+
+
+// Include TGM in your theme
+require_once get_template_directory() . '/inc/TGM-Plugin-Activation/class-tgm-plugin-activation.php';
+add_action('tgmpa_register', 'your_theme_register_required_plugins');
+function your_theme_register_required_plugins()
+{
+    $plugins = array(
+        array(
+            'name' => 'Redux Framework',
+            'slug' => 'redux-framework',
+            'required' => true,
+        ),
+    );
+    tgmpa($plugins);
+}
