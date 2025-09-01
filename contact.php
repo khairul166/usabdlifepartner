@@ -17,6 +17,7 @@ get_header();
 $phone = get_theme_mod('contact_phone', '+1 234 567 890');
 $email = get_theme_mod('contact_email', 'info@yourdomain.com');
 $address = get_theme_mod('contact_address', '2548 Heverly United States');
+<<<<<<< HEAD
 
 $opt_name = 'theme_admin_settings';
 $theme_options = get_option($opt_name);
@@ -43,6 +44,8 @@ $contact_left_side_heading = $theme_options['contact_left_side_heading'] ?? [];
 $contact_left_side_image = $theme_options['contact_left_side_image'] ?? [];
 $contact_left_side_text = $theme_options['contact_left_side_text'] ?? [];
 $google_maps_link = $theme_options['google_maps_link'] ?? [];
+=======
+>>>>>>> 523a812 (Initial commit after system restore)
 					?>
 
 <section id="center" class="center_about pt-4 theme-bg">
@@ -105,10 +108,18 @@ $google_maps_link = $theme_options['google_maps_link'] ?? [];
 	<div class="row  contact_2  mt-5  mx-auto animate__animated animate__fadeInUp">
 	  <div class="col-md-5 p-0">
 	    <div class="contact_2_left bg_light py-5 px-4">
+<<<<<<< HEAD
 		 <h1 class="mb-4"><?php echo $contact_left_side_heading; ?></h1>
       <a href="#"><img src="<?php echo wp_get_attachment_url($contact_left_side_image['id']); ?>
 " class="img-fluid rounded-circle" alt="<?php echo wp_get_attachment_caption($contact_left_side_image['id']); ?>"></a>
 	  <p class="mb-0 mt-4"><?php echo $contact_left_side_text; ?></p>
+=======
+		 <h1 class="mb-4">Now
+<span class="font_50">Contact to us</span>
+Easy and fast.</h1>
+      <a href="#"><img src="<?php echo get_template_directory_uri(); ?>/image/3.jpg" class="img-fluid rounded-circle" alt="abc"></a>
+	  <p class="mb-0 mt-4">Integer non nisl elit in ac tempor ante, eget iaculis augue. Nuncekon dolor mi, accumsan quis ante id, eleifend suscipit purus. Praesent augue eros, consectetur eu eleifend inno, eget condimentum auctor</p>
+>>>>>>> 523a812 (Initial commit after system restore)
 		</div>
 	  </div>
 	  <div class="col-md-7 p-0">
@@ -122,7 +133,11 @@ $google_maps_link = $theme_options['google_maps_link'] ?? [];
 	</div>
 	<div class="row contact_3 mt-5 animate__animated animate__fadeInUp">
     <div class="col-md-12">
+<<<<<<< HEAD
 	<?php echo $google_maps_link; ?>
+=======
+	  <iframe src="https://www.google.com/maps/embed?pb=!1m18!1m12!1m3!1d8355.952359412026!2d-85.62209517704407!3d42.22993140046881!2m3!1f0!2f0!3f0!3m2!1i1024!2i768!4f13.1!3m3!1m2!1s0x881775e032936199%3A0x7209273f1339b392!2s2548%20Heverly%20Dr%20E%2C%20Portage%2C%20MI%2049024%2C%20USA!5e0!3m2!1sen!2sbd!4v1744303801416!5m2!1sen!2sbd" height="450" style="border:0; width:100%;" allowfullscreen=""></iframe>
+>>>>>>> 523a812 (Initial commit after system restore)
 	</div>
    </div>
    </div>

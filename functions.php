@@ -9,6 +9,7 @@ require_once get_template_directory() . '/inc/custom_metabox.php';
 require_once get_template_directory() . '/inc/widget.php';
 // require_once get_template_directory() . '/inc/theme_settings.php';
 require_once get_template_directory() . '/inc/admin-controls.php';
+<<<<<<< HEAD
 // require_once get_template_directory() . '/inc/kirki-master/kirki.php';
 // require_once get_template_directory() . '/inc/codestar-framework/cs-framework.php';
 require_once get_template_directory() . '/inc/theme-settings.php';
@@ -16,6 +17,10 @@ require_once get_template_directory() . '/inc/theme-settings.php';
 require_once get_template_directory() . '/inc/stripe/vendor/autoload.php';
 
 
+=======
+require_once get_template_directory() . '/inc/kirki-master/kirki.php';
+require_once get_template_directory() . '/inc/codestar-framework/cs-framework.php';
+>>>>>>> 523a812 (Initial commit after system restore)
 
 
 // Include Custom Widgets
@@ -1072,6 +1077,7 @@ function check_interest_access_status()
 }
 
 
+<<<<<<< HEAD
 add_action('wp_ajax_toggle_shortlist', 'toggle_shortlist_user');
 
 function create_shortlist_table()
@@ -1598,3 +1604,7 @@ function your_theme_register_required_plugins()
     );
     tgmpa($plugins);
 }
+=======
+
+
+>>>>>>> 523a812 (Initial commit after system restore)

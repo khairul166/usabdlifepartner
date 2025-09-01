@@ -23,12 +23,18 @@ $section_info = $theme_options['section_info'] ?? 'Fusce imperdiet ullamcorper f
   <div class="container-xl">
     <div class="testim_1 row text-center mb-4">
       <div class="col-md-12">
+<<<<<<< HEAD
         <h2 class="text-uppercase animate__animated animate__fadeInLeft"><span class="theme-text-color">Our</span> Gallery</h2>
         <span class="text-uppercase animate__animated animate__fadeInRight"><?php echo $section_info;?></span>
+=======
+        <h2 class="text-uppercase"><span class="theme-text-color">Our</span> Gallery</h2>
+        <span class="text-uppercase">FUSCE IMPERDIET ULLAMCORPER FRINGILLA.</span>
+>>>>>>> 523a812 (Initial commit after system restore)
       </div>
     </div>
 
     <?php
+<<<<<<< HEAD
 $images = $theme_options['image'] ?? [];
 $image_ids = explode(',', $images);
 if (!empty($image_ids)) : ?>
@@ -43,6 +49,23 @@ if (!empty($image_ids)) : ?>
   </div>
 <?php endif; ?>
 
+=======
+    $gallery_items = cs_get_option('gallery_items');
+    if (!empty($gallery_items)) : ?>
+      <div class="gallery-masonry">
+        <?php foreach ($gallery_items as $index => $item) :
+          $img = esc_url($item['image']);
+          $caption = esc_html($item['caption'] ?? '');
+          ?>
+          <div class="masonry-item mb-4">
+            <a href="<?php echo $img; ?>" data-lightbox="gallery" data-title="<?php echo $caption; ?>">
+              <img src="<?php echo $img; ?>" class="img-fluid w-100 rounded" alt="Gallery" loading="lazy">
+            </a>
+          </div>
+        <?php endforeach; ?>
+      </div>
+    <?php endif; ?>
+>>>>>>> 523a812 (Initial commit after system restore)
   </div>
 </section>
 
