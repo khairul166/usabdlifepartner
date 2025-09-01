@@ -1391,7 +1391,8 @@ function usabdlp_check_duplicate()
 
 // function create_stripe_session($selected_plan_id, $duration, $plan_price) {
 //     // Example: Create a Stripe session for the selected plan
-//     \Stripe\Stripe::setApiKey('sk_test_51RD9q2Qq0KZUzGNUcMChuivZRD2oXsKZxvN7ps6B6DkaOqXLvhY3BN9RROFxUKe1HFNZkjN0IZaSsc0yZf6d78ha00mpguVCol');
+// $stripe_secret_key = get_option('usabdlp_payment_client_secret', '');
+//     \Stripe\Stripe::setApiKey($stripe_secret_key);
 
 //     $session = \Stripe\Checkout\Session::create([
 //         'payment_method_types' => ['card'],
