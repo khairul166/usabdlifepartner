@@ -9,7 +9,6 @@ require_once get_template_directory() . '/inc/custom_metabox.php';
 require_once get_template_directory() . '/inc/widget.php';
 // require_once get_template_directory() . '/inc/theme_settings.php';
 require_once get_template_directory() . '/inc/admin-controls.php';
-<<<<<<< HEAD
 // require_once get_template_directory() . '/inc/kirki-master/kirki.php';
 // require_once get_template_directory() . '/inc/codestar-framework/cs-framework.php';
 require_once get_template_directory() . '/inc/theme-settings.php';
@@ -17,10 +16,6 @@ require_once get_template_directory() . '/inc/theme-settings.php';
 require_once get_template_directory() . '/inc/stripe/vendor/autoload.php';
 
 
-=======
-require_once get_template_directory() . '/inc/kirki-master/kirki.php';
-require_once get_template_directory() . '/inc/codestar-framework/cs-framework.php';
->>>>>>> 523a812 (Initial commit after system restore)
 
 
 // Include Custom Widgets
