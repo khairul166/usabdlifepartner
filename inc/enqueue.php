@@ -236,7 +236,6 @@ function kuki_enqueue_gallery_assets() {
     wp_enqueue_script('lightbox2', 'https://cdnjs.cloudflare.com/ajax/libs/lightbox2/2.11.3/js/lightbox.min.js', ['jquery'], '2.11.3', true);
 }
 add_action('wp_enqueue_scripts', 'kuki_enqueue_gallery_assets');
-<<<<<<< HEAD
 
 
 function enqueue_shortlist_script() {
@@ -401,5 +400,3 @@ function load_font_awesome_admin() {
     }
 }
 add_action('admin_enqueue_scripts', 'load_font_awesome_admin');
-=======
->>>>>>> 523a812 (Initial commit after system restore)
