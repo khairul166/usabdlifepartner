@@ -13,7 +13,7 @@ require_once get_template_directory() . '/inc/admin-controls.php';
 // require_once get_template_directory() . '/inc/codestar-framework/cs-framework.php';
 require_once get_template_directory() . '/inc/theme-settings.php';
 // // Include Composer's autoloader
-require_once get_template_directory() . '/inc/stripe/vendor/autoload.php';
+//require_once get_template_directory() . '/inc/stripe/vendor/autoload.php';
 
 
 

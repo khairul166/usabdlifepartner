@@ -6,12 +6,9 @@ function updateAddressFields() {
     const divisionSelect = document.getElementById("division");
     const stateSelect = document.getElementById("state");
     const citySelect = document.getElementById("city");
-<<<<<<< HEAD
     const districtSelect = document.getElementById("district");
     const upazilaSelect = document.getElementById("upazila");
     const bdlandmark = document.getElementById("landmark");
-=======
->>>>>>> 523a812 (Initial commit after system restore)
 
     if (country === "Bangladesh") {
         bangladeshFields.style.display = "block";
@@ -41,13 +38,10 @@ function updateAddressFields() {
         citySelect.disabled = false;
         stateSelect.setAttribute("required", "required");
         citySelect.setAttribute("required", "required");
-<<<<<<< HEAD
         divisionSelect.removeAttribute("required");
         districtSelect.removeAttribute("required");
         upazilaSelect.removeAttribute("required");
         bdlandmark.removeAttribute("required");
-=======
->>>>>>> 523a812 (Initial commit after system restore)
 
         // Populate states
         stateSelect.innerHTML = `<option value="">Select State</option>`;
